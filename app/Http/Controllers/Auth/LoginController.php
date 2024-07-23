@@ -31,11 +31,11 @@ class LoginController extends Controller
             $user = User::findOrFail(Auth::user()->id);
             $user->last_login = Carbon::now();
             $user->save();
-            return redirect()->intended('/UserData');
+            return redirect()->intended('/UserData')->with('succes', 'Anda Berhasil Login');
         }
 
         if (Auth::viaRemember()) {
-            return redirect()->intended('/UserData');
+            return redirect()->intended('/UserData')->with('succes', 'Anda Berhasil Login');
         }
 
         return back()->with('error', 'The provided credentials do not match our records.');

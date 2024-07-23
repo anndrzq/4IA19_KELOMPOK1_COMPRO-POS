@@ -34,6 +34,38 @@
             valueNames: ["name"]
         });
     </script>
+
+
+    <script>
+        $(document).ready(function() {
+            $('.del').on('click', function(e) {
+                e.preventDefault();
+
+                const formId = $(this).closest('form').attr('id');
+
+                swal({
+                    title: 'Hapus Data',
+                    text: 'Apakah Anda Yakin Ingin Menghapus Data Ini?',
+                    icon: 'warning',
+                    buttons: {
+                        cancel: 'Batal',
+                        confirm: {
+                            text: 'Ya, Hapus!',
+                            value: true,
+                            className: 'btn-danger',
+                        }
+                    },
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $('#' + formId).submit();
+                    } else {
+                        swal('Penghapusan Dibatalkan');
+                    }
+                });
+            });
+        });
+    </script>
 @endpush
 
 @section('content')
@@ -84,7 +116,21 @@
                                     <td>{{ $User->email }}</td>
                                     <td>{{ $User->role }}</td>
                                     <td>{{ $User->last_login }}</td>
-                                    <td>Aksi</td>
+                                    <td>
+                                        <a href="" class="btn btn-primary waves-effect waves-light"><i
+                                                class="las la-eye"></i></a>
+                                        <a href="" class="btn btn-success btn-icon waves-effect waves-light"><i
+                                            class="las la-pencil-alt"></i></a>
+                                        <form action="" method="POST"
+                                            class="btn btn-danger btn-icon waves-effect waves-light"
+                                            id="delete-form-{{ $User->id }}">
+                                            @method('delete')
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger btn-icon waves-effect waves-light">
+                                                <i class="ri-delete-bin-5-line"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
