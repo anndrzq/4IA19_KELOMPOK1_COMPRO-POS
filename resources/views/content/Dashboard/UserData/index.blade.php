@@ -35,7 +35,7 @@
         });
     </script>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('.del').on('click', function(e) {
@@ -43,24 +43,20 @@
 
                 const formId = $(this).closest('form').attr('id');
 
-                swal({
-                    title: 'Hapus Data',
-                    text: 'Apakah Anda Yakin Ingin Menghapus Data Ini?',
-                    icon: 'warning',
-                    buttons: {
-                        cancel: 'Batal',
-                        confirm: {
-                            text: 'Ya, Hapus!',
-                            value: true,
-                            className: 'btn-danger',
-                        }
-                    },
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        $('#' + formId).submit();
-                    } else {
-                        swal('Penghapusan Dibatalkan');
+                Swal.fire({
+                    title: "Yakin Hapus?",
+                    text: "Data ini tidak bisa dipulihkan!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    cancelButtonText: "Batal",
+                    confirmButtonText: "Ya, Hapus!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#' + formId).submit().then;
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire('Penghapusan Dibatalkan');
                     }
                 });
             });
@@ -120,13 +116,12 @@
                                         <a href="" class="btn btn-primary waves-effect waves-light"><i
                                                 class="las la-eye"></i></a>
                                         <a href="" class="btn btn-success btn-icon waves-effect waves-light"><i
-                                            class="las la-pencil-alt"></i></a>
-                                        <form action="" method="POST"
-                                            class="btn btn-danger btn-icon waves-effect waves-light"
-                                            id="delete-form-{{ $User->id }}">
+                                                class="las la-pencil-alt"></i></a>
+                                        <form action="{{ route('UserData.destroy', $User->id) }}" method="POST"
+                                            id="delete-form-{{ $User->id }}" class="d-inline">
                                             @method('delete')
                                             @csrf
-                                            <button type="submit" class="btn btn-danger btn-icon waves-effect waves-light">
+                                            <button type="submit" class="btn btn-danger btn-icon  del">
                                                 <i class="ri-delete-bin-5-line"></i>
                                             </button>
                                         </form>
