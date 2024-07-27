@@ -18,7 +18,7 @@ use App\Http\Controllers\Dashboard\UsersDataController;
 // Authenticate
 // Login
 Route::controller(LoginController::class)->middleware('guest')->group(function () {
-    Route::get('/', 'index')->name('loginPage');
+    Route::get('/', 'index')->name('login');
     Route::post('/', 'authenticate')->name('loginPost');
 });
 

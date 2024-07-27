@@ -35,10 +35,12 @@ class UsersDataController extends Controller
                 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
             ],
             'role'          => 'required',
-            'jk'            => 'required'
+            'jk'            => 'required',
+            'address'       => 'required|max:255',
+            // 'photo'         => 'nullable|mimes:jpg,png,jpeg,bmp|max:2048'
         ]);
 
-        $data['passowrd'] = Hash::make($data['password']);
+        $data['password'] = Hash::make($data['password']);
 
         User::create($data);
         return redirect('/UserData')->with('success', 'Anda Berhasil Menambahkan Data User');
@@ -47,12 +49,12 @@ class UsersDataController extends Controller
 
     public function show(User $user)
     {
-        //
     }
 
-    public function edit(User $user)
+    public function edit(User $user, $id)
     {
-        //
+        $UserData = User::findOrFail($id);
+        return view('content.Dashboard.UserData.edit', compact('UserData'));
     }
 
     public function update(Request $request, User $user)

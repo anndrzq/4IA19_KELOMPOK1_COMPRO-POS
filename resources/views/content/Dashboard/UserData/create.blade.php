@@ -28,14 +28,14 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('UserData.store') }}" method="POST">
+                    <form action="{{ route('UserData.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-xxl-6 col-md-6 mb-3">
                                 <label for="name" class="form-label">Nama Pengguna</label>
                                 <input type="text" name="name"
                                     class="form-control @error('name') is-invalid @enderror" id="name"
-                                    placeholder="Masukan Nama">
+                                    placeholder="Masukan Nama" value="{{ old('name') }}">
                                 @error('name')
                                     <small class="text-danger">
                                         {{ $message }}
@@ -47,7 +47,7 @@
                                 <label for="phoneNumber" class="form-label">Nomor Telepon</label>
                                 <input type="text" name="phoneNumber"
                                     class="form-control @error('phoneNumber') is-invalid @enderror" id="phoneNumber"
-                                    placeholder="Masukan Nomor Telepon">
+                                    value="{{ old('phoneNumber') }}" placeholder="Masukan Nomor Telepon">
                                 @error('phoneNumber')
                                     <small class="text-danger">
                                         {{ $message }}
@@ -59,13 +59,15 @@
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" name="email"
                                     class="form-control @error('email') is-invalid @enderror" id="email"
-                                    placeholder="Masukan Email">
+                                    placeholder="Masukan Email" value="{{ old('email') }}">
                                 @error('email')
                                     <small class="text-danger">
                                         {{ $message }}
                                     </small>
                                 @enderror
                             </div>
+
+
 
                             <div class="col-xxl-6 col-md-6 mb-3">
                                 <label for="password" class="form-label">Kata Sandi</label>
@@ -109,6 +111,18 @@
                                     </small>
                                 @enderror
                             </div>
+
+
+                            <div class="col-xxl-6 col-md-6 mb-3">
+                                <label for="address" class="form-label">Alamat</label>
+                                <textarea class="form-control" id="address" name="address" placeholder="Masukan Alamat User">{{ old('address') }}</textarea>
+                                @error('address')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+
                         </div>
                         <button type="submit" class="btn btn-primary mt-3">Submit</button>
                     </form>

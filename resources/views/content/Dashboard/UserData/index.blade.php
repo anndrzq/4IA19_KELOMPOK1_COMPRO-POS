@@ -111,11 +111,12 @@
                                     <td>{{ $User->phoneNumber }}</td>
                                     <td>{{ $User->email }}</td>
                                     <td>{{ $User->role }}</td>
-                                    <td>{{ $User->last_login }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($User->last_login)->format('d-m-Y') }}</td>
                                     <td>
                                         <a href="" class="btn btn-primary waves-effect waves-light"><i
                                                 class="las la-eye"></i></a>
-                                        <a href="" class="btn btn-success btn-icon waves-effect waves-light"><i
+                                        <a href="{{ route('UserData.edit', $User->id) }}"
+                                            class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
                                         <form action="{{ route('UserData.destroy', $User->id) }}" method="POST"
                                             id="delete-form-{{ $User->id }}" class="d-inline">
