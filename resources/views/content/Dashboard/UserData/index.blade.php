@@ -115,7 +115,7 @@
                                     <td>
                                         <a href="" class="btn btn-primary waves-effect waves-light"><i
                                                 class="las la-eye"></i></a>
-                                        <a href="{{ route('UserData.edit', $User->id) }}"
+                                        <a href="{{ route('UserData.edit', $User->uuid) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
                                         <form action="{{ route('UserData.destroy', $User->id) }}" method="POST"

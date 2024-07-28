@@ -86,13 +86,17 @@
                 <div class="card-body p-4">
                     <div class="tab-content">
                         <div class="tab-pane active" id="personalDetails" role="tabpanel">
-                            <form action="javascript:void(0);">
+                            <form action="{{ route('UserData.update', $UserData->uuid) }}" method="POST">
+                                @csrf
+                                @method('PUT')
                                 <div class="row">
+                                    <input type="hidden" name="form_type" value="updateUser">
+
                                     <div class="col-xxl-6 col-md-6 mb-3">
                                         <label for="name" class="form-label">Nama Pengguna</label>
                                         <input type="text" name="name"
                                             class="form-control @error('name') is-invalid @enderror" id="name"
-                                            placeholder="{{ $UserData->name }}">
+                                            value="{{ $UserData->name }}">
                                         @error('name')
                                             <small class="text-danger">
                                                 {{ $message }}
@@ -101,10 +105,10 @@
                                     </div>
 
                                     <div class="col-xxl-6 col-md-6 mb-3">
-                                        <label for="phoneNumber" class="form-label">Nomor Telepon</label>
+                                        <label for="phoneNumber" class="form-label">Nomor Whatsapp</label>
                                         <input type="text" name="phoneNumber"
                                             class="form-control @error('phoneNumber') is-invalid @enderror" id="phoneNumber"
-                                            placeholder="{{ $UserData->phoneNumber }}">
+                                            value="{{ $UserData->phoneNumber }}">
                                         @error('phoneNumber')
                                             <small class="text-danger">
                                                 {{ $message }}
@@ -116,7 +120,7 @@
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" name="email"
                                             class="form-control @error('email') is-invalid @enderror" id="email"
-                                            placeholder="{{ $UserData->email }}">
+                                            value="{{ $UserData->email }}">
                                         @error('email')
                                             <small class="text-danger">
                                                 {{ $message }}
@@ -124,24 +128,20 @@
                                         @enderror
                                     </div>
 
-
                                     <div class="col-xxl-6 col-md-6 mb-3">
                                         <label for="role" class="form-label">Role</label>
-                                        @if ($UserData->role == 'Admin')
-                                            <input type="text" name="role"
-                                                class="form-control @error('role') is-invalid @enderror" id="role"
-                                                disabled value="{{ $UserData->role }}">
-                                        @elseif ($UserData->role == 'SuperAdmin')
-                                            <input type="text" name="role"
-                                                class="form-control @error('role') is-invalid @enderror" id="role"
-                                                disabled value="{{ $UserData->role }}">
-                                        @else
-                                            <input type="text" name="role"
-                                                class="form-control @error('role') is-invalid @enderror" id="role"
-                                                disabled value="{{ $UserData->role }}">
-                                        @endif
+                                        <select name="role" id="role" class="form-select">
+                                            <option selected disabled>---Pilih Role---</option>
+                                            <option value="Admin" {{ $UserData->role == 'Admin' ? 'selected' : '' }}>Admin
+                                            </option>
+                                            <option value="SuperAdmin"
+                                                {{ $UserData->role == 'SuperAdmin' ? 'selected' : '' }}>
+                                                Super Admin</option>
+                                            <option value="Kasir" {{ $UserData->role == 'Kasir' ? 'selected' : '' }}>Kasir
+                                            </option>
+                                        </select>
                                         @error('role')
-                                            <small class="role-danger">
+                                            <small class="text-danger">
                                                 {{ $message }}
                                             </small>
                                         @enderror
@@ -149,21 +149,21 @@
 
                                     <div class="col-xxl-6 col-md-6 mb-3">
                                         <label for="jk" class="form-label">Jenis Kelamin</label>
-                                        @if ($UserData->jk == 'Admin')
-                                            <input type="text" name="jk"
-                                                class="form-control @error('jk') is-invalid @enderror" id="jk"
-                                                disabled value="{{ $UserData->jk }}">
-                                        @elseif ($UserData->jk == 'SuperAdmin')
-                                            <input type="text" name="jk"
-                                                class="form-control @error('jk') is-invalid @enderror" id="jk"
-                                                disabled value="{{ $UserData->jk }}">
-                                        @else
-                                            <input type="text" name="jk"
-                                                class="form-control @error('jk') is-invalid @enderror" id="jk"
-                                                disabled value="{{ $UserData->jk }}">
-                                        @endif
-                                        @error('jk')
-                                            <small class="jk-danger">
+                                        <select name="jk" id="jk" class="form-select">
+                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
+                                            <option value="Laki" {{ $UserData->jk == 'Laki' ? 'selected' : '' }}>Laki
+                                            </option>
+                                            <option value="Perempuan"
+                                                {{ $UserData->jk == 'Perempuan' ? 'selected' : '' }}>
+                                                Perempuan</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-xxl-6 col-md-6 mb-3">
+                                        <label for="address" class="form-label">Alamat</label>
+                                        <textarea class="form-control" id="address" name="address" placeholder="Masukan Alamat User">{{ $UserData->address }}</textarea>
+                                        @error('address')
+                                            <small class="text-danger">
                                                 {{ $message }}
                                             </small>
                                         @enderror
@@ -178,6 +178,8 @@
                             </form>
                         </div>
                         <!--end tab-pane-->
+
+
                         <div class="tab-pane" id="changePassword" role="tabpanel">
                             <form action="javascript:void(0);">
                                 <div class="row g-2">
@@ -226,6 +228,7 @@
                                 </div>
                                 <!--end row-->
                             </form>
+
                             <div class="mt-4 mb-3 border-bottom pb-2">
                                 <div class="float-end">
                                     <a href="javascript:void(0);" class="link-primary">All Logout</a>

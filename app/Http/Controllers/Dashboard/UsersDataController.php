@@ -51,15 +51,28 @@ class UsersDataController extends Controller
     {
     }
 
-    public function edit(User $user, $id)
+    public function edit(User $user, $uuid)
     {
-        $UserData = User::findOrFail($id);
+        $UserData = User::where('uuid', $uuid)->firstOrFail();
         return view('content.Dashboard.UserData.edit', compact('UserData'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $uuid)
     {
-        //
+        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        if ($request->input('form_type') == 'updateUser') {
+            $data = $request->validate([
+                'name'          => 'required|min:3',
+                'email'         => 'required|email|unique:users,email,' . $UserData->id,
+                'phoneNumber'   => 'required|unique:users,phoneNumber,' . $UserData->id,
+                'role'          => 'required',
+                'jk'            => 'required',
+                'address'       => 'required|max:255',
+            ]);
+
+            $UserData->update($data);
+            return redirect('/UserData')->with('success', 'Anda Berhasil Melakukan Update Data User');
+        }
     }
 
 

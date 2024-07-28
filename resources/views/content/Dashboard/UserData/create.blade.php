@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="col-xxl-6 col-md-6 mb-3">
-                                <label for="phoneNumber" class="form-label">Nomor Telepon</label>
+                                <label for="phoneNumber" class="form-label">Nomor Whatsapp</label>
                                 <input type="text" name="phoneNumber"
                                     class="form-control @error('phoneNumber') is-invalid @enderror" id="phoneNumber"
                                     value="{{ old('phoneNumber') }}" placeholder="Masukan Nomor Telepon">
