@@ -13,6 +13,7 @@ class SuplierController extends Controller
 
     public function index()
     {
+        // Mengambil Semua Data Di Supliers
         $SuppliersData = Suplier::all();
         return view('content.Dashboard.Master.Suppliers.index', compact('SuppliersData'));
     }
@@ -20,10 +21,12 @@ class SuplierController extends Controller
 
     public function create()
     {
+        //
     }
 
     public function store(Request $request)
     {
+        // Melakukan Validasi Data
         $data = $request->validate([
             'kdSuppliers'           => 'required|min:6|unique:supliers,kdSuppliers',
             'suppliersName'         => 'required|unique:supliers,suppliersName',
@@ -32,7 +35,7 @@ class SuplierController extends Controller
             'address'               => 'required',
             'status'                => 'required'
         ]);
-
+        // Melakukan Create Data
         Suplier::create($data);
         return back()->with('success', 'Anda Berhasil Menambahkan Data Suppliers');
     }
