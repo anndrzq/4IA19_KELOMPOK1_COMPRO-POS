@@ -47,8 +47,10 @@ class UsersDataController extends Controller
     }
 
 
-    public function show(User $user)
+    public function show(User $user, $uuid)
     {
+        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        return view('content.Dashboard.UserData.show', compact('UserData'));
     }
 
     public function edit(User $user, $uuid)

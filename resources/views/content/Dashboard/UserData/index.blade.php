@@ -135,8 +135,8 @@
                                     <td>{{ $User->role }}</td>
                                     <td>{{ \Carbon\Carbon::parse($User->last_login)->format('d-m-Y') }}</td>
                                     <td>
-                                        <a href="" class="btn btn-primary waves-effect waves-light"><i
-                                                class="las la-eye"></i></a>
+                                        <a href="{{ route('UserData.show', $User->uuid) }}"
+                                            class="btn btn-primary waves-effect waves-light"><i class="las la-eye"></i></a>
                                         <a href="{{ route('UserData.edit', $User->uuid) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
