@@ -25,14 +25,7 @@
                         <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
                             <img src="/assets/images/users/avatar-1.jpg"
                                 class="rounded-circle avatar-xl img-thumbnail user-profile-image" alt="user-profile-image">
-                            <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
-                                <input id="profile-img-file-input" type="file" class="profile-img-file-input">
-                                <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
-                                    <span class="avatar-title rounded-circle bg-light text-body">
-                                        <i class="ri-camera-fill"></i>
-                                    </span>
-                                </label>
-                            </div>
+
                         </div>
                         <h5 class="fs-16 mb-1">{{ $UserData->name }}</h5>
                         <p class="text-muted mb-0">{{ $UserData->role }}</p>
@@ -74,11 +67,6 @@
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab">
                                 <i class="far fa-user"></i> Change Password
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab">
-                                <i class="far fa-envelope"></i> Experience
                             </a>
                         </li>
                     </ul>
@@ -153,8 +141,7 @@
                                             <option selected disabled>---Pilih Jenis Kelamin---</option>
                                             <option value="Laki" {{ $UserData->jk == 'Laki' ? 'selected' : '' }}>Laki
                                             </option>
-                                            <option value="Perempuan"
-                                                {{ $UserData->jk == 'Perempuan' ? 'selected' : '' }}>
+                                            <option value="Perempuan" {{ $UserData->jk == 'Perempuan' ? 'selected' : '' }}>
                                                 Perempuan</option>
                                         </select>
                                     </div>
@@ -181,52 +168,44 @@
 
 
                         <div class="tab-pane" id="changePassword" role="tabpanel">
-                            <form action="javascript:void(0);">
+                            <form action="{{ route('UserData.update', $UserData->uuid) }}" method="POST">
+                                @csrf
+                                @method('PUT')
                                 <div class="row g-2">
-                                    <div class="col-lg-4">
-                                        <div>
-                                            <label for="oldpasswordInput" class="form-label">Old
-                                                Password*</label>
-                                            <input type="password" class="form-control" id="oldpasswordInput"
-                                                placeholder="Enter current password">
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-6">
                                         <div>
                                             <label for="newpasswordInput" class="form-label">New
                                                 Password*</label>
-                                            <input type="password" class="form-control" id="newpasswordInput"
-                                                placeholder="Enter new password">
+                                            <input type="password" class="form-control" name="password"
+                                                id="newpasswordInput" placeholder="Enter new password">
+                                            @error('password')
+                                                <small class="text-danger">
+                                                    {{ $message }}
+                                                </small>
+                                            @enderror
                                         </div>
                                     </div>
                                     <!--end col-->
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-6">
                                         <div>
                                             <label for="confirmpasswordInput" class="form-label">Confirm
                                                 Password*</label>
-                                            <input type="password" class="form-control" id="confirmpasswordInput"
-                                                placeholder="Confirm password">
+                                            <input type="password" name="confirmpassword" class="form-control"
+                                                id="confirmpasswordInput" placeholder="Confirm password">
+                                            @error('confirmpassword')
+                                                <small class="text-danger">
+                                                    {{ $message }}
+                                                </small>
+                                            @enderror
                                         </div>
                                     </div>
-                                    <!--end col-->
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <a href="javascript:void(0);"
-                                                class="link-primary text-decoration-underline">Forgot
-                                                Password ?</a>
-                                        </div>
-                                    </div>
-                                    <!--end col-->
                                     <div class="col-lg-12">
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-success">Change
                                                 Password</button>
                                         </div>
                                     </div>
-                                    <!--end col-->
                                 </div>
-                                <!--end row-->
                             </form>
 
                             <div class="mt-4 mb-3 border-bottom pb-2">
@@ -296,135 +275,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!--end tab-pane-->
-                        <div class="tab-pane" id="experience" role="tabpanel">
-                            <form>
-                                <div id="newlink">
-                                    <div id="1">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <div class="mb-3">
-                                                    <label for="jobTitle" class="form-label">Job
-                                                        Title</label>
-                                                    <input type="text" class="form-control" id="jobTitle"
-                                                        placeholder="Job title" value="Lead Designer / Developer">
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="companyName" class="form-label">Company
-                                                        Name</label>
-                                                    <input type="text" class="form-control" id="companyName"
-                                                        placeholder="Company name" value="Themesbrand">
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="experienceYear" class="form-label">Experience
-                                                        Years</label>
-                                                    <div class="row">
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="experienceYear"
-                                                                id="experienceYear">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17" selected>2017
-                                                                </option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20">2020</option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-auto align-self-center">
-                                                            to
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="choices-single-default2">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17">2017</option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20" selected>2020
-                                                                </option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                    </div>
-                                                    <!--end row-->
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-12">
-                                                <div class="mb-3">
-                                                    <label for="jobDescription" class="form-label">Job
-                                                        Description</label>
-                                                    <textarea class="form-control" id="jobDescription" rows="3" placeholder="Enter description">You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. </textarea>
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="hstack gap-2 justify-content-end">
-                                                <a class="btn btn-success" href="javascript:deleteEl(1)">Delete</a>
-                                            </div>
-                                        </div>
-                                        <!--end row-->
-                                    </div>
-                                </div>
-                                <div id="newForm" style="display: none;">
-
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="hstack gap-2">
-                                        <button type="submit" class="btn btn-success">Update</button>
-                                        <a href="javascript:new_link()" class="btn btn-primary">Add
-                                            New</a>
-                                    </div>
-                                </div>
-                                <!--end col-->
-                            </form>
-                        </div>
-                        <!--end tab-pane-->
-
                         <!--end tab-pane-->
                     </div>
                 </div>

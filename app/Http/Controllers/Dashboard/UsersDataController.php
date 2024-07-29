@@ -72,12 +72,30 @@ class UsersDataController extends Controller
 
             $UserData->update($data);
             return redirect('/UserData')->with('success', 'Anda Berhasil Melakukan Update Data User');
+        } else {
+            $data = $request->validate([
+                'password'              => [
+                    'required',
+                    'min:6',
+                    'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
+                ],
+                'confirmpassword'       => 'required|same:password'
+            ]);
+
+            $UserData->update(['password' => Hash::make($request->input('confirmpassword'))]);
+            return redirect('/UserData')->with('success', 'Anda Telah Mengubah Password Data User');
         }
+        return back()->with('error', 'Periksa Kembali Data Yang Anda Berikan');
     }
 
 
-    public function destroy(User $user)
+    public function destroy(User $user, $uuid)
     {
-        //
+        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        if ($UserData->user) {
+            $UserData->user->delete();
+        }
+        $UserData->delete();
+        return redirect('/UserData')->with('success', 'Anda Telah Berhasil Menghapus User');
     }
 }

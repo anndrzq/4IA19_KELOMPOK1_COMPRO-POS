@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
 
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @push('vendor-script')
@@ -36,6 +37,7 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             $('.del').on('click', function(e) {
@@ -62,6 +64,26 @@
             });
         });
     </script>
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: "Good job!",
+                text: "{{ session('success') }}",
+                icon: "success"
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: "Good job!",
+                text: "{{ session('error') }}",
+                icon: "error"
+            });
+        </script>
+    @endif
 @endpush
 
 @section('content')
@@ -118,7 +140,7 @@
                                         <a href="{{ route('UserData.edit', $User->uuid) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('UserData.destroy', $User->id) }}" method="POST"
+                                        <form action="{{ route('UserData.destroy', $User->uuid) }}" method="POST"
                                             id="delete-form-{{ $User->id }}" class="d-inline">
                                             @method('delete')
                                             @csrf

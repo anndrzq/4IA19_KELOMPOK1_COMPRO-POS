@@ -12,8 +12,13 @@
 @section('content')
     <!-- auth page content -->
     <div class="auth-page-content">
+        <!-- Success Alert -->
+
+
         <div class="container">
+
             <div class="row">
+
                 <div class="col-lg-12">
                     <div class="text-center mt-sm-5 mb-4 text-white-50">
                         <div>
@@ -32,6 +37,26 @@
                     <div class="card mt-4">
 
                         <div class="card-body p-4">
+                            @if (session('success'))
+                                <div class="alert alert-success alert-border-left alert-dismissible fade show material-shadow"
+                                    role="alert">
+                                    <i class="ri-notification-off-line me-3 align-middle"></i> <strong>Success</strong> -
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
+                            @if (session('error'))
+                                <!-- Danger Alert -->
+                                <div class="alert alert-danger alert-border-left alert-dismissible fade show material-shadow"
+                                    role="alert">
+                                    <i class="ri-error-warning-line me-3 align-middle"></i> <strong>Danger</strong> -
+                                    {{ session('error') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
+
                             <div class="text-center mt-2">
                                 <h5 class="text-primary">Selamat Datang!</h5>
                                 <p class="text-muted">Silakan Login untuk mengakses Aplikasi Point Of</p>

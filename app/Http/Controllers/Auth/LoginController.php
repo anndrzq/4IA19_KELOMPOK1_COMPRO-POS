@@ -38,6 +38,14 @@ class LoginController extends Controller
             return redirect()->intended('/UserData')->with('succes', 'Anda Berhasil Login');
         }
 
-        return back()->with('error', 'The provided credentials do not match our records.');
+        return back()->with('error', 'Periksa Kembali Data Yang Anda Masukan');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/')->with('success', 'Anda Berhasil Logout');
     }
 }

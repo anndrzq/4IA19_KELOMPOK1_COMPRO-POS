@@ -22,6 +22,7 @@ Route::controller(LoginController::class)->middleware('guest')->group(function (
     Route::post('/', 'authenticate')->name('loginPost');
 });
 
+Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 
 //Dashboard Data
 
