@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\UsersDataController;
+use App\Http\Controllers\Dashboard\SuplierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->
 
 //Dashboard Data
 
+// Data Master
+// Suplier
+Route::resource('/Suplier', SuplierController::class)->middleware('auth');
 // Setting Sections
 // User Data
 Route::resource('/UserData', UsersDataController::class)->middleware('auth');

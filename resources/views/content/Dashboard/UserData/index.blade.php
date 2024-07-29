@@ -118,7 +118,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
-                                <th>Nomor Telepon</th>
+                                <th>Nomor Whatsapp</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
