@@ -68,7 +68,7 @@
     @if (session('success'))
         <script>
             Swal.fire({
-                title: "Good job!",
+                title: "BERHASIL!",
                 text: "{{ session('success') }}",
                 icon: "success"
             });
@@ -78,7 +78,7 @@
     @if (session('error'))
         <script>
             Swal.fire({
-                title: "Good job!",
+                title: "GAGAL!",
                 text: "{{ session('error') }}",
                 icon: "error"
             });
@@ -91,7 +91,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Users Data</h4>
+                <h4 class="mb-sm-0">Suppliers Data</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
@@ -185,9 +185,9 @@
                                 </div><!--end col-->
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="statusForm" class="form-label">State</label>
+                                        <label for="statusForm" class="form-label">Status</label>
                                         <select id="statusForm" name="status" class="form-select">
-                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
+                                            <option selected disabled>---Pilih Status---</option>
                                             <option value="1" {{ $supplier->status == 1 ? 'selected' : '' }}>Aktif
                                             </option>
                                             <option value="0" {{ $supplier->status == 0 ? 'selected' : '' }}>
@@ -331,13 +331,15 @@
                                     @endif
 
                                     <td>
-                                        <a href="" class="btn btn-primary waves-effect waves-light"><i
-                                                class="las la-eye"></i></a>
+                                        <button data-bs-target="#modalView-{{ $Suppliers->kdSuppliers }}"
+                                            data-bs-toggle="modal" class="btn btn-primary"><i
+                                                class="las la-eye"></i></button>
                                         <a href="{{ route('Suplier.edit', $Suppliers->kdSuppliers) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="" method="POST"
-                                            id="delete-form-{{ $Suppliers->kdSuppliers }}" class="d-inline">
+                                        <form action="{{ route('Suplier.destroy', $Suppliers->kdSuppliers) }}"
+                                            method="POST" id="delete-form-{{ $Suppliers->kdSuppliers }}"
+                                            class="d-inline">
                                             @method('delete')
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-icon  del">
@@ -346,6 +348,91 @@
                                         </form>
                                     </td>
                                 </tr>
+
+                                <div id="modalView-{{ $Suppliers->kdSuppliers }}" class="modal fade" tabindex="-1"
+                                    aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="myModalLabel">Detail Suppliers</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="kdSuppliers" class="form-label">Kode
+                                                                Suppliers</label>
+                                                            <input type="text" class="form-control" name="kdSuppliers"
+                                                                id="kdSuppliers"
+                                                                value="{{ old('kdSuppliers', $Suppliers->kdSuppliers) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="suppliersName" class="form-label">Nama
+                                                                Suppliers</label>
+                                                            <input type="text" class="form-control"
+                                                                name="suppliersName" id="suppliersName"
+                                                                value="{{ old('suppliersName', $Suppliers->suppliersName) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-6">
+                                                        <div class="mb-3">
+                                                            <label for="contactWhatsapp" class="form-label">Kontak
+                                                                Whatsapp</label>
+                                                            <input type="tel" class="form-control"
+                                                                name="contactWhatsapp" id="contactWhatsapp"
+                                                                value="{{ old('contactWhatsapp', $Suppliers->contactWhatsapp) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-6">
+                                                        <div class="mb-3">
+                                                            <label for="contactEmail" class="form-label">Kontak
+                                                                Email</label>
+                                                            <input type="email" class="form-control"
+                                                                name="contactEmail" id="contactEmail"
+                                                                value="{{ old('contactEmail', $Suppliers->contactEmail) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="address" class="form-label">Alamat
+                                                                Suppliers</label>
+                                                            <input type="text" name="address" class="form-control"
+                                                                id="address"
+                                                                value="{{ old('address', $Suppliers->address) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="statusForm" class="form-label">Status</label>
+                                                            @if ($Suppliers->status == 1)
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm" value="Aktif"
+                                                                    disabled>
+                                                            @else
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm"
+                                                                    value="Tidak Aktif" disabled>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div><!--end col-->
+                                            </div><!--end row-->
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
                             @endforeach
                         </tbody>
                     </table>

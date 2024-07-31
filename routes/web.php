@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Dashboard\UsersDataController;
+use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\SuplierController;
+use App\Http\Controllers\Dashboard\UsersDataController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +19,13 @@ use App\Http\Controllers\Dashboard\SuplierController;
 */
 
 // Authenticate
+
 // Login
 Route::controller(LoginController::class)->middleware('guest')->group(function () {
     Route::get('/', 'index')->name('login');
     Route::post('/', 'authenticate')->name('loginPost');
 });
-
+// Logout
 Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 
 //Dashboard Data
@@ -30,6 +33,10 @@ Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->
 // Data Master
 // Suplier
 Route::resource('/Suplier', SuplierController::class)->middleware('auth');
+// Unit
+Route::resource('/Unit', UnitController::class)->middleware('auth');
+
+
 // Setting Sections
 // User Data
 Route::resource('/UserData', UsersDataController::class)->middleware('auth');

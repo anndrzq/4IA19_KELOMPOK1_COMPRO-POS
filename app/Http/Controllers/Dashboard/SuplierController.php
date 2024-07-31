@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Suplier;
@@ -19,11 +20,6 @@ class SuplierController extends Controller
     }
 
 
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         // Melakukan Validasi Data
@@ -38,11 +34,6 @@ class SuplierController extends Controller
         // Melakukan Create Data
         Suplier::create($data);
         return back()->with('success', 'Anda Berhasil Menambahkan Data Suppliers');
-    }
-
-    public function show(Suplier $suplier)
-    {
-        //
     }
 
     public function edit(Suplier $suplier, $kdSuppliers)
@@ -88,8 +79,12 @@ class SuplierController extends Controller
         return redirect('/Suplier')->with('success', 'Anda Berhasil Melakukan Update Data Suppliers');
     }
 
-    public function destroy(Suplier $suplier)
+    public function destroy(Suplier $suplier, $kdSuppliers)
     {
-        //
+        // Mengambil Data Berdasarkan Kode Supplier
+        $SuppliersData = Suplier::where('kdSuppliers', $kdSuppliers)->firstOrFail();
+        // Menghapus Data Suppliers
+        $SuppliersData->delete();
+        return redirect('/Suplier')->with('success', 'Anda Berhasil Menghapus Data Suppliers');
     }
 }

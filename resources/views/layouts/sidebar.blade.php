@@ -509,6 +509,13 @@
                         <i class="ri-dropbox-fill"></i> <span data-key="t-widgets">Suplier</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('Unit*') ? 'active' : '' }}"
+                        href="{{ route('Unit.index') }}">
+                        <i class="ri-stack-fill"></i> <span data-key="t-widgets">Unit</span>
+                    </a>
+                </li>
+
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Settings</span>
                 </li>
