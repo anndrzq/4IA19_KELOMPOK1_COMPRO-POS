@@ -502,12 +502,7 @@
                 </li> <!-- end Dashboard Menu --> --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Data Master</span>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('UserData*') ? 'active' : '' }}"
-                        href="{{ route('UserData.index') }}">
-                        <i class="ri-honour-line"></i> <span data-key="t-widgets">User Data</span>
-                    </a>
-                </li>
+
 
                 <li class="nav-item">
                     <a class="nav-link menu-link {{ Request::is('Suplier*') ? 'active' : '' }}"
@@ -529,6 +524,19 @@
                 </li>
 
 
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pengaturan User</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('Member*') ? 'active' : '' }}" href="">
+                        <i class="ri-file-user-fill"></i> <span data-key="t-widgets">Member</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('UserData*') ? 'active' : '' }}"
+                        href="{{ route('UserData.index') }}">
+                        <i class="ri-user-add-fill"></i> <span data-key="t-widgets">User Data</span>
+                    </a>
+                </li>
                 {{--
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button"
