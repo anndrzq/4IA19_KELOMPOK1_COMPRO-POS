@@ -91,12 +91,12 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Unit Data</h4>
+                <h4 class="mb-sm-0">Kategori Data</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">DataMaster</a></li>
-                        <li class="breadcrumb-item active">Unit</li>
+                        <li class="breadcrumb-item active">Kategori</li>
                     </ol>
                 </div>
 
@@ -108,19 +108,19 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Unit.edit'))
-                        <form action="{{ route('Unit.update', $Unit->kdUnit) }}" method="POST">
+                    @if (request()->routeIs('Category.edit'))
+                        <form action="{{ route('Category.update', $category->kdCategory) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div class="row">
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="kdUnit" class="form-label">Kode Unit</label>
-                                        <input type="text" class="form-control" name="kdUnit"
-                                            placeholder="Masukan Kode Unit" id="kdUnit"
-                                            value="{{ old('kdUnit', $Unit->kdUnit) }}">
+                                        <label for="kdCategory" class="form-label">Kode Kategori</label>
+                                        <input type="text" class="form-control" name="kdCategory"
+                                            placeholder="Masukan Kode Kategori" id="kdCategory"
+                                            value="{{ old('kdCategory', $category->kdCategory) }}">
 
-                                        @error('kdUnit')
+                                        @error('kdCategory')
                                             <small class="text-danger">
                                                 {{ $message }}
                                             </small>
@@ -130,11 +130,11 @@
 
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="unitDescription" class="form-label">Keterangan Unit</label>
-                                        <input type="text" name="unitDescription" class="form-control"
-                                            placeholder="Masukan Keterangan Unit" id="unitDescription"
-                                            value="{{ old('unitDescription', $Unit->unitDescription) }}">
-                                        @error('unitDescription')
+                                        <label for="categoryName" class="form-label">Jenis Kategori</label>
+                                        <input type="text" name="categoryName" class="form-control"
+                                            placeholder="Masukan Jenis Kategori" id="categoryName"
+                                            value="{{ old('categoryName', $category->categoryName) }}">
+                                        @error('categoryName')
                                             <small class="text-danger">
                                                 {{ $message }}
                                             </small>
@@ -149,16 +149,17 @@
                             </div><!--end row-->
                         </form>
                     @else
-                        <form action="{{ route('Unit.store') }}" method="POST">
+                        <form action="{{ route('Category.store') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="kdUnit" class="form-label">Kode Unit</label>
-                                        <input type="text" class="form-control" name="kdUnit"
-                                            placeholder="Masukan Kode Unit" id="kdUnit" value="{{ old('kdUnit') }}">
+                                        <label for="kdCategory" class="form-label">Kode Kategori</label>
+                                        <input type="text" class="form-control" name="kdCategory"
+                                            placeholder="Masukan Kode Kategori" id="kdCategory"
+                                            value="{{ old('kdCategory') }}">
 
-                                        @error('kdUnit')
+                                        @error('kdCategory')
                                             <small class="text-danger">
                                                 {{ $message }}
                                             </small>
@@ -167,11 +168,11 @@
                                 </div><!--end col-->
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="unitDescription" class="form-label">Keterangan Unit</label>
-                                        <input type="text" name="unitDescription" class="form-control"
-                                            placeholder="Masukan Keterangan Unit" id="unitDescription"
-                                            value="{{ old('unitDescription') }}">
-                                        @error('unitDescription')
+                                        <label for="categoryName" class="form-label">Jenis Kategori</label>
+                                        <input type="text" name="categoryName" class="form-control"
+                                            placeholder="Masukan Jenis Kategori" id="categoryName"
+                                            value="{{ old('categoryName') }}">
+                                        @error('categoryName')
                                             <small class="text-danger">
                                                 {{ $message }}
                                             </small>
@@ -198,40 +199,41 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Kode Unit</th>
-                                <th>Keterangan Unit</th>
+                                <th>Kode Kategori</th>
+                                <th>Keterangan Kategori</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($unitData as $Unit)
+                            @foreach ($categoryData as $category)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $Unit->kdUnit }}</td>
-                                    <td>{{ $Unit->unitDescription }}</td>
+                                    <td>{{ $category->kdCategory }}</td>
+                                    <td>{{ $category->categoryName }}</td>
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $Unit->kdUnit }}" data-bs-toggle="modal"
-                                            class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('Unit.edit', $Unit->kdUnit) }}"
+                                        <button data-bs-target="#modalView-{{ $category->kdCategory }}"
+                                            data-bs-toggle="modal" class="btn btn-primary"><i
+                                                class="las la-eye"></i></button>
+                                        <a href="{{ route('Category.edit', $category->kdCategory) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('Unit.destroy', $Unit->kdUnit) }}" method="POST"
-                                            class="d-inline" id="delete-form-{{ $Unit->kdUnit }}">
+                                        <form action="{{ route('Category.destroy', $category->kdCategory) }}"
+                                            method="POST" class="d-inline" id="delete-form-{{ $category->kdCategory }}">
                                             @method('delete')
                                             @csrf
-                                            <button type="submit" class="btn btn-danger btn-icon  del">
+                                            <button type="submit" class="btn btn-danger btn-icon del">
                                                 <i class="ri-delete-bin-5-line"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $Unit->kdUnit }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $category->kdCategory }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="myModalLabel">Detail Unit</h5>
+                                                <h5 class="modal-title" id="myModalLabel">Detail Kategori</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"> </button>
                                             </div>
@@ -239,20 +241,22 @@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="kdUnit" class="form-label">Kode Unit</label>
-                                                            <input type="text" class="form-control" name="kdUnit"
-                                                                id="kdUnit" value="{{ old('kdUnit', $Unit->kdUnit) }}"
+                                                            <label for="kdCategory" class="form-label">Kode
+                                                                Kategori</label>
+                                                            <input type="text" class="form-control" name="kdCategory"
+                                                                id="kdCategory"
+                                                                value="{{ old('kdCategory', $category->kdCategory) }}"
                                                                 disabled>
                                                         </div>
                                                     </div><!--end col-->
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="unitDescription" class="form-label">Keterangan
-                                                                Unit</label>
-                                                            <input type="text" name="unitDescription"
-                                                                class="form-control" id="unitDescription"
-                                                                value="{{ old('unitDescription', $Unit->unitDescription) }}"
+                                                            <label for="categoryName" class="form-label">Jenis
+                                                                Kategori</label>
+                                                            <input type="text" name="categoryName"
+                                                                class="form-control" id="categoryName"
+                                                                value="{{ old('categoryName', $category->categoryName) }}"
                                                                 disabled>
                                                         </div>
                                                     </div><!--end col-->

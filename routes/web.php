@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\UsersDataController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +35,8 @@ Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->
 Route::resource('/Suplier', SuplierController::class)->middleware('auth');
 // Unit
 Route::resource('/Unit', UnitController::class)->middleware('auth');
+// Category
+Route::resource('/Category', CategoryController::class)->middleware('auth');
 
 
 // Setting Sections
