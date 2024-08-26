@@ -16,15 +16,6 @@ class Product extends Model
     // Menonaktifkan auto incrementing
     public $incrementing = false;
 
-    public static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->uuid = Str::uuid();
-        });
-    }
-
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');

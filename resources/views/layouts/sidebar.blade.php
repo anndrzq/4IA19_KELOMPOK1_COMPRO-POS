@@ -503,7 +503,12 @@
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Data Master</span>
                 </li>
 
-
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('Product*') ? 'active' : '' }}"
+                        href="{{ route('Product.index') }}">
+                        <i class="ri-barcode-box-line"></i> <span data-key="t-widgets">Product</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link {{ Request::is('Suplier*') ? 'active' : '' }}"
                         href="{{ route('Suplier.index') }}">

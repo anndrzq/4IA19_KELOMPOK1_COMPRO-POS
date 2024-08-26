@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\MembersController;
+use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\UsersDataController;
@@ -38,7 +39,8 @@ Route::resource('/Suplier', SuplierController::class)->middleware('auth');
 Route::resource('/Unit', UnitController::class)->middleware('auth');
 // Category
 Route::resource('/Category', CategoryController::class)->middleware('auth');
-
+// Product
+Route::resource('/Product', ProductController::class)->middleware('auth');
 
 // Setting Sections
 // User Data
