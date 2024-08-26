@@ -527,7 +527,8 @@
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pengaturan User</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Member*') ? 'active' : '' }}" href="">
+                    <a class="nav-link menu-link {{ Request::is('Member*') ? 'active' : '' }}"
+                        href="{{ route('Member.index') }}">
                         <i class="ri-file-user-fill"></i> <span data-key="t-widgets">Member</span>
                     </a>
                 </li>

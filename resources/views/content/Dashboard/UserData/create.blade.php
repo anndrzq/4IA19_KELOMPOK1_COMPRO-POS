@@ -83,7 +83,8 @@
 
                             <div class="col-xxl-6 col-md-6 mb-3">
                                 <label for="role" class="form-label">Pilih Role</label>
-                                <select name="role" id="role" class="form-select">
+                                <select name="role" id="role" class="form-select" data-choices
+                                    data-choices-search-false>
                                     <option selected disabled>---Pilih Role---</option>
                                     <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
                                     <option value="SuperAdmin" {{ old('role') == 'SuperAdmin' ? 'selected' : '' }}>
@@ -99,7 +100,8 @@
 
                             <div class="col-xxl-6 col-md-6 mb-3">
                                 <label for="jk" class="form-label">Jenis Kelamin</label>
-                                <select name="jk" id="jk" class="form-select">
+                                <select name="jk" id="jk" class="form-select" data-choices
+                                    data-choices-search-false>
                                     <option selected disabled>---Pilih Jenis Kelamin---</option>
                                     <option value="Laki" {{ old('jk') == 'Laki' ? 'selected' : '' }}>Laki</option>
                                     <option value="Perempuan" {{ old('jk') == 'Perempuan' ? 'selected' : '' }}>

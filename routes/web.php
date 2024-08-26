@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\MembersController;
 use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\UsersDataController;
@@ -42,3 +43,5 @@ Route::resource('/Category', CategoryController::class)->middleware('auth');
 // Setting Sections
 // User Data
 Route::resource('/UserData', UsersDataController::class)->middleware('auth');
+// Members
+Route::resource('/Member', MembersController::class)->middleware('auth');

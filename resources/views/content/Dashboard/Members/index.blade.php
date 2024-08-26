@@ -1,0 +1,423 @@
+@extends('layouts.master')
+
+@push('vendor-style')
+    <!--datatable css-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+    <!--datatable responsive css-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@push('vendor-script')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!--datatable js-->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="{{ asset('') }}assets/libs/list.js/list.min.js"></script>
+    <script src="{{ asset('') }}assets/libs/list.pagination.js/list.pagination.min.js"></script>
+@endpush
+
+@push('page-script')
+    <script src="{{ asset('') }}assets/js/pages/datatables.init.js"></script>
+    <script>
+        var nameList = new List('name-list', {
+            valueNames: ["name"]
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.del').on('click', function(e) {
+                e.preventDefault();
+
+                const formId = $(this).closest('form').attr('id');
+
+                Swal.fire({
+                    title: "Yakin Hapus?",
+                    text: "Data ini tidak bisa dipulihkan!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    cancelButtonText: "Batal",
+                    confirmButtonText: "Ya, Hapus!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#' + formId).submit().then;
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire('Penghapusan Dibatalkan');
+                    }
+                });
+            });
+        });
+    </script>
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: "BERHASIL!",
+                text: "{{ session('success') }}",
+                icon: "success"
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: "GAGAL!",
+                text: "{{ session('error') }}",
+                icon: "error"
+            });
+        </script>
+    @endif
+@endpush
+
+@section('content')
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Suppliers Data</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">DataMaster</a></li>
+                        <li class="breadcrumb-item active">Suppliers</li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    @if (request()->routeIs('Member.edit'))
+                        <form action="{{ route('Member.update', $Members->uuid) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Nama Member</label>
+                                        <input type="text" class="form-control" name="name"
+                                            placeholder="Masukan Nama Member" id="name"
+                                            value="{{ old('name', $Members->name) }}">
+                                        @error('name')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="noWA" class="form-label">Kontak Whatsapp</label>
+                                        <input type="tel" class="form-control" name="noWA"
+                                            placeholder="Masukan Whatsapp" id="noWA"
+                                            value="{{ old('noWA', $Members->noWA) }}">
+                                        @error('noWA')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Kontak Email</label>
+                                        <input type="email" class="form-control" name="email"
+                                            placeholder="example@gamil.com" id="email"
+                                            value="{{ old('email', $Members->email) }}">
+                                        @error('email')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="gender" class="form-label">Jenis Kelamin</label>
+                                        <select name="gender" id="gender" class="form-select" data-choices
+                                            data-choices-search-false>
+                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
+                                            <option value="0" {{ $Members->gender == '0' ? 'selected' : '' }}>Laki
+                                            </option>
+                                            <option value="1" {{ $Members->gender == '1' ? 'selected' : '' }}>
+                                                Perempuan</option>
+                                        </select>
+                                        @error('gender')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select name="status" id="status" class="form-select" data-choices
+                                            data-choices-search-false>
+                                            <option selected disabled>---Pilih Status---</option>
+                                            <option value="0" {{ $Members->status == '0' ? 'selected' : '' }}>Tidak
+                                                Aktif
+                                            </option>
+                                            <option value="1" {{ $Members->status == '1' ? 'selected' : '' }}>
+                                                Aktif</option>
+                                        </select>
+                                        @error('status')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                        </form>
+                    @else
+                        <form action="{{ route('Member.store') }}" method="POST">
+                            @csrf
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Nama Member</label>
+                                        <input type="text" class="form-control" name="name"
+                                            placeholder="Masukan Nama Member" id="name" value="{{ old('name') }}">
+                                        @error('name')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="noWA" class="form-label">Kontak Whatsapp</label>
+                                        <input type="tel" class="form-control" name="noWA"
+                                            placeholder="Masukan Whatsapp" id="noWA" value="{{ old('noWA') }}">
+                                        @error('noWA')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Kontak Email</label>
+                                        <input type="email" class="form-control" name="email"
+                                            placeholder="example@gamil.com" id="email" value="{{ old('email') }}">
+                                        @error('email')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="gender" class="form-label">Jenis Kelamin</label>
+                                        <select name="gender" id="gender" class="form-select" data-choices
+                                            data-choices-search-false>
+                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
+                                            <option value="0" {{ old('gender') == '0' ? 'selected' : '' }}>Laki
+                                            </option>
+                                            <option value="1" {{ old('gender') == '1' ? 'selected' : '' }}>
+                                                Perempuan</option>
+                                        </select>
+                                        @error('gender')
+                                            <small class="text-danger">
+                                                {{ $message }}
+                                            </small>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="status" value="1">
+
+                                <div class="col-lg-12">
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                        style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Kontak Whatsapp</th>
+                                <th>Kontak Email</th>
+                                <th>Jenis Kelamin</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($dataMember as $Members)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $Members->name }}</td>
+                                    <td>{{ $Members->noWA }}</td>
+                                    <td>{{ $Members->email }}</td>
+                                    @if ($Members->gender == 0)
+                                        <td>
+                                            Laki Laki
+                                        </td>
+                                    @else
+                                        <td>
+                                            Perempuan
+                                        </td>
+                                    @endif
+                                    @if ($Members->status == 1)
+                                        <td>
+                                            <div class="btn btn-success ">
+                                                Aktif
+                                            </div>
+                                        </td>
+                                    @else
+                                        <td>
+                                            <div class="btn btn-danger ">
+                                                Tidak Aktif
+                                            </div>
+                                        </td>
+                                    @endif
+
+                                    <td>
+                                        <button data-bs-target="#modalView-{{ $Members->uuid }}" data-bs-toggle="modal"
+                                            class="btn btn-primary"><i class="las la-eye"></i></button>
+                                        <a href="{{ route('Member.edit', $Members->uuid) }}"
+                                            class="btn btn-success btn-icon waves-effect waves-light"><i
+                                                class="las la-pencil-alt"></i></a>
+                                        <form action="{{ route('Member.destroy', $Members->uuid) }}" method="POST"
+                                            id="delete-form-{{ $Members->uuid }}" class="d-inline">
+                                            @method('delete')
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger btn-icon  del">
+                                                <i class="ri-delete-bin-5-line"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+
+                                <div id="modalView-{{ $Members->uuid }}" class="modal fade" tabindex="-1"
+                                    aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="myModalLabel">Detail Members</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="name" class="form-label">Nama
+                                                                Suppliers</label>
+                                                            <input type="text" class="form-control" name="name"
+                                                                id="name" value="{{ old('name', $Members->name) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-6">
+                                                        <div class="mb-3">
+                                                            <label for="noWA" class="form-label">Kontak
+                                                                Whatsapp</label>
+                                                            <input type="tel" class="form-control" name="noWA"
+                                                                id="noWA" value="{{ old('noWA', $Members->noWA) }}"
+                                                                disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-6">
+                                                        <div class="mb-3">
+                                                            <label for="email" class="form-label">Kontak
+                                                                Email</label>
+                                                            <input type="email" class="form-control" name="email"
+                                                                id="email"
+                                                                value="{{ old('email', $Members->email) }}" disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="statusForm" class="form-label">Jenis
+                                                                Kelamin</label>
+                                                            @if ($Members->gender == 1)
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm"
+                                                                    value="Perempuan" disabled>
+                                                            @else
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm"
+                                                                    value="Laki Laki" disabled>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="statusForm" class="form-label">Status</label>
+                                                            @if ($Members->status == 1)
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm" value="Aktif"
+                                                                    disabled>
+                                                            @else
+                                                                <input type="text" name="statusForm"
+                                                                    class="form-control" id="statusForm"
+                                                                    value="Tidak Aktif" disabled>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div><!--end col-->
+                                            </div><!--end row-->
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!--end col-->
+    </div><!--end row-->
+@endsection
