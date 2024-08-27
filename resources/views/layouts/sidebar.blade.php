@@ -528,6 +528,19 @@
                     </a>
                 </li>
 
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Laporan</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('StockIn*') ? 'active' : '' }}"
+                        href="{{ Route('StockIn.index') }}">
+                        <i class="ri-arrow-down-line"></i> <span data-key="t-widgets">Stok Masuk</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ Request::is('StockOut*') ? 'active' : '' }}" href="">
+                        <i class="ri-arrow-up-line"></i> <span data-key="t-widgets">Stok Keluar</span>
+                    </a>
+                </li>
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pengaturan User</span>
                 </li>

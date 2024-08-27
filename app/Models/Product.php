@@ -25,4 +25,9 @@ class Product extends Model
     {
         return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
+
+    public function StockIn()
+    {
+        return $this->hasMany(StockIn::class, 'uuid');
+    }
 }

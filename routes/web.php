@@ -5,9 +5,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\MembersController;
 use App\Http\Controllers\Dashboard\ProductController;
+use App\Http\Controllers\dashboard\StockInController;
 use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\UsersDataController;
+use App\Models\StockIn;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +43,10 @@ Route::resource('/Unit', UnitController::class)->middleware('auth');
 Route::resource('/Category', CategoryController::class)->middleware('auth');
 // Product
 Route::resource('/Product', ProductController::class)->middleware('auth');
+
+// Report
+// StockIn
+Route::resource('/StockIn', StockInController::class)->middleware('auth');
 
 // Setting Sections
 // User Data
