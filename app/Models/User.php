@@ -19,6 +19,11 @@ class User extends Authenticatable
         return $this->hasMany(StockIn::class, 'uuid');
     }
 
+    public function StockOut()
+    {
+        return $this->hasMany(StockIn::class, 'uuid');
+    }
+
     public static function boot()
     {
         parent::boot();

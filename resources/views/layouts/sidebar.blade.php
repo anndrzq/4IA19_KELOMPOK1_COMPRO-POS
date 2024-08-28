@@ -537,7 +537,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('StockOut*') ? 'active' : '' }}" href="">
+                    <a class="nav-link menu-link {{ Request::is('StockOut*') ? 'active' : '' }}"
+                        href="{{ route('StockOut.index') }}">
                         <i class="ri-arrow-up-line"></i> <span data-key="t-widgets">Stok Keluar</span>
                     </a>
                 </li>

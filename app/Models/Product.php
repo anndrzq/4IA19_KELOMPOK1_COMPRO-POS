@@ -30,4 +30,9 @@ class Product extends Model
     {
         return $this->hasMany(StockIn::class, 'uuid');
     }
+
+    public function StockOut()
+    {
+        return $this->hasMany(StockIn::class, 'uuid');
+    }
 }

@@ -1,15 +1,16 @@
 <?php
 
+use App\Models\StockIn;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\UnitController;
 use App\Http\Controllers\Dashboard\MembersController;
 use App\Http\Controllers\Dashboard\ProductController;
-use App\Http\Controllers\dashboard\StockInController;
-use App\Http\Controllers\Dashboard\UnitController;
+use App\Http\Controllers\Dashboard\StockInController;
 use App\Http\Controllers\Dashboard\SuplierController;
+use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
-use App\Models\StockIn;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,7 @@ Route::resource('/Product', ProductController::class)->middleware('auth');
 // Report
 // StockIn
 Route::resource('/StockIn', StockInController::class)->middleware('auth');
+Route::resource('/StockOut', StockOutController::class)->middleware('auth');
 
 // Setting Sections
 // User Data

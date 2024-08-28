@@ -98,35 +98,13 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('StockIn.edit'))
-                        <form action="{{ route('StockIn.update', $stock->uuid) }}" method="POST"
+                    @if (request()->routeIs('StockOut.edit'))
+                        <form action="{{ route('StockOut.update', $stock->uuid) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="row">
                                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Pilih Suppliers</label>
-                                        <select name="kdSuppliers" id="kdSuppliers" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Suppliers-</option>
-                                            @foreach ($suppliersData as $suppliers)
-                                                <option value="{{ $suppliers->kdSuppliers }}"
-                                                    {{ $stock->kdSuppliers == $suppliers->kdSuppliers ? 'selected' : '' }}>
-                                                    Kode: {{ $suppliers->kdSuppliers }}, Nama:
-                                                    {{ $suppliers->suppliersName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
 
                                 <div class="col-12">
                                     <div class="mb-3">
@@ -138,6 +116,9 @@
                                                 <option value="{{ $produk->KdProduct }}"
                                                     {{ $stock->KdProduct == $produk->KdProduct ? 'selected' : '' }}>
                                                     Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
+                                                    @if ($produk->stok <= 0)
+                                                        (Stock Habis)
+                                                    @endif
                                                 </option>
                                             @endforeach
                                         </select>
@@ -151,9 +132,9 @@
 
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="qty" class="form-label">Tambah Stock Produk </label>
+                                        <label for="qty" class="form-label">Pengeluaran Stok </label>
                                         <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Tambah Stock Produk " id="qty"
+                                            placeholder="Masukan Pengeluaran Stok " id="qty"
                                             value="{{ $stock->qty }}">
                                         <small class="text-info">
                                             *masukan data dalam bentuk numeric
@@ -188,32 +169,10 @@
                             </div><!--end row-->
                         </form>
                     @else
-                        <form action="{{ route('StockIn.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('StockOut.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Pilih Suppliers</label>
-                                        <select name="kdSuppliers" id="kdSuppliers" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Suppliers-</option>
-                                            @foreach ($suppliersData as $suppliers)
-                                                <option value="{{ $suppliers->kdSuppliers }}"
-                                                    {{ old('kdSuppliers') == $suppliers->kdSuppliers ? 'selected' : '' }}>
-                                                    Kode: {{ $suppliers->kdSuppliers }}, Nama:
-                                                    {{ $suppliers->suppliersName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
 
                                 <div class="col-12">
                                     <div class="mb-3">
@@ -225,6 +184,9 @@
                                                 <option value="{{ $produk->KdProduct }}"
                                                     {{ old('KdProduct') == $produk->KdProduct ? 'selected' : '' }}>
                                                     Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
+                                                    @if ($produk->stok <= 0)
+                                                        (Stock Habis)
+                                                    @endif
                                                 </option>
                                             @endforeach
                                         </select>
@@ -238,9 +200,9 @@
 
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="qty" class="form-label">Tambah Stock Produk </label>
+                                        <label for="qty" class="form-label">Pengeluaran Stok </label>
                                         <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Tambah Stock Produk " id="qty"
+                                            placeholder="Masukan Pengeluaran Stok " id="qty"
                                             value="{{ old('qty') }}">
                                         <small class="text-info">
                                             *masukan data dalam bentuk numeric
@@ -293,7 +255,6 @@
                                 <th>Ditambah Oleh</th>
                                 <th>Kode Produk</th>
                                 <th>Nama Produk</th>
-                                <th>Nama Suppliers</th>
                                 <th>Tanggal</th>
                                 <th>Stock Masuk</th>
                                 <th>Keterangan</th>
@@ -307,17 +268,16 @@
                                     <td>{{ $stock->user->name }}</td>
                                     <td>{{ $stock->products->KdProduct }}</td>
                                     <td>{{ $stock->products->nameProduct }}</td>
-                                    <td>{{ $stock->supplier->suppliersName }}</td>
                                     <td>{{ $stock->date }}</td>
                                     <td>{{ $stock->qty }}</td>
                                     <td>{{ $stock->description }}</td>
                                     <td>
                                         <button data-bs-target="#modalView-{{ $stock->uuid }}" data-bs-toggle="modal"
                                             class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('StockIn.edit', $stock->uuid) }}"
+                                        <a href="{{ route('StockOut.edit', $stock->uuid) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('StockIn.destroy', $stock->uuid) }}" method="POST"
+                                        <form action="{{ route('StockOut.destroy', $stock->uuid) }}" method="POST"
                                             class="d-inline" id="delete-form-{{ $stock->uuid }}">
                                             @method('delete')
                                             @csrf
@@ -334,7 +294,7 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="myModalLabel">Detail Produk Masuk</h5>
+                                                <h5 class="modal-title" id="myModalLabel">Detail Produk Keluar</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"> </button>
                                             </div>
@@ -367,21 +327,10 @@
                                                         </div>
                                                     </div><!--end col-->
 
-
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="kdSuppliers" class="form-label">Nama
-                                                                Suppliers</label>
-                                                            <input type="text" class="form-control" name="kdSuppliers"
-                                                                id="kdSuppliers"
-                                                                value="{{ $stock->supplier->suppliersName }}" disabled>
-                                                        </div>
-                                                    </div><!--end col-->
-
                                                     <div class="col-12">
                                                         <div class="mb-3">
                                                             <label for="date" class="form-label">Tanggal
-                                                                Upload</label>
+                                                                Produk Keluar</label>
                                                             <input type="text" class="form-control" name="date"
                                                                 id="date" value="{{ $stock->date }}" disabled>
 
@@ -390,7 +339,8 @@
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="qty" class="form-label">Jumlah Produk</label>
+                                                            <label for="qty" class="form-label">Jumlah Produk
+                                                                Keluar</label>
                                                             <input type="number" name="qty" class="form-control"
                                                                 placeholder="Masukan Jumlah Produk" id="qty"
                                                                 value="{{ $stock->qty }}" disabled>
