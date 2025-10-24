@@ -15,9 +15,10 @@ return new class extends Migration
             $table->string('KdProduct')->primary();
             $table->string('Photo')->nullable();
             $table->string('nameProduct')->unique();
-            $table->string('stok');
-            $table->string('price');
-            $table->boolean('status')->default(1);
+            $table->integer('stock')->default(0);
+            $table->decimal('purchase_price', 12, 2)->default(0);
+            $table->decimal('price', 12, 2)->default(0);
+            $table->decimal('markup_percentage', 5, 2)->default(0);
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->unsignedBigInteger('unit_id');

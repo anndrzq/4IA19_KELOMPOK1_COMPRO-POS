@@ -108,86 +108,32 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Category.edit'))
-                        <form action="{{ route('Category.update', $category->kdCategory) }}" method="POST">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('Category.edit') ? route('Category.update', $category->kdCategory) : route('Category.store') }}"
+                        method="POST" id="formCategory">
+                        @csrf
+                        @if (request()->routeIs('Category.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdCategory" class="form-label">Kode Kategori</label>
-                                        <input type="text" class="form-control" name="kdCategory"
-                                            placeholder="Masukan Kode Kategori" id="kdCategory"
-                                            value="{{ old('kdCategory', $category->kdCategory) }}">
+                        @endif
 
-                                        @error('kdCategory')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="categoryName" class="form-label">Jenis Kategori</label>
+                                <input type="text" class="form-control" name="categoryName" id="categoryName"
+                                    placeholder="Masukan Jenis Kategori"
+                                    value="{{ old('categoryName', $category->categoryName ?? '') }}">
+                                @error('categoryName')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="categoryName" class="form-label">Jenis Kategori</label>
-                                        <input type="text" name="categoryName" class="form-control"
-                                            placeholder="Masukan Jenis Kategori" id="categoryName"
-                                            value="{{ old('categoryName', $category->categoryName) }}">
-                                        @error('categoryName')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('Category.store') }}" method="POST">
-                            @csrf
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdCategory" class="form-label">Kode Kategori</label>
-                                        <input type="text" class="form-control" name="kdCategory"
-                                            placeholder="Masukan Kode Kategori" id="kdCategory"
-                                            value="{{ old('kdCategory') }}">
-
-                                        @error('kdCategory')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="categoryName" class="form-label">Jenis Kategori</label>
-                                        <input type="text" name="categoryName" class="form-control"
-                                            placeholder="Masukan Jenis Kategori" id="categoryName"
-                                            value="{{ old('categoryName') }}">
-                                        @error('categoryName')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ request()->routeIs('Category.edit') ? 'Update' : 'Submit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -254,8 +200,8 @@
                                                         <div class="mb-3">
                                                             <label for="categoryName" class="form-label">Jenis
                                                                 Kategori</label>
-                                                            <input type="text" name="categoryName"
-                                                                class="form-control" id="categoryName"
+                                                            <input type="text" name="categoryName" class="form-control"
+                                                                id="categoryName"
                                                                 value="{{ old('categoryName', $category->categoryName) }}"
                                                                 disabled>
                                                         </div>

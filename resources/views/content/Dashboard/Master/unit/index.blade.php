@@ -108,85 +108,32 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Unit.edit'))
-                        <form action="{{ route('Unit.update', $Unit->kdUnit) }}" method="POST">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('Unit.edit') ? route('Unit.update', $Unit->kdUnit) : route('Unit.store') }}"
+                        method="POST" id="formUnit">
+                        @csrf
+                        @if (request()->routeIs('Unit.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdUnit" class="form-label">Kode Unit</label>
-                                        <input type="text" class="form-control" name="kdUnit"
-                                            placeholder="Masukan Kode Unit" id="kdUnit"
-                                            value="{{ old('kdUnit', $Unit->kdUnit) }}">
+                        @endif
 
-                                        @error('kdUnit')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="unitDescription" class="form-label">Keterangan Unit</label>
+                                <input type="text" class="form-control" name="unitDescription" id="unitDescription"
+                                    placeholder="Masukan Keterangan Unit"
+                                    value="{{ old('unitDescription', $Unit->unitDescription ?? '') }}">
+                                @error('unitDescription')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="unitDescription" class="form-label">Keterangan Unit</label>
-                                        <input type="text" name="unitDescription" class="form-control"
-                                            placeholder="Masukan Keterangan Unit" id="unitDescription"
-                                            value="{{ old('unitDescription', $Unit->unitDescription) }}">
-                                        @error('unitDescription')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('Unit.store') }}" method="POST">
-                            @csrf
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdUnit" class="form-label">Kode Unit</label>
-                                        <input type="text" class="form-control" name="kdUnit"
-                                            placeholder="Masukan Kode Unit" id="kdUnit" value="{{ old('kdUnit') }}">
-
-                                        @error('kdUnit')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="unitDescription" class="form-label">Keterangan Unit</label>
-                                        <input type="text" name="unitDescription" class="form-control"
-                                            placeholder="Masukan Keterangan Unit" id="unitDescription"
-                                            value="{{ old('unitDescription') }}">
-                                        @error('unitDescription')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ request()->routeIs('Unit.edit') ? 'Update' : 'Submit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
@@ -17,10 +18,21 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        // Generate kode otomatis
+        $lastCode = DB::table('categories')->orderBy('kdCategory', 'desc')->first();
+        if ($lastCode) {
+            $lastNumber = intval(substr($lastCode->kdCategory, 3));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        $kdCategory = 'CAT' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+
         $data = $request->validate([
-            'kdCategory'    => 'required|min:1|unique:categories,kdCategory',
             'categoryName'  => 'required'
         ]);
+
+        $data['kdCategory'] = $kdCategory;
 
         Category::create($data);
         return redirect('/Category')->with('success', 'Anda Telah Berhasil Menambahkan Kategori');
@@ -37,7 +49,6 @@ class CategoryController extends Controller
     {
         $categoryData = Category::where('kdCategory', $kdCategory)->firstOrFail();
         $data = $request->validate([
-            'kdCategory'    => 'required|min:1|unique:categories,kdCategory,' . $categoryData->id,
             'categoryName'  => 'required'
         ]);
 

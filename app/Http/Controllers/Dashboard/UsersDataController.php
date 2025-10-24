@@ -37,7 +37,6 @@ class UsersDataController extends Controller
             'role'          => 'required',
             'jk'            => 'required',
             'address'       => 'required|max:255',
-            // 'photo'         => 'nullable|mimes:jpg,png,jpeg,bmp|max:2048'
         ]);
 
         $data['password'] = Hash::make($data['password']);

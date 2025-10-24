@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Suplier;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 
 class SuplierController extends Controller
@@ -22,18 +23,32 @@ class SuplierController extends Controller
 
     public function store(Request $request)
     {
-        // Melakukan Validasi Data
+        // Generate kode otomatis
+        $lastCode = DB::table('supliers')->orderBy('kdSuppliers', 'desc')->first();
+        if ($lastCode) {
+            $lastNumber = intval(substr($lastCode->kdSuppliers, 3));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        $kdSuppliers = 'SUP' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+
+        // Validasi data selain kdSuppliers
         $data = $request->validate([
-            'kdSuppliers'           => 'required|min:6|unique:supliers,kdSuppliers',
-            'suppliersName'         => 'required|unique:supliers,suppliersName',
-            'contactWhatsapp'       => 'required|unique:supliers,contactWhatsapp',
-            'contactEmail'          => 'required|email:dns|unique:supliers,contactEmail',
-            'address'               => 'required',
-            'status'                => 'required'
+            'suppliersName'   => 'required|unique:supliers,suppliersName',
+            'contactWhatsapp' => 'required|unique:supliers,contactWhatsapp',
+            'contactEmail'    => 'required|email:dns|unique:supliers,contactEmail',
+            'address'         => 'required',
+            'status'          => 'required'
         ]);
-        // Melakukan Create Data
+
+        // Tambahkan kode otomatis ke data yang akan disimpan
+        $data['kdSuppliers'] = $kdSuppliers;
+
+        // Simpan data ke database
         Suplier::create($data);
-        return back()->with('success', 'Anda Berhasil Menambahkan Data Suppliers');
+
+        return back()->with('success', 'Anda Berhasil Menambahkan Data Suppliers dengan kode otomatis!');
     }
 
     public function edit(Suplier $suplier, $kdSuppliers)
@@ -50,33 +65,29 @@ class SuplierController extends Controller
         // Ambil data supplier berdasarkan kdSuppliers
         $supplier = Suplier::where('kdSuppliers', $kdSuppliers)->firstOrFail();
 
-        // Validasi data dengan pengecualian pada aturan unique
+        // Validasi data (kdSuppliers tidak perlu divalidasi karena tidak diubah user)
         $data = $request->validate([
-            'kdSuppliers'           => [
+            'suppliersName' => [
                 'required',
-                'min:6',
-                Rule::unique('supliers', 'kdSuppliers')->ignore($kdSuppliers, 'kdSuppliers'),
+                Rule::unique('supliers', 'suppliersName')->ignore($supplier->kdSuppliers, 'kdSuppliers'),
             ],
-            'suppliersName'         => [
+            'contactWhatsapp' => [
                 'required',
-                Rule::unique('supliers', 'suppliersName')->ignore($kdSuppliers, 'kdSuppliers'),
+                Rule::unique('supliers', 'contactWhatsapp')->ignore($supplier->kdSuppliers, 'kdSuppliers'),
             ],
-            'contactWhatsapp'       => [
-                'required',
-                Rule::unique('supliers', 'contactWhatsapp')->ignore($kdSuppliers, 'kdSuppliers'),
-            ],
-            'contactEmail'          => [
+            'contactEmail' => [
                 'required',
                 'email:dns',
-                Rule::unique('supliers', 'contactEmail')->ignore($kdSuppliers, 'kdSuppliers'),
+                Rule::unique('supliers', 'contactEmail')->ignore($supplier->kdSuppliers, 'kdSuppliers'),
             ],
-            'address'               => 'required',
-            'status'                => 'required'
+            'address' => 'required',
+            'status' => 'required'
         ]);
 
-        // Perbarui data supplier
+        // Update data ke database
         $supplier->update($data);
-        return redirect('/Suplier')->with('success', 'Anda Berhasil Melakukan Update Data Suppliers');
+
+        return redirect('/Suplier')->with('success', 'Anda Berhasil Melakukan Update Data Supplier!');
     }
 
     public function destroy(Suplier $suplier, $kdSuppliers)

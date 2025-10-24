@@ -85,7 +85,7 @@
         </script>
     @endif
 @endpush
-
+@section('title', 'Data Suppliers')
 @section('content')
     <!-- start page title -->
     <div class="row">
@@ -108,184 +108,79 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Suplier.edit'))
-                        <form action="{{ route('Suplier.update', $supplier->kdSuppliers) }}" method="POST">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('Suplier.edit') ? route('Suplier.update', $supplier->kdSuppliers) : route('Suplier.store') }}"
+                        method="POST" id="formSuplier">
+                        @csrf
+                        @if (request()->routeIs('Suplier.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Kode Suppliers</label>
-                                        <input type="text" class="form-control" name="kdSuppliers"
-                                            placeholder="Masukan Kode Suppliers" id="kdSuppliers"
-                                            value="{{ old('kdSuppliers', $supplier->kdSuppliers) }}">
+                        @endif
 
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="suppliersName" class="form-label">Nama Suppliers</label>
+                                <input type="text" class="form-control" name="suppliersName" id="suppliersName"
+                                    placeholder="Masukan Nama Suppliers"
+                                    value="{{ old('suppliersName', $supplier->suppliersName ?? '') }}">
+                                @error('suppliersName')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="suppliersName" class="form-label">Nama Suppliers</label>
-                                        <input type="text" class="form-control" name="suppliersName"
-                                            placeholder="Masukan Nama Suppliers" id="suppliersName"
-                                            value="{{ old('suppliersName', $supplier->suppliersName) }}">
-                                        @error('suppliersName')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-6 mb-3">
+                                <label for="contactWhatsapp" class="form-label">Kontak Whatsapp</label>
+                                <input type="tel" class="form-control" name="contactWhatsapp" id="contactWhatsapp"
+                                    placeholder="Masukan Whatsapp"
+                                    value="{{ old('contactWhatsapp', $supplier->contactWhatsapp ?? '') }}">
+                                @error('contactWhatsapp')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="contactWhatsapp" class="form-label">Kontak Whatsapp</label>
-                                        <input type="tel" class="form-control" name="contactWhatsapp"
-                                            placeholder="Masukan Whatsapp" id="contactWhatsapp"
-                                            value="{{ old('contactWhatsapp', $supplier->contactWhatsapp) }}">
-                                        @error('contactWhatsapp')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-6 mb-3">
+                                <label for="contactEmail" class="form-label">Kontak Email</label>
+                                <input type="email" class="form-control" name="contactEmail" id="contactEmail"
+                                    placeholder="example@gmail.com"
+                                    value="{{ old('contactEmail', $supplier->contactEmail ?? '') }}">
+                                @error('contactEmail')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="contactEmail" class="form-label">Kontak Email</label>
-                                        <input type="email" class="form-control" name="contactEmail"
-                                            placeholder="example@gamil.com" id="contactEmail"
-                                            value="{{ old('contactEmail', $supplier->contactEmail) }}">
-                                        @error('contactEmail')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="address" class="form-label">Alamat Suppliers</label>
+                                <input type="text" class="form-control" name="address" id="address"
+                                    placeholder="Masukan Alamat Suppliers"
+                                    value="{{ old('address', $supplier->address ?? '') }}">
+                                @error('address')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="address" class="form-label">Alamat Suppliers</label>
-                                        <input type="text" name="address" class="form-control"
-                                            placeholder="Masukan Alamat Suppliers" id="address"
-                                            value="{{ old('address', $supplier->address) }}">
-                                        @error('address')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="statusForm" class="form-label">Status</label>
-                                        <select id="statusForm" name="status" class="form-select">
-                                            <option selected disabled>---Pilih Status---</option>
-                                            <option value="1" {{ $supplier->status == 1 ? 'selected' : '' }}>Aktif
-                                            </option>
-                                            <option value="0" {{ $supplier->status == 0 ? 'selected' : '' }}>
-                                                Tidak Aktif</option>
-                                        </select>
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('Suplier.store') }}" method="POST">
-                            @csrf
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Kode Suppliers</label>
-                                        <input type="text" class="form-control" name="kdSuppliers"
-                                            placeholder="Masukan Kode Suppliers" id="kdSuppliers"
-                                            value="{{ old('kdSuppliers') }}">
-
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="suppliersName" class="form-label">Nama Suppliers</label>
-                                        <input type="text" class="form-control" name="suppliersName"
-                                            placeholder="Masukan Nama Suppliers" id="suppliersName"
-                                            value="{{ old('suppliersName') }}">
-                                        @error('suppliersName')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="contactWhatsapp" class="form-label">Kontak Whatsapp</label>
-                                        <input type="tel" class="form-control" name="contactWhatsapp"
-                                            placeholder="Masukan Whatsapp" id="contactWhatsapp"
-                                            value="{{ old('contactWhatsapp') }}">
-                                        @error('contactWhatsapp')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="contactEmail" class="form-label">Kontak Email</label>
-                                        <input type="email" class="form-control" name="contactEmail"
-                                            placeholder="example@gamil.com" id="contactEmail"
-                                            value="{{ old('contactEmail') }}">
-                                        @error('contactEmail')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="address" class="form-label">Alamat Suppliers</label>
-                                        <input type="text" name="address" class="form-control"
-                                            placeholder="Masukan Alamat Suppliers" id="address"
-                                            value="{{ old('address') }}">
-                                        @error('address')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
+                            @if (request()->routeIs('Suplier.edit'))
+                                <div class="col-12 mb-3">
+                                    <label for="statusForm" class="form-label">Status</label>
+                                    <select id="statusForm" name="status" class="form-select">
+                                        <option selected disabled>---Pilih Status---</option>
+                                        <option value="1"
+                                            {{ old('status', $supplier->status ?? '') == 1 ? 'selected' : '' }}>Aktif
+                                        </option>
+                                        <option value="0"
+                                            {{ old('status', $supplier->status ?? '') == 0 ? 'selected' : '' }}>Tidak Aktif
+                                        </option>
+                                    </select>
+                                </div>
+                            @else
                                 <input type="hidden" name="status" value="1">
+                            @endif
 
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ request()->routeIs('Suplier.edit') ? 'Update' : 'Submit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -338,8 +233,7 @@
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
                                         <form action="{{ route('Suplier.destroy', $Suppliers->kdSuppliers) }}"
-                                            method="POST" id="delete-form-{{ $Suppliers->kdSuppliers }}"
-                                            class="d-inline">
+                                            method="POST" id="delete-form-{{ $Suppliers->kdSuppliers }}" class="d-inline">
                                             @method('delete')
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-icon  del">

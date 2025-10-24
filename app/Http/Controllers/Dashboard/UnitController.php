@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class UnitController extends Controller
@@ -17,11 +18,22 @@ class UnitController extends Controller
 
     public function store(Request $request)
     {
+        $lastCode = DB::table('units')->orderBy('kdUnit', 'desc')->first();
+        if ($lastCode) {
+            $lastNumber = intval(substr($lastCode->kdUnit, 3));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        $kdUnit = 'UNT' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+
         // Mengambil Request untuk Validasi
         $data = $request->validate([
-            'kdUnit'            => 'required|min:1|unique:units,kdUnit',
             'unitDescription'   => 'required'
         ]);
+
+        $data['kdUnit'] = $kdUnit;
+
         // Melakukan Create Unit Berdasarkan Data Validasi
         Unit::create($data);
         return redirect('/Unit')->with('success', 'Anda Berhasil Menambahkan Satuan Unit');
@@ -42,7 +54,6 @@ class UnitController extends Controller
         $unitData = Unit::where('kdUnit', $kdUnit)->firstOrFail();
         // Melakukan Validasi Data
         $data = $request->validate([
-            'kdUnit'            => 'required|min:1|unique:units,kdUnit,' . $unitData->id,
             'unitDescription'   => 'required'
         ]);
         // Melakukan Update Data

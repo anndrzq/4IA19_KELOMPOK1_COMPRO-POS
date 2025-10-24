@@ -11,10 +11,6 @@
 @endpush
 
 @push('vendor-script')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-    <!--datatable js-->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
@@ -29,17 +25,12 @@
 @endpush
 
 @push('page-script')
-    <script src="{{ asset('') }}assets/js/pages/datatables.init.js"></script>
-    <script>
-        var nameList = new List('name-list', {
-            valueNames: ["name"]
-        });
-    </script>
-
+    <script src="{{ asset('assets/js/pages/datatables.init.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
+            // SweetAlert Delete
             $('.del').on('click', function(e) {
                 e.preventDefault();
 
@@ -56,12 +47,25 @@
                     confirmButtonText: "Ya, Hapus!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#' + formId).submit().then;
+                        $('#' + formId).submit();
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire('Penghapusan Dibatalkan');
                     }
                 });
             });
+
+            // Select2 Kategori
+            $('.category').select2({
+                placeholder: "-- Pilih Kategori --",
+                width: '100%'
+            });
+
+            // Select2 Satuan
+            $('.unit').select2({
+                placeholder: "-- Pilih Satuan --",
+                width: '100%'
+            });
+
         });
     </script>
 
@@ -86,6 +90,7 @@
     @endif
 @endpush
 
+@section('title', 'Data Produk')
 @section('content')
     <!-- start page title -->
     <div class="row">
@@ -108,284 +113,112 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Product.edit'))
-                        <form action="{{ route('Product.update', $product->KdProduct) }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('Product.edit') ? route('Product.update', $product->KdProduct) : route('Product.store') }}"
+                        method="POST" enctype="multipart/form-data" id="formProduct">
+                        @csrf
+                        @if (request()->routeIs('Product.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="KdProduct" class="form-label">Kode Product</label>
-                                        <input type="text" class="form-control" name="KdProduct"
-                                            placeholder="Masukan Kode Product" id="KdProduct"
-                                            value="{{ old('KdProduct', $product->KdProduct) }}">
-
-                                        @error('KdProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="nameProduct" class="form-label">Nama Product</label>
-                                        <input type="text" class="form-control" name="nameProduct"
-                                            placeholder="Masukan Nama Product" id="nameProduct"
-                                            value="{{ old('nameProduct', $product->nameProduct) }}">
-                                        @error('nameProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="category_id" class="form-label">Kategori</label>
-                                        <select name="category_id" id="category_id" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Kategori-</option>
-                                            @foreach ($categoryData as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ $product->category_id == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->categoryName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('category_id')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="unit_id" class="form-label">Pilih Unit</label>
-                                        <select name="unit_id" id="unit_id" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Unit-</option>
-                                            @foreach ($unitsData as $unit)
-                                                <option value="{{ $unit->id }}"
-                                                    {{ $product->unit_id == $unit->id ? 'selected' : '' }}>
-                                                    {{ $unit->unitDescription }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('unit_id')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <div>
-                                            <label for="formFile" class="form-label">Gambar Product</label>
-                                            <input class="form-control" type="file" name="Photo" id="Photo">
-                                        </div>
-                                        <small class="text-info">
-                                            *Anda Bisa Mengubah Gambar Product Disini
-                                        </small>
-                                        @error('Photo')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Pilih Unit</label>
-                                        <select name="status" id="status" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Unit-</option>
-                                            <option value="1" {{ $product->status == 1 ? 'selected' : '' }}>Aktif
-                                            </option>
-                                            <option value="0" {{ $product->status == 0 ? 'selected' : '' }}>Non Aktif
-                                            </option>
-
-                                        </select>
-                                        @error('status')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="stok" class="form-label">Stok</label>
-                                        <input type="number" class="form-control" name="stok" placeholder="Masukan stok"
-                                            id="stok" value="{{ old('stok', $product->stok) }}">
-                                        @error('stok')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div>
-                                    <label for="price" class="form-label">Harga</label>
-                                    <div class="input-group col-12">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="number" name="price" placeholder="Masukan Harga" id="price"
-                                            value="{{ old('price', $product->price) }}" class="form-control">
-                                    </div>
-                                    @error('price')
-                                        <small class="text-danger">
-                                            {{ $message }}
-                                        </small>
-                                    @enderror
-                                </div><!--end col-->
+                        @endif
 
 
-                                <div class="col-lg-12 mt-4">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('Product.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="KdProduct" class="form-label">Kode Product</label>
-                                        <input type="text" class="form-control" name="KdProduct"
-                                            placeholder="Masukan Kode Product" id="KdProduct"
-                                            value="{{ old('KdProduct') }}">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="Photo" class="form-label">Gambar Produk</label>
+                                <input type="file" class="form-control" name="Photo" id="Photo">
+                                @error('Photo')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
 
-                                        @error('KdProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="nameProduct" class="form-label">Nama Product</label>
+                                <input type="text" class="form-control" name="nameProduct" id="nameProduct"
+                                    placeholder="Masukan Nama Product"
+                                    value="{{ old('nameProduct', $product->nameProduct ?? '') }}">
+                                @error('nameProduct')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="nameProduct" class="form-label">Nama Product</label>
-                                        <input type="text" class="form-control" name="nameProduct"
-                                            placeholder="Masukan Nama Product" id="nameProduct"
-                                            value="{{ old('nameProduct') }}">
-                                        @error('nameProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="category_id" class="form-label">Kategori</label>
+                                <select name="category_id" id="category_id" class="form-select category">
+                                    <option></option>
+                                    @foreach ($categoryData as $category)
+                                        <option value="{{ $category->id }}"
+                                            {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->categoryName }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="category_id" class="form-label">Kategori</label>
-                                        <select name="category_id" id="category_id" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Kategori-</option>
-                                            @foreach ($categoryData as $category)
-                                                <option value="{{ $category->id }}"
-                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->categoryName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('category_id')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="unit_id" class="form-label">Unit</label>
+                                <select name="unit_id" id="unit_id" class="form-select unit">
+                                    <option></option>
+                                    @foreach ($unitsData as $unit)
+                                        <option value="{{ $unit->id }}"
+                                            {{ old('unit_id', $product->unit_id ?? '') == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->unitDescription }}</option>
+                                    @endforeach
+                                </select>
+                                @error('unit_id')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="unit_id" class="form-label">Pilih Unit</label>
-                                        <select name="unit_id" id="unit_id" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Unit-</option>
-                                            @foreach ($unitsData as $unit)
-                                                <option value="{{ $unit->id }}"
-                                                    {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
-                                                    {{ $unit->unitDescription }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('unit_id')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="stock" class="form-label">Stok</label>
+                                <input type="number" class="form-control" name="stock" id="stock"
+                                    placeholder="Masukan jumlah stok" value="{{ old('stock', $product->stock ?? 0) }}">
+                                @error('stock')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <div>
-                                            <label for="formFile" class="form-label">Gambar Product</label>
-                                            <input class="form-control" type="file" name="Photo" id="Photo">
-                                        </div>
-                                        <small class="text-info">
-                                            *max 1 gambar, Size Max 2MB
-                                        </small>
-                                        @error('Photo')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="stok" class="form-label">Stok</label>
-                                        <input type="number" class="form-control" name="stok"
-                                            placeholder="Masukan stok" id="stok" value="{{ old('stok') }}">
-                                        @error('stok')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="purchase_price" class="form-label">Harga Beli</label>
+                                <input type="number" class="form-control" name="purchase_price" id="purchase_price"
+                                    placeholder="Masukan harga beli"
+                                    value="{{ old('purchase_price', $product->purchase_price ?? 0) }}">
+                            </div>
 
-                                <div>
-                                    <label for="price" class="form-label">Harga</label>
-                                    <div class="input-group col-12">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="number" name="price" placeholder="Masukan Harga" id="price"
-                                            value="{{ old('price') }}" class="form-control">
-                                    </div>
-                                    @error('price')
-                                        <small class="text-danger">
-                                            {{ $message }}
-                                        </small>
-                                    @enderror
-                                </div><!--end col-->
 
-                                <input type="hidden" name="status" value="1">
+                            <div class="col-12 mb-3">
+                                <label for="markup_percentage" class="form-label">Markup (%)</label>
+                                <input type="number" class="form-control" name="markup_percentage" id="markup_percentage"
+                                    placeholder="Contoh: 20"
+                                    value="{{ old('markup_percentage', $product->markup_percentage ?? 0) }}">
 
-                                <div class="col-lg-12 mt-4">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
+                                @error('markup_percentage')
+                                    <small class="text-danger">
+                                        {{ $message }}
+                                    </small>
+                                @enderror
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit"
+                                    class="btn btn-primary">{{ request()->routeIs('Product.edit') ? 'Update' : 'Submit' }}</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -402,8 +235,9 @@
                                 <th>Kategori Produk</th>
                                 <th>Unit Produk</th>
                                 <th>Stok</th>
-                                <th>Harga</th>
-                                <th>Status</th>
+                                <th>Harga Beli</th>
+                                <th>Markup (%)</th>
+                                <th>Harga Jual</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -415,21 +249,11 @@
                                     <td>{{ $Product->nameProduct }}</td>
                                     <td>{{ $Product->category->categoryName }}</td>
                                     <td>{{ $Product->unit->unitDescription }}</td>
-                                    <td>{{ $Product->stok }}</td>
-                                    <td>{{ $Product->price }}</td>
-                                    @if ($Product->status == 1)
-                                        <td>
-                                            <div class="btn btn-success ">
-                                                Aktif
-                                            </div>
-                                        </td>
-                                    @else
-                                        <td>
-                                            <div class="btn btn-danger ">
-                                                Tidak Aktif
-                                            </div>
-                                        </td>
-                                    @endif
+                                    <td>{{ $Product->stock }}</td>
+                                    <td>Rp{{ number_format($Product->purchase_price, 0, ',', '.') }},-</td>
+                                    <td>{{ rtrim(rtrim(number_format($Product->markup_percentage, 2, '.', ''), '0'), '.') }}%
+                                    </td>
+                                    <td>Rp{{ number_format($Product->price, 0, ',', '.') }},-</td>
 
                                     <td>
                                         <button data-bs-target="#modalView-{{ $Product->KdProduct }}"
@@ -454,7 +278,7 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="myModalLabel">Detail Suppliers</h5>
+                                                <h5 class="modal-title" id="myModalLabel">Detail Produk</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
@@ -519,41 +343,29 @@
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="statusForm" class="form-label">Status</label>
-                                                            @if ($Product->status == 1)
-                                                                <input type="text" name="statusForm"
-                                                                    class="form-control" id="statusForm" value="Aktif"
-                                                                    disabled>
-                                                            @else
-                                                                <input type="text" name="statusForm"
-                                                                    class="form-control" id="statusForm"
-                                                                    value="Tidak Aktif" disabled>
-                                                            @endif
-                                                        </div>
-
-                                                        <div class="col-12">
-                                                            <div class="mb-3">
-                                                                <label for="stok" class="form-label">Stok
-                                                                    Produk</label>
-                                                                <input type="text" name="stok" class="form-control"
-                                                                    id="stok"
-                                                                    value="{{ old('stok', $Product->stok) }}" disabled>
-                                                            </div>
-                                                        </div><!--end col-->
-
-
-                                                        <div>
-                                                            <label for="price" class="form-label">Harga</label>
+                                                            <label for="purchase_price" class="form-label">Harga
+                                                                Beli</label>
                                                             <div class="input-group col-12">
                                                                 <span class="input-group-text">Rp</span>
-                                                                <input type="number" name="price"
-                                                                    placeholder="Masukan Harga" id="price"
+                                                                <input type="number" name="purchase_price"
+                                                                    id="purchase_price"
+                                                                    value="{{ old('purchase_price', $Product->purchase_price) }}"
+                                                                    class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="price" class="form-label">Harga Jual</label>
+                                                            <div class="input-group col-12">
+                                                                <span class="input-group-text">Rp</span>
+                                                                <input type="number" name="price" id="price"
                                                                     value="{{ old('price', $Product->price) }}"
                                                                     class="form-control">
                                                             </div>
-                                                        </div><!--end col-->
-
-                                                    </div>
+                                                        </div>
+                                                    </div><!--end col-->
                                                 </div><!--end col-->
                                             </div><!--end row-->
                                         </div><!-- /.modal-content -->

@@ -108,171 +108,86 @@
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('Member.edit'))
-                        <form action="{{ route('Member.update', $Members->uuid) }}" method="POST">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('Member.edit') ? route('Member.update', $Members->uuid) : route('Member.store') }}"
+                        method="POST" id="formMember">
+                        @csrf
+                        @if (request()->routeIs('Member.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">Nama Member</label>
-                                        <input type="text" class="form-control" name="name"
-                                            placeholder="Masukan Nama Member" id="name"
-                                            value="{{ old('name', $Members->name) }}">
-                                        @error('name')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        @endif
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="noWA" class="form-label">Kontak Whatsapp</label>
-                                        <input type="tel" class="form-control" name="noWA"
-                                            placeholder="Masukan Whatsapp" id="noWA"
-                                            value="{{ old('noWA', $Members->noWA) }}">
-                                        @error('noWA')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="name" class="form-label">Nama Member</label>
+                                <input type="text" class="form-control" name="name" id="name"
+                                    placeholder="Masukan Nama Member" value="{{ old('name', $Members->name ?? '') }}">
+                                @error('name')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Kontak Email</label>
-                                        <input type="email" class="form-control" name="email"
-                                            placeholder="example@gamil.com" id="email"
-                                            value="{{ old('email', $Members->email) }}">
-                                        @error('email')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            <div class="col-12 mb-3">
+                                <label for="noWA" class="form-label">Kontak Whatsapp</label>
+                                <input type="tel" class="form-control" name="noWA" id="noWA"
+                                    placeholder="Masukan Whatsapp" value="{{ old('noWA', $Members->noWA ?? '') }}">
+                                @error('noWA')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="gender" class="form-label">Jenis Kelamin</label>
-                                        <select name="gender" id="gender" class="form-select" data-choices
-                                            data-choices-search-false>
-                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
-                                            <option value="0" {{ $Members->gender == '0' ? 'selected' : '' }}>Laki
-                                            </option>
-                                            <option value="1" {{ $Members->gender == '1' ? 'selected' : '' }}>
-                                                Perempuan</option>
-                                        </select>
-                                        @error('gender')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
+                            <div class="col-12 mb-3">
+                                <label for="email" class="form-label">Kontak Email</label>
+                                <input type="email" class="form-control" name="email" id="email"
+                                    placeholder="example@gmail.com" value="{{ old('email', $Members->email ?? '') }}">
+                                @error('email')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label for="gender" class="form-label">Jenis Kelamin</label>
+                                <select name="gender" id="gender" class="form-select" data-choices
+                                    data-choices-search-false>
+                                    <option selected disabled>---Pilih Jenis Kelamin---</option>
+                                    <option value="0"
+                                        {{ old('gender', $Members->gender ?? '') == '0' ? 'selected' : '' }}>Laki</option>
+                                    <option value="1"
+                                        {{ old('gender', $Members->gender ?? '') == '1' ? 'selected' : '' }}>Perempuan
+                                    </option>
+                                </select>
+                                @error('gender')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            @if (request()->routeIs('Member.edit'))
+                                <div class="col-12 mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select name="status" id="status" class="form-select" data-choices
+                                        data-choices-search-false>
+                                        <option selected disabled>---Pilih Status---</option>
+                                        <option value="0"
+                                            {{ old('status', $Members->status ?? '') == '0' ? 'selected' : '' }}>Tidak
+                                            Aktif</option>
+                                        <option value="1"
+                                            {{ old('status', $Members->status ?? '') == '1' ? 'selected' : '' }}>Aktif
+                                        </option>
+                                    </select>
+                                    @error('status')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
-                                        <select name="status" id="status" class="form-select" data-choices
-                                            data-choices-search-false>
-                                            <option selected disabled>---Pilih Status---</option>
-                                            <option value="0" {{ $Members->status == '0' ? 'selected' : '' }}>Tidak
-                                                Aktif
-                                            </option>
-                                            <option value="1" {{ $Members->status == '1' ? 'selected' : '' }}>
-                                                Aktif</option>
-                                        </select>
-                                        @error('status')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('Member.store') }}" method="POST">
-                            @csrf
-                            <div class="row">
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">Nama Member</label>
-                                        <input type="text" class="form-control" name="name"
-                                            placeholder="Masukan Nama Member" id="name" value="{{ old('name') }}">
-                                        @error('name')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="noWA" class="form-label">Kontak Whatsapp</label>
-                                        <input type="tel" class="form-control" name="noWA"
-                                            placeholder="Masukan Whatsapp" id="noWA" value="{{ old('noWA') }}">
-                                        @error('noWA')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Kontak Email</label>
-                                        <input type="email" class="form-control" name="email"
-                                            placeholder="example@gamil.com" id="email" value="{{ old('email') }}">
-                                        @error('email')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="gender" class="form-label">Jenis Kelamin</label>
-                                        <select name="gender" id="gender" class="form-select" data-choices
-                                            data-choices-search-false>
-                                            <option selected disabled>---Pilih Jenis Kelamin---</option>
-                                            <option value="0" {{ old('gender') == '0' ? 'selected' : '' }}>Laki
-                                            </option>
-                                            <option value="1" {{ old('gender') == '1' ? 'selected' : '' }}>
-                                                Perempuan</option>
-                                        </select>
-                                        @error('gender')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div>
-
+                            @else
                                 <input type="hidden" name="status" value="1">
+                            @endif
 
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ request()->routeIs('Member.edit') ? 'Update' : 'Submit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

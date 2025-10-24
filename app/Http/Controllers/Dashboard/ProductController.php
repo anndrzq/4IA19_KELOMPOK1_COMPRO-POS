@@ -25,26 +25,49 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-
-        // Melakukan Validasi Request dari Form
+        // Validasi input
         $data = $request->validate([
-            'KdProduct'     => 'required|unique:products,KdProduct',
-            'nameProduct'   => 'required|unique:products,nameProduct',
-            'Photo'         => 'required|mimes:jpg,png,jpeg,svg,webp|max:2048',
-            'stok'         => 'required|numeric',
-            'price'         => 'required|numeric',
-            'status'        => 'required',
-            'category_id'   => 'required',
-            'unit_id'       => 'required'
+            'nameProduct'      => 'required|unique:products,nameProduct',
+            'Photo'            => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
+            'stock'            => 'required|numeric|min:0',
+            'purchase_price'   => 'required|numeric|min:0',
+            'markup_percentage' => 'required|numeric|min:0',
+            'category_id'      => 'required|exists:categories,id',
+            'unit_id'          => 'required|exists:units,id',
         ]);
-        // Kondisi dimana jika ada request file dari foto maka lakukan penyimpanan
+
+        // Ambil nama kategori berdasarkan category_id
+        $category = Category::find($data['category_id']);
+        $prefix = strtoupper(substr($category->categoryName, 0, 3)); // 3 huruf pertama kategori
+
+        // Cari kode terakhir berdasarkan prefix kategori
+        $lastProduct = Product::where('KdProduct', 'like', $prefix . '-%')
+            ->orderBy('KdProduct', 'desc')
+            ->first();
+
+        if (!$lastProduct) {
+            $kodeBaru = $prefix . '-0001';
+        } else {
+            $lastNumber = intval(substr($lastProduct->KdProduct, 4));
+            $kodeBaru = $prefix . '-' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        }
+
+        // Tambahkan kode produk ke data
+        $data['KdProduct'] = $kodeBaru;
+
+        // Hitung harga otomatis
+        $data['price'] = $data['purchase_price'] + ($data['purchase_price'] * $data['markup_percentage'] / 100);
+
+        // Upload photo jika ada
         if ($request->hasFile('Photo')) {
             $data['Photo'] = $request->file('Photo')->store('images/Products', 'public');
         }
-        // Melakukan Pembuatan Data Product
+
         Product::create($data);
-        return redirect('/Product')->with('success', 'Anda Berhasil Menambahkan Produk');
+
+        return redirect('/Product')->with('success', 'Produk berhasil ditambahkan dengan kode otomatis berdasarkan kategori.');
     }
+
 
     public function edit($KdProduct)
     {
@@ -60,39 +83,39 @@ class ProductController extends Controller
 
     public function update(Request $request, $KdProduct)
     {
-        // dd($request);
-        // Melakukan Pencarian Data Product
-        $product            = Product::findOrFail($KdProduct);
-        // Melakuakan Validasi Request Input Ulang
+        // Cari produk berdasarkan primary key KdProduct
+        $product = Product::findOrFail($KdProduct);
+
+        // Validasi input
         $data = $request->validate([
-            'KdProduct'           => [
-                'required',
-                Rule::unique('products', 'KdProduct')->ignore($KdProduct, 'KdProduct'),
-            ],
-            'nameProduct'           => [
+            'nameProduct' => [
                 'required',
                 Rule::unique('products', 'nameProduct')->ignore($KdProduct, 'KdProduct'),
             ],
-            'Photo'         => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
-            'stok'          => 'required|numeric',
-            'price'         => 'required|numeric',
-            'status'        => 'required',
-            'category_id'   => 'required',
-            'unit_id'       => 'required'
+            'Photo'             => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
+            'stock'             => 'required|numeric|min:0',
+            'purchase_price'    => 'required|numeric|min:0',
+            'markup_percentage' => 'required|numeric|min:0',
+            'category_id'       => 'required|exists:categories,id',
+            'unit_id'           => 'required|exists:units,id',
         ]);
-        // Melakukan Validasi Gambar
-        if ($request->hasFile('Photo')) {
-            // Hapus Gambar Lama
-            if ($product->Photo) {
-                Storage::delete($product->Photo);
-            }
 
-            // Upload Gambar Baru
+        // Hitung ulang harga jual berdasarkan harga beli & persentase
+        $data['price'] = $data['purchase_price'] + ($data['purchase_price'] * $data['markup_percentage'] / 100);
+
+        // Upload photo jika ada
+        if ($request->hasFile('Photo')) {
+            // Hapus foto lama jika ada
+            if ($product->Photo) {
+                Storage::disk('public')->delete($product->Photo);
+            }
             $data['Photo'] = $request->file('Photo')->store('images/Products', 'public');
         }
 
+        // Update data produk
         $product->update($data);
-        return redirect('/Product')->with('success', 'Anda Berhasil Melakukan Update Data Produk');
+
+        return redirect('/Product')->with('success', 'Produk berhasil diperbarui.');
     }
 
 
