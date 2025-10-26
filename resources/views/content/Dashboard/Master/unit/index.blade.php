@@ -109,7 +109,7 @@
             <div class="card">
                 <div class="card-body">
                     <form
-                        action="{{ request()->routeIs('Unit.edit') ? route('Unit.update', $Unit->kdUnit) : route('Unit.store') }}"
+                        action="{{ request()->routeIs('Unit.edit') ? route('Unit.update', $Unit->KdUnit) : route('Unit.store') }}"
                         method="POST" id="formUnit">
                         @csrf
                         @if (request()->routeIs('Unit.edit'))
@@ -154,16 +154,16 @@
                             @foreach ($unitData as $Unit)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $Unit->kdUnit }}</td>
+                                    <td>{{ $Unit->KdUnit }}</td>
                                     <td>{{ $Unit->unitDescription }}</td>
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $Unit->kdUnit }}" data-bs-toggle="modal"
+                                        <button data-bs-target="#modalView-{{ $Unit->KdUnit }}" data-bs-toggle="modal"
                                             class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('Unit.edit', $Unit->kdUnit) }}"
+                                        <a href="{{ route('Unit.edit', $Unit->KdUnit) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('Unit.destroy', $Unit->kdUnit) }}" method="POST"
-                                            class="d-inline" id="delete-form-{{ $Unit->kdUnit }}">
+                                        <form action="{{ route('Unit.destroy', $Unit->KdUnit) }}" method="POST"
+                                            class="d-inline" id="delete-form-{{ $Unit->KdUnit }}">
                                             @method('delete')
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-icon  del">
@@ -173,7 +173,7 @@
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $Unit->kdUnit }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $Unit->KdUnit }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -186,9 +186,9 @@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="kdUnit" class="form-label">Kode Unit</label>
-                                                            <input type="text" class="form-control" name="kdUnit"
-                                                                id="kdUnit" value="{{ old('kdUnit', $Unit->kdUnit) }}"
+                                                            <label for="KdUnit" class="form-label">Kode Unit</label>
+                                                            <input type="text" class="form-control" name="KdUnit"
+                                                                id="KdUnit" value="{{ old('KdUnit', $Unit->KdUnit) }}"
                                                                 disabled>
                                                         </div>
                                                     </div><!--end col-->

@@ -18,14 +18,13 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         User::create([
-            'uuid' => Str::uuid(),
-            'name' => 'Ananda Rizq',
+            'name' => 'P3L',
             'phoneNumber' => '081212131060',
-            'email' => 'anndrzq32@gmail.com',
+            'email' => 'superadmin@gmail.com',
             'address' => "Jalan Jalan",
             'password' => Hash::make('123123'),
             'role' => 'SuperAdmin',
-            'jk' => 'Laki',
+            'gender' => 'Laki',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -15,11 +15,11 @@ class ProductController extends Controller
     public function index()
     {
         // Mengambil Data Id dan Nama Kategori dari models Category
-        $categoryData       = Category::get(['id', 'categoryName']);
+        $categoryData       = Category::get(['KdCategory', 'categoryName']);
         // Mengambil Semua Data Product
         $productData        = Product::all();
         // Mengambil Id dan Deskripsi Unit dari Models Unit
-        $unitsData          = Unit::get(['id', 'unitDescription']);
+        $unitsData          = Unit::get(['KdUnit', 'unitDescription']);
         return view('content.Dashboard.Master.Product.index', compact('productData', 'categoryData', 'unitsData'));
     }
 
@@ -30,14 +30,12 @@ class ProductController extends Controller
             'nameProduct'      => 'required|unique:products,nameProduct',
             'Photo'            => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
             'stock'            => 'required|numeric|min:0',
-            'purchase_price'   => 'required|numeric|min:0',
-            'markup_percentage' => 'required|numeric|min:0',
-            'category_id'      => 'required|exists:categories,id',
-            'unit_id'          => 'required|exists:units,id',
+            'KdCategory'      => 'required|exists:categories,KdCategory',
+            'KdUnit'          => 'required|exists:units,KdUnit',
         ]);
 
-        // Ambil nama kategori berdasarkan category_id
-        $category = Category::find($data['category_id']);
+        // Ambil nama kategori berdasarkan KdCategory
+        $category = Category::find($data['KdCategory']);
         $prefix = strtoupper(substr($category->categoryName, 0, 3)); // 3 huruf pertama kategori
 
         // Cari kode terakhir berdasarkan prefix kategori
@@ -55,9 +53,6 @@ class ProductController extends Controller
         // Tambahkan kode produk ke data
         $data['KdProduct'] = $kodeBaru;
 
-        // Hitung harga otomatis
-        $data['price'] = $data['purchase_price'] + ($data['purchase_price'] * $data['markup_percentage'] / 100);
-
         // Upload photo jika ada
         if ($request->hasFile('Photo')) {
             $data['Photo'] = $request->file('Photo')->store('images/Products', 'public');
@@ -73,11 +68,11 @@ class ProductController extends Controller
     {
         $product            = Product::findOrFail($KdProduct);
         // Mengambil Data Id dan Nama Kategori dari models Category
-        $categoryData       = Category::get(['id', 'categoryName']);
+        $categoryData       = Category::get(['KdCategory', 'categoryName']);
         // Mengambil Semua Data Product
         $productData        = Product::all();
         // Mengambil Id dan Deskripsi Unit dari Models Unit
-        $unitsData          = Unit::get(['id', 'unitDescription']);
+        $unitsData          = Unit::get(['KdUnit', 'unitDescription']);
         return view('content.Dashboard.Master.Product.index', compact('product', 'productData', 'categoryData', 'unitsData'));
     }
 
@@ -94,14 +89,9 @@ class ProductController extends Controller
             ],
             'Photo'             => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
             'stock'             => 'required|numeric|min:0',
-            'purchase_price'    => 'required|numeric|min:0',
-            'markup_percentage' => 'required|numeric|min:0',
-            'category_id'       => 'required|exists:categories,id',
-            'unit_id'           => 'required|exists:units,id',
+            'KdCategory'       => 'required|exists:categories,KdCategory',
+            'KdUnit'           => 'required|exists:units,KdUnit',
         ]);
-
-        // Hitung ulang harga jual berdasarkan harga beli & persentase
-        $data['price'] = $data['purchase_price'] + ($data['purchase_price'] * $data['markup_percentage'] / 100);
 
         // Upload photo jika ada
         if ($request->hasFile('Photo')) {

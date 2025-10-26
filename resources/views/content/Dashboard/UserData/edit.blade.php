@@ -53,7 +53,7 @@
                 <div class="card-body p-4">
                     <div class="tab-content">
                         <div class="tab-pane active" id="personalDetails" role="tabpanel">
-                            <form action="{{ route('UserData.update', $UserData->uuid) }}" method="POST">
+                            <form action="{{ route('UserData.update', $UserData->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
@@ -115,12 +115,13 @@
                                     </div>
 
                                     <div class="col-xxl-6 col-md-6 mb-3">
-                                        <label for="jk" class="form-label">Jenis Kelamin</label>
-                                        <select name="jk" id="jk" class="form-select">
+                                        <label for="gender" class="form-label">Jenis Kelamin</label>
+                                        <select name="gender" id="gender" class="form-select">
                                             <option selected disabled>---Pilih Jenis Kelamin---</option>
-                                            <option value="Laki" {{ $UserData->jk == 'Laki' ? 'selected' : '' }}>Laki
+                                            <option value="Laki" {{ $UserData->gender == 'Laki' ? 'selected' : '' }}>Laki
                                             </option>
-                                            <option value="Perempuan" {{ $UserData->jk == 'Perempuan' ? 'selected' : '' }}>
+                                            <option value="Perempuan"
+                                                {{ $UserData->gender == 'Perempuan' ? 'selected' : '' }}>
                                                 Perempuan</option>
                                         </select>
                                     </div>
@@ -147,7 +148,7 @@
 
 
                         <div class="tab-pane" id="changePassword" role="tabpanel">
-                            <form action="{{ route('UserData.update', $UserData->uuid) }}" method="POST">
+                            <form action="{{ route('UserData.update', $UserData->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <div class="row g-2">

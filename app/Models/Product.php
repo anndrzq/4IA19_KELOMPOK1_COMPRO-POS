@@ -11,19 +11,18 @@ class Product extends Model
     use HasFactory;
     protected $guarded = [];
     protected $primaryKey = 'KdProduct';
-    // Memberitahu bahwa primary key bertype string
     protected $keyType = 'string';
-    // Menonaktifkan auto incrementing
     public $incrementing = false;
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'KdCategory', 'KdCategory');
     }
+
 
     public function unit()
     {
-        return $this->belongsTo(Unit::class, 'unit_id', 'id');
+        return $this->belongsTo(Unit::class, 'KdUnit', 'KdUnit');
     }
 
     public function StockIn()

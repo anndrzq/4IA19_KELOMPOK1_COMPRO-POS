@@ -35,7 +35,7 @@ class UsersDataController extends Controller
                 'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
             ],
             'role'          => 'required',
-            'jk'            => 'required',
+            'gender'            => 'required',
             'address'       => 'required|max:255',
         ]);
 
@@ -46,28 +46,28 @@ class UsersDataController extends Controller
     }
 
 
-    public function show(User $user, $uuid)
+    public function show(User $user, $id)
     {
-        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        $UserData = User::where('id', $id)->firstOrFail();
         return view('content.Dashboard.UserData.show', compact('UserData'));
     }
 
-    public function edit(User $user, $uuid)
+    public function edit(User $user, $id)
     {
-        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        $UserData = User::where('id', $id)->firstOrFail();
         return view('content.Dashboard.UserData.edit', compact('UserData'));
     }
 
-    public function update(Request $request, $uuid)
+    public function update(Request $request, $id)
     {
-        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        $UserData = User::where('id', $id)->firstOrFail();
         if ($request->input('form_type') == 'updateUser') {
             $data = $request->validate([
                 'name'          => 'required|min:3',
                 'email'         => 'required|email|unique:users,email,' . $UserData->id,
                 'phoneNumber'   => 'required|unique:users,phoneNumber,' . $UserData->id,
                 'role'          => 'required',
-                'jk'            => 'required',
+                'gender'            => 'required',
                 'address'       => 'required|max:255',
             ]);
 
@@ -90,9 +90,9 @@ class UsersDataController extends Controller
     }
 
 
-    public function destroy(User $user, $uuid)
+    public function destroy(User $user, $id)
     {
-        $UserData = User::where('uuid', $uuid)->firstOrFail();
+        $UserData = User::where('id', $id)->firstOrFail();
         if ($UserData->user) {
             $UserData->user->delete();
         }

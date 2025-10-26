@@ -213,15 +213,11 @@
                                     <td>{{ $Suppliers->address }}</td>
                                     @if ($Suppliers->status == 1)
                                         <td>
-                                            <div class="btn btn-success btn-icon waves-effect waves-light">
-                                                Aktif
-                                            </div>
+                                            Aktif
                                         </td>
                                     @else
                                         <td>
-                                            <div class="btn btn-danger btn-icon waves-effect waves-light">
-                                                Tidak Aktif
-                                            </div>
+                                            Tidak Aktif
                                         </td>
                                     @endif
 

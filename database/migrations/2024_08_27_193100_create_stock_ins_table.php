@@ -12,16 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_ins', function (Blueprint $table) {
-            $table->uuid();
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('id')->primary();
+            $table->uuid('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('KdProduct');
             $table->foreign('KdProduct')->references('KdProduct')->on('products')->onDelete('cascade');
-            $table->string('kdSuppliers');
-            $table->foreign('kdSuppliers')->references('kdSuppliers')->on('supliers')->onDelete('cascade');
-            $table->date('date');
-            $table->string('qty');
-            $table->string('description');
+            $table->string('KdSuppliers');
+            $table->foreign('KdSuppliers')->references('kdSuppliers')->on('supliers')->onDelete('cascade');
+            $table->string('batch_code')->unique();
+            $table->integer('quantity');
+            $table->date('expired_date')->nullable();
+            $table->string('qr_code')->nullable();
+            $table->decimal('purchase_price', 12, 2);
+            $table->decimal('markup_percentage', 5, 2)->default(0);
+            $table->decimal('final_price', 12, 2);
             $table->timestamps();
         });
     }

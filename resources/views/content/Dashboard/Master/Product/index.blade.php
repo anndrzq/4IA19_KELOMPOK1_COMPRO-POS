@@ -146,17 +146,17 @@
                             </div>
 
                             <div class="col-12 mb-3">
-                                <label for="category_id" class="form-label">Kategori</label>
-                                <select name="category_id" id="category_id" class="form-select category">
+                                <label for="KdCategory" class="form-label">Kategori</label>
+                                <select name="KdCategory" id="KdCategory" class="form-select category">
                                     <option></option>
                                     @foreach ($categoryData as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->categoryName }}
+                                        <option value="{{ $category->KdCategory }}"
+                                            {{ old('KdCategory', $product->KdCategory ?? '') == $category->KdCategory ? 'selected' : '' }}>
+                                            {{ $category->KdCategory }} || {{ $category->categoryName }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('category_id')
+                                @error('KdCategory')
                                     <small class="text-danger">
                                         {{ $message }}
                                     </small>
@@ -164,16 +164,16 @@
                             </div>
 
                             <div class="col-12 mb-3">
-                                <label for="unit_id" class="form-label">Unit</label>
-                                <select name="unit_id" id="unit_id" class="form-select unit">
+                                <label for="KdUnit" class="form-label">Unit</label>
+                                <select name="KdUnit" id="KdUnit" class="form-select unit">
                                     <option></option>
                                     @foreach ($unitsData as $unit)
-                                        <option value="{{ $unit->id }}"
-                                            {{ old('unit_id', $product->unit_id ?? '') == $unit->id ? 'selected' : '' }}>
-                                            {{ $unit->unitDescription }}</option>
+                                        <option value="{{ $unit->KdUnit }}"
+                                            {{ old('KdUnit', $product->KdUnit ?? '') == $unit->KdUnit ? 'selected' : '' }}>
+                                            {{ $unit->KdUnit }} || {{ $unit->unitDescription }}</option>
                                     @endforeach
                                 </select>
-                                @error('unit_id')
+                                @error('KdUnit')
                                     <small class="text-danger">
                                         {{ $message }}
                                     </small>
@@ -185,28 +185,6 @@
                                 <input type="number" class="form-control" name="stock" id="stock"
                                     placeholder="Masukan jumlah stok" value="{{ old('stock', $product->stock ?? 0) }}">
                                 @error('stock')
-                                    <small class="text-danger">
-                                        {{ $message }}
-                                    </small>
-                                @enderror
-                            </div>
-
-
-                            <div class="col-12 mb-3">
-                                <label for="purchase_price" class="form-label">Harga Beli</label>
-                                <input type="number" class="form-control" name="purchase_price" id="purchase_price"
-                                    placeholder="Masukan harga beli"
-                                    value="{{ old('purchase_price', $product->purchase_price ?? 0) }}">
-                            </div>
-
-
-                            <div class="col-12 mb-3">
-                                <label for="markup_percentage" class="form-label">Markup (%)</label>
-                                <input type="number" class="form-control" name="markup_percentage" id="markup_percentage"
-                                    placeholder="Contoh: 20"
-                                    value="{{ old('markup_percentage', $product->markup_percentage ?? 0) }}">
-
-                                @error('markup_percentage')
                                     <small class="text-danger">
                                         {{ $message }}
                                     </small>
@@ -235,8 +213,6 @@
                                 <th>Kategori Produk</th>
                                 <th>Unit Produk</th>
                                 <th>Stok</th>
-                                <th>Harga Beli</th>
-                                <th>Markup (%)</th>
                                 <th>Harga Jual</th>
                                 <th>Aksi</th>
                             </tr>
@@ -250,9 +226,6 @@
                                     <td>{{ $Product->category->categoryName }}</td>
                                     <td>{{ $Product->unit->unitDescription }}</td>
                                     <td>{{ $Product->stock }}</td>
-                                    <td>Rp{{ number_format($Product->purchase_price, 0, ',', '.') }},-</td>
-                                    <td>{{ rtrim(rtrim(number_format($Product->markup_percentage, 2, '.', ''), '0'), '.') }}%
-                                    </td>
                                     <td>Rp{{ number_format($Product->price, 0, ',', '.') }},-</td>
 
                                     <td>
@@ -338,20 +311,6 @@
                                                                 id="unit_id"
                                                                 value="{{ old('unit_id', $Product->unit->unitDescription) }}"
                                                                 disabled>
-                                                        </div>
-                                                    </div><!--end col-->
-
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="purchase_price" class="form-label">Harga
-                                                                Beli</label>
-                                                            <div class="input-group col-12">
-                                                                <span class="input-group-text">Rp</span>
-                                                                <input type="number" name="purchase_price"
-                                                                    id="purchase_price"
-                                                                    value="{{ old('purchase_price', $Product->purchase_price) }}"
-                                                                    class="form-control">
-                                                            </div>
                                                         </div>
                                                     </div><!--end col-->
 

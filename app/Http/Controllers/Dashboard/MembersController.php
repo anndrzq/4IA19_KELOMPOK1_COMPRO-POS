@@ -25,7 +25,6 @@ class MembersController extends Controller
             'noWA'      => 'required|unique:members',
             'email'     => 'required|email:dns',
             'gender'    => 'required',
-            'status'    => 'required'
         ]);
 
         // Melakukan pembuatan members
@@ -33,43 +32,42 @@ class MembersController extends Controller
         return redirect('/Member')->with('success', 'Anda Berhasil Menambahkan Users');
     }
 
-    public function edit(Members $members, $uuid)
+    public function edit(Members $members, $id)
     {
-        // Mengambil data berdasarkan UUID
-        $Members        = Members::findOrFail($uuid);
+        // Mengambil data berdasarkan id
+        $Members        = Members::findOrFail($id);
         // Mengambil semua data member untuk tabel
         $dataMember     = Members::all();
         return view('content.Dashboard.Members.index', compact('Members', 'dataMember'));
     }
 
-    public function update(Request $request, $uuid)
+    public function update(Request $request, $id)
     {
         // Mencaari Data Members
-        $Members    = Members::findOrFail($uuid);
+        $Members    = Members::findOrFail($id);
         // Mengambil request inputan data
         $data = $request->validate([
             'name'      => 'required',
             'noWA'      => [
                 'required',
-                Rule::unique('members', 'noWA')->ignore($Members->uuid, 'uuid'),
+                Rule::unique('members', 'noWA')->ignore($Members->id, 'id'),
             ],
             'email'     => [
                 'required',
                 'email:dns',
-                Rule::unique('members', 'email')->ignore($Members->uuid, 'uuid'),
+                Rule::unique('members', 'email')->ignore($Members->id, 'id'),
             ],
             'gender'    => 'required',
-            'status'    => 'required',
         ]);
         // Melakukan Update
         $Members->update($data);
         return redirect('/Member')->with('success', 'Anda Berhasil Melakukan Update Members');
     }
 
-    public function destroy($uuid)
+    public function destroy($id)
     {
-        // Melakukan pencarian data member bedasarkan uuid
-        $Members = Members::findOrFail($uuid);
+        // Melakukan pencarian data member bedasarkan id
+        $Members = Members::findOrFail($id);
         // Melakukan Penghapusan
         $Members->delete();
         return redirect('/Member')->with('success', 'Anda Berhasil Menghapus Data Member');

@@ -99,15 +99,15 @@
                             </div>
 
                             <div class="col-xxl-6 col-md-6 mb-3">
-                                <label for="jk" class="form-label">Jenis Kelamin</label>
-                                <select name="jk" id="jk" class="form-select" data-choices
+                                <label for="gender" class="form-label">Jenis Kelamin</label>
+                                <select name="gender" id="gender" class="form-select" data-choices
                                     data-choices-search-false>
                                     <option selected disabled>---Pilih Jenis Kelamin---</option>
-                                    <option value="Laki" {{ old('jk') == 'Laki' ? 'selected' : '' }}>Laki</option>
-                                    <option value="Perempuan" {{ old('jk') == 'Perempuan' ? 'selected' : '' }}>
+                                    <option value="Laki" {{ old('gender') == 'Laki' ? 'selected' : '' }}>Laki</option>
+                                    <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>
                                         Perempuan</option>
                                 </select>
-                                @error('jk')
+                                @error('gender')
                                     <small class="text-danger">
                                         {{ $message }}
                                     </small>

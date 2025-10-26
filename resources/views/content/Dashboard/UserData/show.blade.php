@@ -70,9 +70,9 @@
                                 </div>
 
                                 <div class="col-xxl-6 col-md-6 mb-3">
-                                    <label for="jk" class="form-label">Jenis Kelamin</label>
-                                    <input type="jk" name="jk" class="form-control" id="jk"
-                                        value="{{ $UserData->jk }}" disabled>
+                                    <label for="gender" class="form-label">Jenis Kelamin</label>
+                                    <input type="gender" name="gender" class="form-control" id="gender"
+                                        value="{{ $UserData->gender }}" disabled>
                                 </div>
 
                                 <div class="col-xxl-6 col-md-6 mb-3">

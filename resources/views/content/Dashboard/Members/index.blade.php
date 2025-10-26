@@ -109,7 +109,7 @@
             <div class="card">
                 <div class="card-body">
                     <form
-                        action="{{ request()->routeIs('Member.edit') ? route('Member.update', $Members->uuid) : route('Member.store') }}"
+                        action="{{ request()->routeIs('Member.edit') ? route('Member.update', $Members->id) : route('Member.store') }}"
                         method="POST" id="formMember">
                         @csrf
                         @if (request()->routeIs('Member.edit'))
@@ -146,40 +146,20 @@
 
                             <div class="col-12 mb-3">
                                 <label for="gender" class="form-label">Jenis Kelamin</label>
-                                <select name="gender" id="gender" class="form-select" data-choices
-                                    data-choices-search-false>
+                                <select name="gender" id="gender" class="form-select">
                                     <option selected disabled>---Pilih Jenis Kelamin---</option>
-                                    <option value="0"
-                                        {{ old('gender', $Members->gender ?? '') == '0' ? 'selected' : '' }}>Laki</option>
-                                    <option value="1"
-                                        {{ old('gender', $Members->gender ?? '') == '1' ? 'selected' : '' }}>Perempuan
+                                    <option value="Laki"
+                                        {{ old('gender', $Members->gender ?? '') == 'Laki' ? 'selected' : '' }}>Laki
+                                    </option>
+                                    <option value="Perempuan"
+                                        {{ old('gender', $Members->gender ?? '') == 'Perempuan' ? 'selected' : '' }}>
+                                        Perempuan
                                     </option>
                                 </select>
                                 @error('gender')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-
-                            @if (request()->routeIs('Member.edit'))
-                                <div class="col-12 mb-3">
-                                    <label for="status" class="form-label">Status</label>
-                                    <select name="status" id="status" class="form-select" data-choices
-                                        data-choices-search-false>
-                                        <option selected disabled>---Pilih Status---</option>
-                                        <option value="0"
-                                            {{ old('status', $Members->status ?? '') == '0' ? 'selected' : '' }}>Tidak
-                                            Aktif</option>
-                                        <option value="1"
-                                            {{ old('status', $Members->status ?? '') == '1' ? 'selected' : '' }}>Aktif
-                                        </option>
-                                    </select>
-                                    @error('status')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            @else
-                                <input type="hidden" name="status" value="1">
-                            @endif
 
                             <div class="col-12 text-end">
                                 <button type="submit" class="btn btn-primary">
@@ -203,7 +183,6 @@
                                 <th>Kontak Whatsapp</th>
                                 <th>Kontak Email</th>
                                 <th>Jenis Kelamin</th>
-                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -223,28 +202,14 @@
                                             Perempuan
                                         </td>
                                     @endif
-                                    @if ($Members->status == 1)
-                                        <td>
-                                            <div class="btn btn-success ">
-                                                Aktif
-                                            </div>
-                                        </td>
-                                    @else
-                                        <td>
-                                            <div class="btn btn-danger ">
-                                                Tidak Aktif
-                                            </div>
-                                        </td>
-                                    @endif
-
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $Members->uuid }}" data-bs-toggle="modal"
+                                        <button data-bs-target="#modalView-{{ $Members->id }}" data-bs-toggle="modal"
                                             class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('Member.edit', $Members->uuid) }}"
+                                        <a href="{{ route('Member.edit', $Members->id) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('Member.destroy', $Members->uuid) }}" method="POST"
-                                            id="delete-form-{{ $Members->uuid }}" class="d-inline">
+                                        <form action="{{ route('Member.destroy', $Members->id) }}" method="POST"
+                                            id="delete-form-{{ $Members->id }}" class="d-inline">
                                             @method('delete')
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-icon  del">
@@ -254,7 +219,7 @@
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $Members->uuid }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $Members->id }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -306,20 +271,6 @@
                                                                 <input type="text" name="statusForm"
                                                                     class="form-control" id="statusForm"
                                                                     value="Laki Laki" disabled>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="mb-3">
-                                                            <label for="statusForm" class="form-label">Status</label>
-                                                            @if ($Members->status == 1)
-                                                                <input type="text" name="statusForm"
-                                                                    class="form-control" id="statusForm" value="Aktif"
-                                                                    disabled>
-                                                            @else
-                                                                <input type="text" name="statusForm"
-                                                                    class="form-control" id="statusForm"
-                                                                    value="Tidak Aktif" disabled>
                                                             @endif
                                                         </div>
                                                     </div>

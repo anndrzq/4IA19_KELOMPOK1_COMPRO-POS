@@ -10,11 +10,8 @@ class Suplier extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    // Menetapkan primary key yang digunakan
     protected $primaryKey = 'kdSuppliers';
-    // Memberitahu bahwa primary key bertype string
     protected $keyType = 'string';
-    // Menonaktifkan auto incrementing
     public $incrementing = false;
 
     public function StockIn()

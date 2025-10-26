@@ -18,40 +18,40 @@ class UnitController extends Controller
 
     public function store(Request $request)
     {
-        $lastCode = DB::table('units')->orderBy('kdUnit', 'desc')->first();
+        $lastCode = DB::table('units')->orderBy('KdUnit', 'desc')->first();
         if ($lastCode) {
-            $lastNumber = intval(substr($lastCode->kdUnit, 3));
+            $lastNumber = intval(substr($lastCode->KdUnit, 3));
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
-        $kdUnit = 'UNT' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        $KdUnit = 'UNT' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
         // Mengambil Request untuk Validasi
         $data = $request->validate([
             'unitDescription'   => 'required'
         ]);
 
-        $data['kdUnit'] = $kdUnit;
+        $data['KdUnit'] = $KdUnit;
 
         // Melakukan Create Unit Berdasarkan Data Validasi
         Unit::create($data);
         return redirect('/Unit')->with('success', 'Anda Berhasil Menambahkan Satuan Unit');
     }
 
-    public function edit(Unit $unit, $kdUnit)
+    public function edit(Unit $unit, $KdUnit)
     {
         // Mengambil Data Dimana Data Berdasarkan Kode Unit
-        $Unit = Unit::where('kdUnit', $kdUnit)->firstOrFail();
+        $Unit = Unit::where('KdUnit', $KdUnit)->firstOrFail();
         // Mengambil Semua Data Di Model Unit
         $unitData = Unit::all();
         return view('content.Dashboard.Master.unit.index', compact('Unit', 'unitData'));
     }
 
-    public function update(Request $request, $kdUnit)
+    public function update(Request $request, $KdUnit)
     {
         // Mengambil data Kode Unit
-        $unitData = Unit::where('kdUnit', $kdUnit)->firstOrFail();
+        $unitData = Unit::where('KdUnit', $KdUnit)->firstOrFail();
         // Melakukan Validasi Data
         $data = $request->validate([
             'unitDescription'   => 'required'
@@ -61,10 +61,10 @@ class UnitController extends Controller
         return redirect('/Unit')->with('success', 'Anda Berhasil Mengupdate Unit Data');
     }
 
-    public function destroy($kdUnit)
+    public function destroy($KdUnit)
     {
         // Mengambil data Kode Unit yang sesuai
-        $unitData = Unit::where('kdUnit', $kdUnit)->firstOrFail();
+        $unitData = Unit::where('KdUnit', $KdUnit)->firstOrFail();
         // Menghapus Data
         $unitData->delete();
         return redirect('/Unit')->with('success', 'Anda Berhasil Menghapus Unit Data');

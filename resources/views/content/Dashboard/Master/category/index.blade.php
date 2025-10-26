@@ -109,7 +109,7 @@
             <div class="card">
                 <div class="card-body">
                     <form
-                        action="{{ request()->routeIs('Category.edit') ? route('Category.update', $category->kdCategory) : route('Category.store') }}"
+                        action="{{ request()->routeIs('Category.edit') ? route('Category.update', $category->KdCategory) : route('Category.store') }}"
                         method="POST" id="formCategory">
                         @csrf
                         @if (request()->routeIs('Category.edit'))
@@ -154,17 +154,17 @@
                             @foreach ($categoryData as $category)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $category->kdCategory }}</td>
+                                    <td>{{ $category->KdCategory }}</td>
                                     <td>{{ $category->categoryName }}</td>
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $category->kdCategory }}"
+                                        <button data-bs-target="#modalView-{{ $category->KdCategory }}"
                                             data-bs-toggle="modal" class="btn btn-primary"><i
                                                 class="las la-eye"></i></button>
-                                        <a href="{{ route('Category.edit', $category->kdCategory) }}"
+                                        <a href="{{ route('Category.edit', $category->KdCategory) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('Category.destroy', $category->kdCategory) }}"
-                                            method="POST" class="d-inline" id="delete-form-{{ $category->kdCategory }}">
+                                        <form action="{{ route('Category.destroy', $category->KdCategory) }}"
+                                            method="POST" class="d-inline" id="delete-form-{{ $category->KdCategory }}">
                                             @method('delete')
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-icon del">
@@ -174,7 +174,7 @@
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $category->kdCategory }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $category->KdCategory }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -187,11 +187,11 @@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="kdCategory" class="form-label">Kode
+                                                            <label for="KdCategory" class="form-label">Kode
                                                                 Kategori</label>
-                                                            <input type="text" class="form-control" name="kdCategory"
-                                                                id="kdCategory"
-                                                                value="{{ old('kdCategory', $category->kdCategory) }}"
+                                                            <input type="text" class="form-control" name="KdCategory"
+                                                                id="KdCategory"
+                                                                value="{{ old('KdCategory', $category->KdCategory) }}"
                                                                 disabled>
                                                         </div>
                                                     </div><!--end col-->

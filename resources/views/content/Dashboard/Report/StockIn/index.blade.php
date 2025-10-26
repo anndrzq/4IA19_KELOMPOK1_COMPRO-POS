@@ -11,9 +11,6 @@
 @endpush
 
 @push('vendor-script')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <!--datatable js-->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
@@ -38,7 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        function confirmDelete(StockUuid) {
+        function confirmDelete(Stockid) {
             Swal.fire({
                 title: "Yakin Hapus?",
                 text: "Data ini tidak bisa dipulihkan!",
@@ -49,7 +46,7 @@
                 confirmButtonText: "Ya, Hapus!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + StockUuid).submit();
+                    document.getElementById('delete-form-' + Stockid).submit();
                 }
             })
         }
@@ -74,6 +71,156 @@
             });
         </script>
     @endif
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const tableBody = document.querySelector('#productTable tbody');
+
+            // ✅ Inisialisasi Select2 pada semua dropdown
+            function initSelect2() {
+                $('.selectProduct').select2({
+                    placeholder: 'Pilih Produk',
+                    width: '100%',
+                    allowClear: true
+                });
+            }
+
+            // ✅ Hitung harga jual otomatis per unit
+            function calculatePrice(row) {
+                const purchaseInput = row.querySelector('.purchasePrice');
+                const qtyInput = row.querySelector('input[name="quantity[]"]');
+                const markupInput = row.querySelector('.markupPercentage');
+                const finalPriceInput = row.querySelector('.finalPrice');
+                const finalPriceHidden = row.querySelector('.finalPriceHidden');
+
+                let purchase = parseFloat(purchaseInput.value) || 0;
+                let qty = parseFloat(qtyInput.value) || 0;
+                let markup = parseFloat(markupInput.value) || 0;
+
+                if (qty === 0) {
+                    finalPriceInput.value = '0.00';
+                    finalPriceHidden.value = '0.00';
+                    return;
+                }
+
+                let pricePerUnit = purchase / qty;
+                let finalPrice = pricePerUnit + (pricePerUnit * markup / 100);
+
+                finalPriceInput.value = finalPrice.toFixed(2);
+                finalPriceHidden.value = finalPrice.toFixed(2);
+            }
+
+            // pastikan dipanggil setiap change di qty, purchase price, markup
+            tableBody.addEventListener('input', function(e) {
+                if (e.target.classList.contains('purchasePrice') ||
+                    e.target.classList.contains('markupPercentage') ||
+                    e.target.name === 'quantity[]') {
+                    calculatePrice(e.target.closest('tr'));
+                }
+            });
+
+            // ✅ Update tombol tambah/hapus
+            function updateButtons() {
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    const actionCell = row.cells[6];
+                    actionCell.innerHTML = '';
+                    if (index === rows.length - 1) {
+                        actionCell.innerHTML =
+                            `<button type="button" class="btn btn-success btn-sm addRow">+</button>`;
+                    } else {
+                        actionCell.innerHTML =
+                            `<button type="button" class="btn btn-danger btn-sm removeRow">-</button>`;
+                    }
+                });
+            }
+
+            // ✅ Ambil produk yang sudah dipilih
+            function getSelectedProducts() {
+                let selected = [];
+                tableBody.querySelectorAll('select[name="KdProduct[]"]').forEach(select => {
+                    if (select.value) selected.push(select.value);
+                });
+                return selected;
+            }
+
+            // ✅ Update dropdown agar tidak bisa pilih produk yang sama
+            function updateDropdownOptions() {
+                const allDropdowns = tableBody.querySelectorAll('select[name="KdProduct[]"]');
+                const selectedProducts = getSelectedProducts();
+
+                allDropdowns.forEach(dropdown => {
+                    const currentValue = dropdown.value;
+
+                    $(dropdown).find('option').each(function() {
+                        if (this.value === "" || this.value === currentValue) {
+                            $(this).prop('disabled', false);
+                        } else {
+                            $(this).prop('disabled', selectedProducts.includes(this.value));
+                        }
+                    });
+
+                    $(dropdown).trigger('change.select2');
+                });
+            }
+
+            // ✅ Tambah baris baru
+            function addRow() {
+                $('.selectProduct').select2('destroy');
+
+                const rows = tableBody.querySelectorAll('tr');
+                const lastRow = rows[rows.length - 1];
+                const newRow = lastRow.cloneNode(true);
+
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+                tableBody.appendChild(newRow);
+
+                initSelect2();
+                updateButtons();
+                updateDropdownOptions();
+            }
+
+            // ✅ Event listener untuk tombol + dan -
+            tableBody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('addRow')) {
+                    addRow();
+                }
+                if (e.target.classList.contains('removeRow')) {
+                    e.target.closest('tr').remove();
+                    updateButtons();
+                    updateDropdownOptions();
+                }
+            });
+
+            // ✅ Event listener untuk dropdown & input harga
+            tableBody.addEventListener('change', function(e) {
+                if (e.target.name === 'KdProduct[]') {
+                    updateDropdownOptions();
+                }
+                if (e.target.classList.contains('purchasePrice') || e.target.classList.contains(
+                        'markupPercentage')) {
+                    calculatePrice(e.target.closest('tr'));
+                }
+            });
+
+            // ✅ Inisialisasi awal
+            initSelect2();
+            updateButtons();
+            updateDropdownOptions();
+
+            $(document).ready(function() {
+                $('#kdSuppliers').select2({
+                    placeholder: '-Pilih Suppliers-',
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        });
+    </script>
+
 @endpush
 @section('title', 'Stock Masuk Produk')
 @section('content')
@@ -95,190 +242,105 @@
     </div>
     <!-- end page title -->
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    @if (request()->routeIs('StockIn.edit'))
-                        <form action="{{ route('StockIn.update', $stock->uuid) }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
+                    <form
+                        action="{{ request()->routeIs('StockIn.edit') ? route('StockIn.update', $stock->id) : route('StockIn.store') }}"
+                        method="POST" enctype="multipart/form-data" id="stockForm">
+                        @csrf
+                        @if (request()->routeIs('StockIn.edit'))
                             @method('PUT')
-                            <div class="row">
-                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Pilih Suppliers</label>
-                                        <select name="kdSuppliers" id="kdSuppliers" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Suppliers-</option>
-                                            @foreach ($suppliersData as $suppliers)
-                                                <option value="{{ $suppliers->kdSuppliers }}"
-                                                    {{ $stock->kdSuppliers == $suppliers->kdSuppliers ? 'selected' : '' }}>
-                                                    Kode: {{ $suppliers->kdSuppliers }}, Nama:
-                                                    {{ $suppliers->suppliersName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                        @endif
+
+                        <div class="row">
+                            {{-- Hidden User --}}
+                            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+
+                            {{-- Pilih Supplier --}}
+                            <div class="col-12 mb-3">
+                                <label for="kdSuppliers" class="form-label">Pilih Suppliers</label>
+                                <select name="KdSuppliers" id="kdSuppliers" class="form-select" data-choices
+                                    data-choices-search-true required>
+                                    <option selected disabled>-Pilih Suppliers-</option>
+                                    @foreach ($suppliersData as $suppliers)
+                                        <option value="{{ $suppliers->kdSuppliers }}">
+                                            Kode: {{ $suppliers->kdSuppliers }}, Nama: {{ $suppliers->suppliersName }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Dynamic Product List --}}
+                            <div class="col-12">
+                                <label class="form-label">Daftar Produk</label>
+                                <table class="table table-bordered" id="productTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Produk</th>
+                                            <th>Qty</th>
+                                            <th>Expired Date</th>
+                                            <td>Harga Beli</td>
+                                            <td>Markup (%)</td>
+                                            <td>Harga Jual</td>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <select name="KdProduct[]" class="form-select selectProduct" required>
+                                                    <option selected disabled>-Pilih Produk-</option>
+                                                    @foreach ($productData as $produk)
+                                                        <option value="{{ $produk->KdProduct }}">
+                                                            {{ $produk->KdProduct }} || {{ $produk->nameProduct }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <input type="number" name="quantity[]" class="form-control" min="1"
+                                                    required>
+                                            </td>
+                                            <td>
+                                                <input type="date" name="expired_date[]" class="form-control">
+                                            </td>
+                                            <td><input type="number" name="purchase_price[]"
+                                                    class="form-control purchasePrice" step="0.01" required></td>
+                                            <td><input type="number" name="markup_percentage[]"
+                                                    class="form-control markupPercentage" step="0.01" value="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control finalPrice" step="0.01"
+                                                    disabled>
+                                                <input type="hidden" name="final_price[]" class="finalPriceHidden">
+                                            </td>
 
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="KdProduct" class="form-label">Pilih Produk</label>
-                                        <select name="KdProduct" id="KdProduct" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Produk-</option>
-                                            @foreach ($productData as $produk)
-                                                <option value="{{ $produk->KdProduct }}"
-                                                    {{ $stock->KdProduct == $produk->KdProduct ? 'selected' : '' }}>
-                                                    Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('KdProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="qty" class="form-label">Tambah Stock Produk </label>
-                                        <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Tambah Stock Produk " id="qty"
-                                            value="{{ $stock->qty }}">
-                                        <small class="text-info">
-                                            *masukan data dalam bentuk numeric
-                                        </small>
-                                        @error('qty')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Keterangan</label>
-                                        <input type="text" class="form-control" name="description"
-                                            placeholder="Masukan Keterangan" id="description"
-                                            value="{{ $stock->description }}">
-                                        @error('description')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @else
-                        <form action="{{ route('StockIn.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="kdSuppliers" class="form-label">Pilih Suppliers</label>
-                                        <select name="kdSuppliers" id="kdSuppliers" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Suppliers-</option>
-                                            @foreach ($suppliersData as $suppliers)
-                                                <option value="{{ $suppliers->kdSuppliers }}"
-                                                    {{ old('kdSuppliers') == $suppliers->kdSuppliers ? 'selected' : '' }}>
-                                                    Kode: {{ $suppliers->kdSuppliers }}, Nama:
-                                                    {{ $suppliers->suppliersName }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('kdSuppliers')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    id="addRow">+</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="KdProduct" class="form-label">Pilih Produk</label>
-                                        <select name="KdProduct" id="KdProduct" class="form-select" data-choices
-                                            data-choices-search-true>
-                                            <option selected disabled>-Pilih Produk-</option>
-                                            @foreach ($productData as $produk)
-                                                <option value="{{ $produk->KdProduct }}"
-                                                    {{ old('KdProduct') == $produk->KdProduct ? 'selected' : '' }}>
-                                                    Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('KdProduct')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
+                            {{-- Submit Button --}}
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ request()->routeIs('StockIn.edit') ? 'Update' : 'Submit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="qty" class="form-label">Tambah Stock Produk </label>
-                                        <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Tambah Stock Produk " id="qty"
-                                            value="{{ old('qty') }}">
-                                        <small class="text-info">
-                                            *masukan data dalam bentuk numeric
-                                        </small>
-                                        @error('qty')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Keterangan</label>
-                                        <input type="text" class="form-control" name="description"
-                                            placeholder="Masukan Keterangan" id="description"
-                                            value="{{ old('description') }}">
-                                        @error('description')
-                                            <small class="text-danger">
-                                                {{ $message }}
-                                            </small>
-                                        @enderror
-                                    </div>
-                                </div><!--end col-->
-
-                                <div class="col-lg-12">
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                    </div>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </form>
-                    @endif
                 </div>
             </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-12 mt-4">
             <div class="card">
                 <div class="card-header">
                     <a href="" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i>
@@ -296,7 +358,8 @@
                                 <th>Nama Suppliers</th>
                                 <th>Tanggal</th>
                                 <th>Stock Masuk</th>
-                                <th>Keterangan</th>
+                                <th>Harga Beli</th>
+                                <th>Harga Jual</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -308,28 +371,31 @@
                                     <td>{{ $stock->products->KdProduct }}</td>
                                     <td>{{ $stock->products->nameProduct }}</td>
                                     <td>{{ $stock->supplier->suppliersName }}</td>
-                                    <td>{{ $stock->date }}</td>
-                                    <td>{{ $stock->qty }}</td>
-                                    <td>{{ $stock->description }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($stock->expired_date)->locale('id')->isoFormat('dddd, DD MMMM YYYY') }}
+                                    </td>
+                                    <td>{{ $stock->quantity }}</td>
+                                    <td>{{ 'Rp.' . number_format($stock->purchase_price, 0, ',', '.') . ',-' }}</td>
+                                    <td>{{ 'Rp.' . number_format($stock->final_price, 0, ',', '.') . ',-' }}</td>
+
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $stock->uuid }}" data-bs-toggle="modal"
+                                        <button data-bs-target="#modalView-{{ $stock->id }}" data-bs-toggle="modal"
                                             class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('StockIn.edit', $stock->uuid) }}"
+                                        <a href="{{ route('StockIn.edit', $stock->id) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('StockIn.destroy', $stock->uuid) }}" method="POST"
-                                            class="d-inline" id="delete-form-{{ $stock->uuid }}">
+                                        <form action="{{ route('StockIn.destroy', $stock->id) }}" method="POST"
+                                            class="d-inline" id="delete-form-{{ $stock->id }}">
                                             @method('delete')
                                             @csrf
                                             <button type="button" class="btn btn-danger btn-icon"
-                                                onclick="confirmDelete('{{ $stock->uuid }}')">
+                                                onclick="confirmDelete('{{ $stock->id }}')">
                                                 <i class="ri-delete-bin-5-line"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $stock->uuid }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $stock->id }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -380,29 +446,43 @@
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="date" class="form-label">Tanggal
-                                                                Upload</label>
+                                                            <label for="date" class="form-label">
+                                                                Tanggal Expired</label>
                                                             <input type="text" class="form-control" name="date"
-                                                                id="date" value="{{ $stock->date }}" disabled>
+                                                                id="date" value="{{ $stock->expired_date }}"
+                                                                disabled>
 
                                                         </div>
                                                     </div><!--end col-->
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="qty" class="form-label">Jumlah Produk</label>
+                                                            <label for="qty" class="form-label">Jumlah
+                                                                Produk</label>
                                                             <input type="number" name="qty" class="form-control"
                                                                 placeholder="Masukan Jumlah Produk" id="qty"
-                                                                value="{{ $stock->qty }}" disabled>
+                                                                value="{{ $stock->quantity }}" disabled>
                                                         </div>
                                                     </div><!--end col-->
 
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="necessary" class="form-label">Keterangan</label>
-                                                            <input type="text" class="form-control" name="necessary"
-                                                                id="necessary" value="{{ $stock->description }}"
+                                                            <label for="purchase_price" class="form-label">Harga
+                                                                Beli</label>
+                                                            <input type="text" name="purchase_price"
+                                                                class="form-control" placeholder="Masukan Harga Beli"
+                                                                id="purchase_price" value="{{ $stock->purchase_price }}"
                                                                 disabled>
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-12">
+                                                        <div class="mb-3">
+                                                            <label for="final_price" class="form-label">Harga
+                                                                Jual</label>
+                                                            <input type="text" name="final_price" class="form-control"
+                                                                placeholder="Masukan Harga Jual" id="final_price"
+                                                                value="{{ $stock->final_price }}" disabled>
                                                         </div>
                                                     </div><!--end col-->
 
