@@ -70,10 +70,10 @@ class StockInController extends Controller
         return strtoupper($kdProduct . '-' . date('YmdHis') . '-' . Str::random(4));
     }
 
-    public function edit($uuid)
+    public function edit($id)
     {
-        // Mengambil data Di Stock In berdasarkan UUID
-        $stock              = StockIn::Where('uuid', $uuid)->firstOrFail();
+        // Mengambil data Di Stock In berdasarkan id
+        $stock              = StockIn::Where('id', $id)->firstOrFail();
         // Mengambil data product seperti kode dan nama
         $productData        = Product::get(['KdProduct', 'nameProduct']);
         // Mengambil data Suplier Aktif yaitu Kode dan nama
@@ -83,56 +83,72 @@ class StockInController extends Controller
         return view('content.Dashboard.Report.StockIn.index', compact('stock', 'productData', 'suppliersData', 'StockData'));
     }
 
-    public function update(Request $request, $uuid)
+    public function update(Request $request, $id)
     {
-        // Mengambil Semua Data Di Form Input
-        $data = $request->validate([
-            'user_id'       => 'required',
-            'KdProduct'     => 'required',
-            'kdSuppliers'   => 'required',
-            'date'          => 'date',
-            'qty'           => 'required',
-            'description'   => 'required'
+        // Validasi input (tetap array karena form reuse dari create)
+        $validated = $request->validate([
+            'KdProduct.*' => 'required|exists:products,KdProduct',
+            'KdSuppliers' => 'required|exists:supliers,kdSuppliers',
+            'quantity.*' => 'required|numeric|min:1',
+            'expired_date.*' => 'nullable|date',
+            'purchase_price.*' => 'required|numeric|min:0',
+            'markup_percentage.*' => 'nullable|numeric|min:0',
+            'final_price.*' => 'required|numeric|min:0',
         ]);
-        // Cari Berdasarkan UUID
-        $StockData = StockIn::findOrFail($uuid);
-        // Caru Kode Product
-        $product = Product::find($data['KdProduct']);
+
+        DB::transaction(function () use ($validated, $id) {
+            $stock = StockIn::findOrFail($id);
+
+            // Ambil data produk tunggal dari array (edit hanya 1 row)
+            $kdProduct = $validated['KdProduct'][0];
+            $quantity  = $validated['quantity'][0];
+            $expired   = $validated['expired_date'][0] ?? null;
+            $purchase  = $validated['purchase_price'][0];
+            $markup    = $validated['markup_percentage'][0] ?? 0;
+            $final     = $validated['final_price'][0];
+
+            // 1️⃣ Kurangi stok lama
+            Product::where('KdProduct', $stock->KdProduct)->update([
+                'stock' => DB::raw("stock - {$stock->quantity}")
+            ]);
+
+            // 2️⃣ Update StockIn
+            $stock->update([
+                'KdProduct' => $kdProduct,
+                'KdSuppliers' => $validated['KdSuppliers'],
+                'quantity' => $quantity,
+                'expired_date' => $expired,
+                'purchase_price' => $purchase,
+                'markup_percentage' => $markup,
+                'final_price' => $final,
+            ]);
+
+            // 3️⃣ Tambahkan stok baru ke produk baru
+            Product::where('KdProduct', $kdProduct)->update([
+                'stock' => DB::raw("stock + {$quantity}"),
+                'price' => $final,
+            ]);
+        });
+
+        return redirect()->route('StockIn.index')->with('success', 'Stock berhasil diupdate!');
+    }
+
+    public function destroy($id)
+    {
+        $stock = StockIn::findOrFail($id);
+        $product = Product::find($stock->KdProduct);
+
         if ($product) {
-            // Kurang stok Produk dengan qty yang Lama
-            $product->stok -= $StockData->qty;
-
-            // Tambah qty yang baru ke stok
-            $product->stok += $data['qty'];
-
-            // Pastikan stok tidak menjadi negatif
-            if ($product->stok < 0) {
-                return back()->with('error', 'Tidak Boleh Kurang Dari 0');
-            }
-            // Simpan perubahan stok ke database
+            // Kurangi stok produk sesuai quantity StockIn yang dihapus
+            $product->stock = max(0, $product->stock - $stock->quantity);
             $product->save();
         } else {
             return back()->with('error', 'Produk Tidak Ada');
         }
-        // dd($data);
-        $StockData->update($data);
-        return redirect('/StockIn')->with('success', 'Anda Telah Berhasil Mengupdate Stock Masuk Produk');
-    }
 
-    public function destroy($uuid)
-    {
-        $StockData = StockIn::findOrFail($uuid);
-        $product = Product::find($StockData->KdProduct);
-        if ($product) {
-            // Tambahkan kembali qty dari reservasi ke stok alat
-            $product->stok -= $StockData->qty;
-            // Simpan perubahan stok ke database
-            $product->save();
-        } else {
-            return back()->with('error', 'Alat Tidak Ada');
-        }
-        // Hapus reservasi
-        $StockData->delete();
-        return back()->with('success', 'Data Stok Masuk Berhasil Di Hapus');
+        // Hapus StockIn
+        $stock->delete();
+
+        return back()->with('success', 'Data Stok Masuk berhasil dihapus');
     }
 }

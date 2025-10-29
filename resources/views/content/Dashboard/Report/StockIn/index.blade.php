@@ -1,11 +1,8 @@
 @extends('layouts.master')
 
 @push('vendor-style')
-    <!--datatable css-->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
-    <!--datatable responsive css-->
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
-
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
@@ -26,67 +23,66 @@
 
 @push('page-script')
     <script src="{{ asset('') }}assets/js/pages/datatables.init.js"></script>
-    <script>
-        var nameList = new List('name-list', {
-            valueNames: ["name"]
-        });
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        function confirmDelete(Stockid) {
-            Swal.fire({
-                title: "Yakin Hapus?",
-                text: "Data ini tidak bisa dipulihkan!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: "Ya, Hapus!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + Stockid).submit();
-                }
-            })
-        }
-    </script>
-
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                title: "BERHASIL!",
-                text: "{{ session('success') }}",
-                icon: "success"
-            });
-        </script>
-    @endif
-
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                title: "GAGAL!",
-                text: "{{ session('error') }}",
-                icon: "error"
-            });
-        </script>
-    @endif
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const tableBody = document.querySelector('#productTable tbody');
 
-            // ✅ Inisialisasi Select2 pada semua dropdown
+            // =======================
+            // Fungsi SweetAlert
+            // =======================
+            window.confirmDelete = function(Stockid) {
+                Swal.fire({
+                    title: "Yakin Hapus?",
+                    text: "Data ini tidak bisa dipulihkan!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: "Ya, Hapus!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + Stockid).submit();
+                    }
+                })
+            }
+
+            @if (session('success'))
+                Swal.fire({
+                    title: "BERHASIL!",
+                    text: "{{ session('success') }}",
+                    icon: "success"
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    title: "GAGAL!",
+                    text: "{{ session('error') }}",
+                    icon: "error"
+                });
+            @endif
+
+            // =======================
+            // Fungsi Select2
+            // =======================
             function initSelect2() {
                 $('.selectProduct').select2({
                     placeholder: 'Pilih Produk',
                     width: '100%',
                     allowClear: true
                 });
+
+                $('#kdSuppliers').select2({
+                    placeholder: '-Pilih Suppliers-',
+                    allowClear: true,
+                    width: '100%'
+                });
             }
 
-            // ✅ Hitung harga jual otomatis per unit
+            // =======================
+            // Hitung harga jual otomatis
+            // =======================
             function calculatePrice(row) {
                 const purchaseInput = row.querySelector('.purchasePrice');
                 const qtyInput = row.querySelector('input[name="quantity[]"]');
@@ -111,7 +107,6 @@
                 finalPriceHidden.value = finalPrice.toFixed(2);
             }
 
-            // pastikan dipanggil setiap change di qty, purchase price, markup
             tableBody.addEventListener('input', function(e) {
                 if (e.target.classList.contains('purchasePrice') ||
                     e.target.classList.contains('markupPercentage') ||
@@ -120,23 +115,32 @@
                 }
             });
 
-            // ✅ Update tombol tambah/hapus
+            // =======================
+            // Update tombol + / -
+            // =======================
             function updateButtons() {
                 const rows = tableBody.querySelectorAll('tr');
+                const isEdit = @json(request()->routeIs('StockIn.edit'));
+
                 rows.forEach((row, index) => {
                     const actionCell = row.cells[6];
                     actionCell.innerHTML = '';
-                    if (index === rows.length - 1) {
-                        actionCell.innerHTML =
-                            `<button type="button" class="btn btn-success btn-sm addRow">+</button>`;
-                    } else {
-                        actionCell.innerHTML =
-                            `<button type="button" class="btn btn-danger btn-sm removeRow">-</button>`;
+
+                    if (!isEdit) {
+                        if (index === rows.length - 1) {
+                            actionCell.innerHTML =
+                                `<button type="button" class="btn btn-success btn-sm addRow">+</button>`;
+                        } else {
+                            actionCell.innerHTML =
+                                `<button type="button" class="btn btn-danger btn-sm removeRow">-</button>`;
+                        }
                     }
                 });
             }
 
-            // ✅ Ambil produk yang sudah dipilih
+            // =======================
+            // Dropdown: produk yang dipilih
+            // =======================
             function getSelectedProducts() {
                 let selected = [];
                 tableBody.querySelectorAll('select[name="KdProduct[]"]').forEach(select => {
@@ -145,14 +149,12 @@
                 return selected;
             }
 
-            // ✅ Update dropdown agar tidak bisa pilih produk yang sama
             function updateDropdownOptions() {
                 const allDropdowns = tableBody.querySelectorAll('select[name="KdProduct[]"]');
                 const selectedProducts = getSelectedProducts();
 
                 allDropdowns.forEach(dropdown => {
                     const currentValue = dropdown.value;
-
                     $(dropdown).find('option').each(function() {
                         if (this.value === "" || this.value === currentValue) {
                             $(this).prop('disabled', false);
@@ -160,12 +162,13 @@
                             $(this).prop('disabled', selectedProducts.includes(this.value));
                         }
                     });
-
                     $(dropdown).trigger('change.select2');
                 });
             }
 
-            // ✅ Tambah baris baru
+            // =======================
+            // Tambah / Hapus baris
+            // =======================
             function addRow() {
                 $('.selectProduct').select2('destroy');
 
@@ -183,11 +186,8 @@
                 updateDropdownOptions();
             }
 
-            // ✅ Event listener untuk tombol + dan -
             tableBody.addEventListener('click', function(e) {
-                if (e.target.classList.contains('addRow')) {
-                    addRow();
-                }
+                if (e.target.classList.contains('addRow')) addRow();
                 if (e.target.classList.contains('removeRow')) {
                     e.target.closest('tr').remove();
                     updateButtons();
@@ -195,32 +195,22 @@
                 }
             });
 
-            // ✅ Event listener untuk dropdown & input harga
             tableBody.addEventListener('change', function(e) {
-                if (e.target.name === 'KdProduct[]') {
-                    updateDropdownOptions();
-                }
+                if (e.target.name === 'KdProduct[]') updateDropdownOptions();
                 if (e.target.classList.contains('purchasePrice') || e.target.classList.contains(
                         'markupPercentage')) {
                     calculatePrice(e.target.closest('tr'));
                 }
             });
 
-            // ✅ Inisialisasi awal
+            // =======================
+            // Inisialisasi awal
+            // =======================
             initSelect2();
             updateButtons();
             updateDropdownOptions();
-
-            $(document).ready(function() {
-                $('#kdSuppliers').select2({
-                    placeholder: '-Pilih Suppliers-',
-                    allowClear: true,
-                    width: '100%'
-                });
-            });
         });
     </script>
-
 @endpush
 @section('title', 'Stock Masuk Produk')
 @section('content')
@@ -264,11 +254,17 @@
                                     data-choices-search-true required>
                                     <option selected disabled>-Pilih Suppliers-</option>
                                     @foreach ($suppliersData as $suppliers)
-                                        <option value="{{ $suppliers->kdSuppliers }}">
+                                        <option value="{{ $suppliers->kdSuppliers }}"
+                                            {{ old('KdSuppliers', $stock->KdSuppliers ?? '') == $suppliers->kdSuppliers ? 'selected' : '' }}>
                                             Kode: {{ $suppliers->kdSuppliers }}, Nama: {{ $suppliers->suppliersName }}
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('KdSuppliers')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Dynamic Product List --}}
@@ -283,46 +279,48 @@
                                             <td>Harga Beli</td>
                                             <td>Markup (%)</td>
                                             <td>Harga Jual</td>
-                                            <th>Aksi</th>
+                                            @if (!request()->routeIs('StockIn.edit'))
+                                                <th>Aksi</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>
                                                 <select name="KdProduct[]" class="form-select selectProduct" required>
-                                                    <option selected disabled>-Pilih Produk-</option>
+                                                    <option value="" disabled selected>-Pilih Produk-</option>
                                                     @foreach ($productData as $produk)
-                                                        <option value="{{ $produk->KdProduct }}">
+                                                        <option value="{{ $produk->KdProduct }}"
+                                                            {{ isset($stock) && $produk->KdProduct == $stock->KdProduct ? 'selected' : '' }}>
                                                             {{ $produk->KdProduct }} || {{ $produk->nameProduct }}
                                                         </option>
                                                     @endforeach
                                                 </select>
-
                                             </td>
-                                            <td>
-                                                <input type="number" name="quantity[]" class="form-control" min="1"
-                                                    required>
-                                            </td>
-                                            <td>
-                                                <input type="date" name="expired_date[]" class="form-control">
-                                            </td>
+                                            <td><input type="number" name="quantity[]" class="form-control" min="1"
+                                                    value="{{ $stock->quantity ?? old('quantity.0') }}"></td>
+                                            <td><input type="date" name="expired_date[]" class="form-control"
+                                                    value="{{ $stock->expired_date ?? old('expired_date.0') }}"></td>
                                             <td><input type="number" name="purchase_price[]"
-                                                    class="form-control purchasePrice" step="0.01" required></td>
+                                                    class="form-control purchasePrice" step="0.01"
+                                                    value="{{ $stock->purchase_price ?? old('purchase_price.0') }}"></td>
                                             <td><input type="number" name="markup_percentage[]"
-                                                    class="form-control markupPercentage" step="0.01" value="0">
+                                                    class="form-control markupPercentage" step="0.01"
+                                                    value="{{ $stock->markup_percentage ?? old('markup_percentage.0', 0) }}">
                                             </td>
                                             <td>
                                                 <input type="number" class="form-control finalPrice" step="0.01"
-                                                    disabled>
-                                                <input type="hidden" name="final_price[]" class="finalPriceHidden">
+                                                    value="{{ $stock->final_price ?? old('final_price.0') }}" disabled>
+                                                <input type="hidden" name="final_price[]" class="finalPriceHidden"
+                                                    value="{{ $stock->final_price ?? old('final_price.0') }}">
                                             </td>
-
-
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-success btn-sm"
-                                                    id="addRow">+</button>
-                                            </td>
+                                            @if (!request()->routeIs('StockIn.edit'))
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-success btn-sm addRow">+</button>
+                                                </td>
+                                            @endif
                                         </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -353,7 +351,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Ditambah Oleh</th>
-                                <th>Kode Produk</th>
+                                <th>Kode Batch</th>
                                 <th>Nama Produk</th>
                                 <th>Nama Suppliers</th>
                                 <th>Tanggal</th>
@@ -368,7 +366,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $stock->user->name }}</td>
-                                    <td>{{ $stock->products->KdProduct }}</td>
+                                    <td>{{ $stock->batch_code }}</td>
                                     <td>{{ $stock->products->nameProduct }}</td>
                                     <td>{{ $stock->supplier->suppliersName }}</td>
                                     <td>{{ \Carbon\Carbon::parse($stock->expired_date)->locale('id')->isoFormat('dddd, DD MMMM YYYY') }}
@@ -417,10 +415,9 @@
                                                     </div><!--end col-->
                                                     <div class="col-12">
                                                         <div class="mb-3">
-                                                            <label for="KdProduct" class="form-label">Kode Produk</label>
+                                                            <label for="KdProduct" class="form-label">Kode Batch</label>
                                                             <input type="text" class="form-control" name="KdProduct"
-                                                                id="KdProduct" value="{{ $stock->products->KdProduct }}"
-                                                                disabled>
+                                                                id="KdProduct" value="{{ $stock->batch_code }}" disabled>
                                                         </div>
                                                     </div><!--end col-->
                                                     <div class="col-12">

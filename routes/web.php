@@ -4,6 +4,7 @@ use App\Models\StockIn;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\UnitController;
+use App\Http\Controllers\dashboard\CashierController;
 use App\Http\Controllers\Dashboard\MembersController;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\StockInController;
@@ -44,6 +45,12 @@ Route::resource('/Unit', UnitController::class)->middleware('auth');
 Route::resource('/Category', CategoryController::class)->middleware('auth');
 // Product
 Route::resource('/Product', ProductController::class)->middleware('auth');
+
+//Cashier
+Route::middleware('auth')->group(function () {
+    Route::get('/cashier', [CashierController::class, 'index'])->name('cashier');
+    Route::post('/cashier', [CashierController::class, 'store'])->name('cashier.store');
+});
 
 // Report
 // StockIn
