@@ -71,15 +71,16 @@
 
 
             function initSelect2() {
-                $('#customerType, select[name="payment_method"], select[name="member_id"]').each(function() {
-                    if (!$(this).hasClass('select2-hidden-accessible')) {
-                        $(this).select2({
-                            width: '100%',
-                            placeholder: 'Pilih Opsi',
-                            allowClear: true,
-                        });
-                    }
-                });
+                $('#customerType, select[name="payment_method"], select[name="member_id"], #paymentDetail').each(
+                    function() {
+                        if (!$(this).hasClass('select2-hidden-accessible')) {
+                            $(this).select2({
+                                width: '100%',
+                                placeholder: 'Pilih Opsi',
+                                allowClear: true,
+                            });
+                        }
+                    });
                 $('.selectProduct').each(function() {
                     if (!$(this).hasClass('select2-hidden-accessible')) {
                         $(this).select2({
@@ -96,6 +97,66 @@
                     }
                 });
             }
+
+            $(document).on('change', 'select[name="payment_method"]', function() {
+                const paymentMethod = $(this).val();
+                const detailRow = $('#paymentDetailRow');
+                const taxRow = $('#taxRow');
+                const detailSelect = $('#paymentDetail');
+                const payInput = $('#pay');
+
+                if (detailSelect.hasClass('select2-hidden-accessible')) {
+                    try {
+                        detailSelect.select2('destroy');
+                    } catch (e) {}
+                }
+
+                let options = '<option></option>';
+
+                if (paymentMethod === 'debit') {
+                    options += '<option value="debit_bca">Debit BCA (0% Pajak)</option>';
+                    options += '<option value="debit_lain">Debit Bank Lain (2% Pajak)</option>';
+                    detailRow.removeClass('d-none');
+                    taxRow.removeClass('d-none');
+                    payInput.prop('readonly', true); // <-- DIGANTI
+                } else if (paymentMethod === 'credit') {
+                    options += '<option value="credit_bca">Credit BCA (1% Pajak)</option>';
+                    options += '<option value="credit_lain">Credit Bank Lain (2.5% Pajak)</option>';
+                    detailRow.removeClass('d-none');
+                    taxRow.removeClass('d-none');
+                    payInput.prop('readonly', true); // <-- DIGANTI
+                } else {
+                    detailRow.addClass('d-none');
+                    taxRow.addClass('d-none');
+                    payInput.prop('readonly', false); // <-- DIGANTI
+                    if (paymentMethod) {
+                        payInput.val(formatRupiah(0));
+                    } else if (!paymentMethod) {
+                        payInput.val(formatRupiah(0));
+                    }
+                }
+
+                detailSelect.html(options);
+
+                detailSelect.select2({
+                    width: '100%',
+                    placeholder: 'Pilih Detail',
+                    allowClear: true,
+                });
+
+                if (detailSelect.find('option').length === 2) {
+                    detailSelect.val(detailSelect.find('option:last').val());
+                } else {
+                    detailSelect.val(null);
+                }
+
+                detailSelect.trigger('change');
+                calculateAll();
+            });
+
+            $(document).on('change', '#paymentDetail', function() {
+                calculateAll();
+            });
 
             function updateActionButtons() {
                 const rows = $('#productTable tbody tr');
@@ -213,16 +274,46 @@
 
 
             function calculateAll() {
-                let total = 0;
+                let subtotal = 0;
                 $('.subtotal').each(function() {
-                    total += $(this).data('raw') || 0;
+                    subtotal += $(this).data('raw') || 0;
                 });
-                $('#total').val(formatRupiah(total)).data('raw', total);
+                $('#total').val(formatRupiah(subtotal)).data('raw', subtotal);
+
+                let taxPercent = 0;
+                const paymentMethod = $('select[name="payment_method"]').val();
+                const paymentDetail = $('#paymentDetail').val();
+
+                if (paymentMethod === 'debit' || paymentMethod === 'credit') {
+                    switch (paymentDetail) {
+                        case 'debit_bca':
+                            taxPercent = 0;
+                            break;
+                        case 'debit_lain':
+                            taxPercent = 2;
+                            break;
+                        case 'credit_bca':
+                            taxPercent = 1;
+                            break;
+                        case 'credit_lain':
+                            taxPercent = 2.5;
+                            break;
+                    }
+                }
+
+                let taxAmount = (subtotal * taxPercent) / 100;
+                $('#taxAmount').val(formatRupiah(taxAmount)).data('raw', taxAmount);
+
+                let grandTotal = subtotal + taxAmount;
+                $('#grandTotal').val(formatRupiah(grandTotal)).data('raw', grandTotal);
+
+                if (paymentMethod === 'debit' || paymentMethod === 'credit') {
+                    $('#pay').val(formatRupiah(grandTotal));
+                }
 
                 let payInputVal = $('#pay').val();
                 let pay = parseRupiah(payInputVal);
-
-                let change = pay - total;
+                let change = pay - grandTotal;
                 $('#change').val(formatRupiah(change < 0 ? 0 : change));
             }
 
@@ -328,6 +419,13 @@
                 $('select[name="payment_method"]').val(null).trigger('change');
                 $('#pay').val(formatRupiah(0));
                 $('#memberSelect').addClass('d-none');
+
+                $('#paymentDetailRow').addClass('d-none');
+                $('#taxRow').addClass('d-none');
+                $('#paymentDetail').html('<option></option>').val(null).trigger('change.select2');
+                $('#taxAmount').val(formatRupiah(0)).data('raw', 0);
+                $('#grandTotal').val(formatRupiah(0)).data('raw', 0);
+
                 reinitAllSelect2();
                 updateActionButtons();
                 calculateAll();
@@ -425,7 +523,13 @@
                 if (tx.customerType === 'member') {
                     $('select[name="member_id"]').val(tx.memberId).trigger('change');
                 }
+
                 $('select[name="payment_method"]').val(tx.paymentMethod).trigger('change');
+
+                if (tx.paymentMethod === 'debit' || tx.paymentMethod === 'credit') {
+                    $('#paymentDetail').val(tx.paymentDetail).trigger('change');
+                }
+
                 tx.products.forEach((product, productIndex) => {
                     let rowToPopulate;
 
@@ -518,6 +622,7 @@
                     customerType: $('#customerType').val(),
                     memberId: $('select[name="member_id"]').val(),
                     paymentMethod: $('select[name="payment_method"]').val(),
+                    paymentDetail: $('#paymentDetail').val(),
                     products: products
                 };
 
@@ -566,6 +671,10 @@
                     missingFields.push('Metode Pembayaran');
                 }
 
+                if ((customerType === 'debit' || customerType === 'credit') && !$('#paymentDetail').val()) {
+                    missingFields.push('Detail Pembayaran (BCA/Bank Lain)');
+                }
+
                 let hasProduct = false;
                 $('#productTable tbody tr').each(function() {
                     let productSelect = $(this).find('.selectProduct');
@@ -596,13 +705,14 @@
                     missingFields.push('Produk (minimal 1 barang valid)');
                 }
 
-                let totalAmount = parseRupiah($('#total').val());
+                let grandTotalAmount = parseRupiah($('#grandTotal').val());
                 let paidAmount = parseRupiah($('#pay').val());
 
-                if (paidAmount <= 0 && totalAmount > 0) {
+                if (paidAmount <= 0 && grandTotalAmount > 0) {
                     missingFields.push('Jumlah Bayar harus diisi');
-                } else if (paidAmount < totalAmount) {
-                    missingFields.push('Jumlah Bayar Kurang (Total: ' + formatRupiah(totalAmount) + ')');
+                } else if (paidAmount < grandTotalAmount) {
+                    missingFields.push('Jumlah Bayar Kurang (Total: ' + formatRupiah(grandTotalAmount) +
+                        ')');
                 }
 
 
@@ -688,6 +798,7 @@
                                     <option value="transfer">Transfer</option>
                                     <option value="qris">QRIS</option>
                                     <option value="debit">Debit</option>
+                                    <option value="credit">Kredit</option>
                                 </select>
                             </div>
                         </div>
@@ -714,7 +825,7 @@
                                             <option value="" disabled selected>Pilih Produk</option>
                                             @foreach ($products as $product)
                                                 <option value="{{ $product->KdProduct }}"
-                                                    data-image="{{ asset('storage/' . $product->Photo) }}"
+                                                    data-image="{{ asset('storage/' . '/' . $product->Photo) }}"
                                                     data-price="{{ $product->price }}" data-stock="{{ $product->stock }}"
                                                     data-name="{{ $product->nameProduct }}">
                                                     {{ $product->nameProduct }}
@@ -739,12 +850,31 @@
                         <div class="row mt-4">
                             <div class="col-md-4 offset-md-8">
                                 <div class="mb-2">
-                                    <label>Total</label>
+                                    <label>Subtotal</label>
                                     <input type="text" class="form-control" id="total" disabled>
                                 </div>
+
+                                <div class="mb-2 d-none" id="paymentDetailRow">
+                                    <label>Detail Pembayaran</label>
+                                    <select class="form-select" id="paymentDetail" name="payment_detail"
+                                        data-placeholder="-- Pilih Detail --">
+                                    </select>
+                                </div>
+
+                                <div class="mb-2 d-none" id="taxRow">
+                                    <label>Pajak</label>
+                                    <input type="text" class="form-control" id="taxAmount" disabled data-raw="0">
+                                </div>
+
+                                <div class="mb-2">
+                                    <label>Total Keseluruhan</label>
+                                    <input type="text" class="form-control" id="grandTotal" disabled data-raw="0">
+                                </div>
+
                                 <div class="mb-2">
                                     <label>Bayar</label>
-                                    <input type="text" class="form-control" id="pay" name="pay" value="Rp 0,-">
+                                    <input type="text" class="form-control" id="pay" name="pay"
+                                        value="Rp 0,-">
                                 </div>
                                 <div class="mb-2">
                                     <label>Kembalian</label>
