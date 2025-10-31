@@ -10,8 +10,10 @@ use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\StockInController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\DiscountController;
 use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
+use App\Models\Discount;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +47,8 @@ Route::resource('/Unit', UnitController::class)->middleware('auth');
 Route::resource('/Category', CategoryController::class)->middleware('auth');
 // Product
 Route::resource('/Product', ProductController::class)->middleware('auth');
+// Discount
+Route::resource('/Discount', DiscountController::class)->middleware('auth');
 
 //Cashier
 Route::middleware('auth')->group(function () {

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dateTime('transaction_date');
             $table->enum('type_transaction', ['member', 'umum', 'grosir'])->default('umum');
 
-            $table->enum('payment_method', ['cash', 'transfer', 'qris', 'debit'])->default('cash');
+            $table->enum('payment_method', ['cash', 'transfer', 'qris', 'debit', 'credit'])->default('cash');
             $table->enum('payment_provider', ['bca', 'lain'])->nullable();
 
             $table->decimal('amount_paid', 15, 2)->default(0);

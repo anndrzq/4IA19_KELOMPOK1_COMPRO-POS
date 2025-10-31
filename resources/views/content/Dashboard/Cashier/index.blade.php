@@ -114,21 +114,21 @@
                 let options = '<option></option>';
 
                 if (paymentMethod === 'debit') {
-                    options += '<option value="debit_bca">Debit BCA (0% Pajak)</option>';
-                    options += '<option value="debit_lain">Debit Bank Lain (2% Pajak)</option>';
+                    options += '<option value="debit_bca">Debit BCA (0.25% Biaya Admin)</option>';
+                    options += '<option value="debit_lain">Debit Bank Lain (1% Biaya Admin)</option>';
                     detailRow.removeClass('d-none');
                     taxRow.removeClass('d-none');
-                    payInput.prop('readonly', true); // <-- DIGANTI
+                    payInput.prop('readonly', true);
                 } else if (paymentMethod === 'credit') {
-                    options += '<option value="credit_bca">Credit BCA (1% Pajak)</option>';
-                    options += '<option value="credit_lain">Credit Bank Lain (2.5% Pajak)</option>';
+                    options += '<option value="credit_bca">Credit BCA (1% Biaya Admin)</option>';
+                    options += '<option value="credit_lain">Credit Bank Lain (2.5% Biaya Admin)</option>';
                     detailRow.removeClass('d-none');
                     taxRow.removeClass('d-none');
-                    payInput.prop('readonly', true); // <-- DIGANTI
+                    payInput.prop('readonly', true);
                 } else {
                     detailRow.addClass('d-none');
                     taxRow.addClass('d-none');
-                    payInput.prop('readonly', false); // <-- DIGANTI
+                    payInput.prop('readonly', false);
                     if (paymentMethod) {
                         payInput.val(formatRupiah(0));
                     } else if (!paymentMethod) {
@@ -272,7 +272,6 @@
                 calculateAll();
             }
 
-
             function calculateAll() {
                 let subtotal = 0;
                 $('.subtotal').each(function() {
@@ -287,10 +286,10 @@
                 if (paymentMethod === 'debit' || paymentMethod === 'credit') {
                     switch (paymentDetail) {
                         case 'debit_bca':
-                            taxPercent = 0;
+                            taxPercent = 0.25;
                             break;
                         case 'debit_lain':
-                            taxPercent = 2;
+                            taxPercent = 1;
                             break;
                         case 'credit_bca':
                             taxPercent = 1;
@@ -304,18 +303,22 @@
                 let taxAmount = (subtotal * taxPercent) / 100;
                 $('#taxAmount').val(formatRupiah(taxAmount)).data('raw', taxAmount);
 
-                let grandTotal = subtotal + taxAmount;
+                let grandTotal = subtotal - taxAmount;
+                if (grandTotal < 0) {
+                    grandTotal = 0;
+                }
                 $('#grandTotal').val(formatRupiah(grandTotal)).data('raw', grandTotal);
 
                 if (paymentMethod === 'debit' || paymentMethod === 'credit') {
-                    $('#pay').val(formatRupiah(grandTotal));
+                    $('#pay').val(formatRupiah(subtotal));
                 }
 
                 let payInputVal = $('#pay').val();
                 let pay = parseRupiah(payInputVal);
-                let change = pay - grandTotal;
+                let change = pay - subtotal;
                 $('#change').val(formatRupiah(change < 0 ? 0 : change));
             }
+
 
             $(document).on('select2:select', '.selectProduct', function() {
                 let row = $(this).closest('tr');
@@ -715,7 +718,6 @@
                         ')');
                 }
 
-
                 if (missingFields.length > 0) {
                     Swal.fire({
                         icon: stockError ? 'error' : 'warning',
@@ -802,51 +804,52 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle" id="productTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Foto</th>
+                                        <th>Produk</th>
+                                        <th>Harga</th>
+                                        <th>Qty</th>
+                                        <th>Diskon (%) / Rp</th>
+                                        <th>Subtotal</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">
+                                            <img src="" class="product-image" width="50">
+                                        </td>
+                                        <td>
+                                            <select name="KdProduct[]" class="form-select selectProduct">
+                                                <option value="" disabled selected>Pilih Produk</option>
+                                                @foreach ($products as $product)
+                                                    <option value="{{ $product->KdProduct }}"
+                                                        data-image="{{ asset('storage/' . '/' . $product->Photo) }}"
+                                                        data-price="{{ $product->price }}"
+                                                        data-stock="{{ $product->stock }}"
+                                                        data-name="{{ $product->nameProduct }}">
+                                                        {{ $product->nameProduct }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
 
-                        <table class="table table-bordered align-middle" id="productTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Foto</th>
-                                    <th>Produk</th>
-                                    <th>Harga</th>
-                                    <th>Qty</th>
-                                    <th>Diskon (%) / Rp</th>
-                                    <th>Subtotal</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center">
-                                        <img src="" class="product-image" width="50">
-                                    </td>
-                                    <td>
-                                        <select name="KdProduct[]" class="form-select selectProduct">
-                                            <option value="" disabled selected>Pilih Produk</option>
-                                            @foreach ($products as $product)
-                                                <option value="{{ $product->KdProduct }}"
-                                                    data-image="{{ asset('storage/' . '/' . $product->Photo) }}"
-                                                    data-price="{{ $product->price }}" data-stock="{{ $product->stock }}"
-                                                    data-name="{{ $product->nameProduct }}">
-                                                    {{ $product->nameProduct }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-
-                                    </td>
-                                    <td> <input type="text" class="form-control price" disabled></td>
-                                    <td><input type="number" class="form-control qty" name="qty[]" value="1"
-                                            min="0"></td>
-                                    <td>
-                                        <input type="number" class="form-control discount" name="discount[]" value="0"
-                                            min="0">
-                                    </td>
-                                    <td><input type="text" class="form-control subtotal" disabled></td>
-                                    <td><button type="button" class="btn btn-success btn-sm addRow">+</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
+                                        </td>
+                                        <td> <input type="text" class="form-control price" disabled></td>
+                                        <td><input type="number" class="form-control qty" name="qty[]" value="1"
+                                                min="0"></td>
+                                        <td>
+                                            <input type="number" class="form-control discount" name="discount[]"
+                                                value="0" min="0">
+                                        </td>
+                                        <td><input type="text" class="form-control subtotal" disabled></td>
+                                        <td><button type="button" class="btn btn-success btn-sm addRow">+</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="row mt-4">
                             <div class="col-md-4 offset-md-8">
                                 <div class="mb-2">
@@ -862,7 +865,7 @@
                                 </div>
 
                                 <div class="mb-2 d-none" id="taxRow">
-                                    <label>Pajak</label>
+                                    <label>Biaya Admin Tertanggung</label>
                                     <input type="text" class="form-control" id="taxAmount" disabled data-raw="0">
                                 </div>
 

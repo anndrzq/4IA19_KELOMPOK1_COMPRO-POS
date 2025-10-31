@@ -528,8 +528,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Category*') ? 'active' : '' }}"
-                        href="{{ route('Category.index') }}">
+                    <a class="nav-link menu-link {{ Request::is('Discount*') ? 'active' : '' }}"
+                        href="{{ route('Discount.index') }}">
                         <i class="ri-percent-line"></i> <span data-key="t-widgets">Diskon</span>
                     </a>
                 </li>

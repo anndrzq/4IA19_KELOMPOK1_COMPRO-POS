@@ -57,11 +57,11 @@ class CashierController extends Controller
                 switch ($request->payment_detail) {
                     case 'debit_bca':
                         $paymentProvider = 'bca';
-                        $taxPercent = 0; // 0%
+                        $taxPercent = 0.25; // 0.25%
                         break;
                     case 'debit_lain':
                         $paymentProvider = 'lain';
-                        $taxPercent = 2; // 2%
+                        $taxPercent = 1; // 2%
                         break;
                     case 'credit_bca':
                         $paymentProvider = 'bca';
@@ -98,7 +98,8 @@ class CashierController extends Controller
             foreach ($request->KdProduct as $index => $kdProduct) {
                 if (empty($kdProduct)) continue;
 
-                $product = Product::find($kdProduct);
+                // Ganti 'find' dengan 'where' untuk 'KdProduct'
+                $product = Product::where('KdProduct', $kdProduct)->first();
                 if (!$product) {
                     throw new \Exception("Produk dengan kode {$kdProduct} tidak ditemukan.");
                 }
@@ -133,28 +134,31 @@ class CashierController extends Controller
 
             // 8. Hitung Total, Pajak, dan Kembalian (setelah loop)
             $taxAmount = ($runningSubtotal * $taxPercent) / 100;
-            $grandTotal = $runningSubtotal + $taxAmount; // Ini adalah total_amount akhir
 
-            // Validasi jumlah bayar terhadap Grand Total
+            // --- PERUBAHAN 1: total_amount adalah Subtotal DIKURANGI Pajak ---
+            $grandTotal = $runningSubtotal - $taxAmount; // Ini adalah total_amount bersih yang diterima toko
+
+            // --- PERUBAHAN 2: Validasi jumlah bayar terhadap Subtotal (apa yg dibayar pelanggan) ---
             // Beri toleransi 0.01 untuk pembulatan angka desimal/float
-            if (round($paidAmount, 2) < round($grandTotal, 2) && abs($paidAmount - $grandTotal) > 0.01) {
-                throw new \Exception("Jumlah bayar (Rp " . number_format($paidAmount) . ") tidak mencukupi. Total belanja: Rp " . number_format($grandTotal));
+            if (round($paidAmount, 2) < round($runningSubtotal, 2) && abs($paidAmount - $runningSubtotal) > 0.01) {
+                throw new \Exception("Jumlah bayar (Rp " . number_format($paidAmount) . ") tidak mencukupi. Total belanja: Rp " . number_format($runningSubtotal));
             }
 
-            $changeAmount = $paidAmount - $grandTotal;
+            // --- PERUBAHAN 3: Kembalian dihitung dari Bayar - Subtotal ---
+            $changeAmount = $paidAmount - $runningSubtotal;
             if ($changeAmount < 0) $changeAmount = 0; // Pastikan kembalian tidak negatif
 
 
             // 9. Update Transaksi Header dengan nilai akhir
-            $transaction->total_amount = $grandTotal;   // Total akhir (setelah pajak)
-            $transaction->tax_amount = $taxAmount;     // Jumlah pajak
+            $transaction->total_amount = $grandTotal;   // Total bersih (setelah potong pajak)
+            $transaction->tax_amount = $taxAmount;    // Jumlah pajak (biaya MDR)
             $transaction->change_amount = $changeAmount; // Kembalian
             $transaction->save();
 
             // 10. Commit
             DB::commit();
 
-            return redirect('/cashier') // Asumsi nama route halaman kasir
+            return redirect('/cashier') // Gunakan route() helper
                 ->with('success', 'Transaksi berhasil disimpan! Invoice: ' . $invoiceNumber);
         } catch (\Exception $e) {
             // 11. Rollback jika gagal
