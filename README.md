@@ -1,101 +1,105 @@
-<h1 align="center">😎 Ananda’s Playground</h1>
+<h1 align="center">🥩 Point of Sale — Toko Daging Sawangan 🐮</h1>
 <p align="center">
-  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="100" height="100"/>
+  <img src="https://media.giphy.com/media/26tPplGWjN0xLybiU/giphy.gif" width="120" height="120" alt="Meat GIF"/>
 </p>
 
 <p align="center">
-  <b>Selamat datang di dunia di mana kopi, bug, dan kode bersatu menjadi <i>chaos</i> yang indah ☕💻</b><br>
-  <i>“Nggak error? berarti belum dijalankan.”</i> – kata pepatah developer abad 21
+  <b>Sistem kasir yang dibuat dengan penuh cinta dan sedikit kelaparan 💻🍖</b><br>
+  <i>“Kalau stok daging aman, hati pun tenang.”</i> – kata kasir bijak
 </p>
 
 ---
 
-## 🧠 Tentang Repo Ini
+## 🧾 Tentang Proyek Ini
 
-> 🎯 Ini bukan proyek serius. Ini cuma tempat Ananda **ngoprek, ngide, dan ngelawak** pakai kode.  
-> Kadang PHP, kadang JS, kadang malah README doang.  
+> 🎯 Sebuah aplikasi Point of Sale untuk <b>Toko Daging Sawangan</b>  
+> Dibangun menggunakan <b>Laravel</b>, karena daging segar perlu backend yang segar juga 😎  
 
-Ciri-ciri repo ini:
-- ✅ Nggak penting tapi seru
-- 🔥 Bisa jalan (kadang)
-- 🧩 Banyak komentar ga jelas
-- 🧃 Dibuat di antara dua tegukan kopi
+Ciri khas proyek ini:
+
+- ✅ Dibuat dengan rasa tanggung jawab dan lapar
+- 🥩 Banyak Blade, karena potongan kode harus rapi seperti potongan daging
+- 💳 Bisa bantu kasir tanpa perlu mikir rumus diskon manual
+- 🧠 Aman, sopan, dan siap dipresentasikan ke dosen tercinta 👨‍🏫
 
 ---
 
-## 💻 Tech Stack (kadang dipakai, kadang enggak)
+## 💻 Tech Stack
 
 | Stack | Status | Komentar |
 |:------|:--------|:---------|
-| 🐘 PHP | ✅ | Masih setia walau sering ditinggalin |
-| ⚡ JavaScript | ✅ | Paling sering bikin pusing |
-| 🎨 CSS | 🔥 | “Kenapa padding-nya beda?” – Ananda, setiap hari |
-| 🐍 Python | 💤 | Dipakai cuma buat data mining tugas kuliah |
-| 🧱 HTML | ✅ | Pondasi dari semua penderitaan |
+| 🐘 PHP (Laravel) | ✅ | Tulang punggung dari kasir ini |
+| 🎨 Blade | 🔥 | Tempat semua tampilan beraksi |
+| ⚡ JavaScript | ✅ | Biar kasir bisa responsif & gesit |
+| 💾 MySQL | 🧊 | Tempat menyimpan rahasia semua transaksi |
+| 🧂 Bootstrap | ✅ | Biar tampilannya gak kaku kayak frozen beef |
 
 ---
 
 ## ☕ Filosofi Developer
 
-> “Kalau ngoding gak sambil kopi, rasanya kayak ngoding tanpa semangat hidup.”  
-> “Kalau jalanin `php artisan serve` gak error, itu pertanda semesta lagi aneh.”
+> “Ngoding tanpa kopi itu ibarat sate tanpa bumbu.”  
+> “Kalau error, mungkin cuma belum di-*clear* aja: `php artisan optimize:clear`.” 😌
 
 ---
 
-## 🎨 Aesthetic Screenshot (Gak Ada Tapi Sok Ada)
+## 🎨 Cuplikan Estetika
 
 <p align="center">
-  <img src="https://media.giphy.com/media/Y4pAQv58ETJgRwoLxj/giphy.gif" width="500" alt="Coding vibes">
+  <img src="https://media.giphy.com/media/Y4pAQv58ETJgRwoLxj/giphy.gif" width="480" alt="Coding vibes">
   <br>
-  <i>“Hasil tidak menjamin proses ngodingnya gampang.”</i>
+  <i>“Kode boleh ribet, asal hasilnya menggoda.”</i>
 </p>
 
 ---
 
-## 🧩 Kegiatan Favorit
+## 🧩 Kegiatan Harian Developer
 
-- 🔧 Benerin bug yang muncul karena benerin bug lain  
-- 🎵 Ngoding sambil playlist Lo-Fi 3 jam nonstop  
-- 💭 Rename variabel `data` jadi `newData` lalu `finalData` lalu `finalFinalData`  
-- ☠️ Ngetik `composer update` tanpa backup  
-- 💫 `git push` dulu baru sadar belum commit yang penting  
-
----
-
-## 🦸 Siapa di Balik Repo Ini?
-
-| Nama | Role | Keahlian |
-|------|------|-----------|
-| 🧑‍💻 **Ananda R.** | Chief Chaos Engineer | Laravel, Kopi, dan Error Handling |
-| 🐈 **Persia (Kucing)** | QA Tester | Ngetap keyboard random pas ngoding |
+- 🧠 Benerin bug yang muncul karena benerin bug lain  
+- 🎧 Ngoding sambil denger playlist Lofi “Beef Coding Session”  
+- 🥱 Rename variabel `total` jadi `grandTotal`, lalu `finalTotal`  
+- ☠️ Jalankan `composer update` tanpa backup (tantangan hidup)  
+- 💫 Debug sambil ngeteh di malam minggu  
 
 ---
 
-## 🧃 Random Facts
+## 🦸 Siapa di Balik Proyek Ini?
 
-- 🌙 Aktif jam 1 pagi ke atas  
-- 🎧 Kadang nulis kode cuma buat lihat hasil animasi  
-- 🧠 Paling sering lupa return di controller  
-- 🪄 Bisa debug cuma dengan tatapan kosong ke layar selama 10 menit  
+| Nama | Peran | Keahlian |
+|------|--------|-----------|
+| 🧑‍💻 **Akmal Ridho Rabbani** | Project Manager | Manajemen Proyek |
+| 🎨 **Irfan Aviseena** | Designer | UI/UX Design |
+| 💻 **Ananda R.** | Programmer | Laravel, Debugging Elegan |
+| 🧪 **Fadhly Dzil Ikram** | QA | Pengujian Aplikasi, Dokumentasi Bug |
+| ✍️ **Muhammad Tio Safrian** | Technical Writer | Penulisan Dokumentasi, Research |
+
+---
+
+## 🧃 Fun Facts
+
+- 🌙 Aktif ngoding di jam sepi biar inspirasi datang  
+- 🥩 Pernah bikin tabel `produk_daging` sampai 200 baris cuma buat testing  
+- ⚙️ Bisa fix bug hanya dengan menatap layar 10 menit tanpa ngapa-ngapain  
+- 💾 Backup? Kadang ingat, kadang ikhlas  
 
 ---
 
 ## ☕ Dukung Kreativitas
 
-Kalau kamu suka repo iseng ini (entah kenapa 😅), boleh traktir kopi biar ide-ide aneh tetap mengalir:
+Kalau kamu suka repo ini (meski isinya cuma daging dan semangat 😅), boleh traktir kopi biar ide tetap ngalir:
 
 <p align="center">
-  <a href="https://saweria.co/username" target="_blank">
+  <a href="https://saweria.co/anndrzq" target="_blank">
     <img src="https://img.shields.io/badge/☕%20Traktir%20Kopi%20Dong!-ff6f61?style=for-the-badge" alt="Support via Saweria">
   </a>
 </p>
 
 ---
 
-## 🎆 Motto Hidup Developer
+## 💬 Motto Developer
 
-> “Code. Sleep. Debug. Repeat.”  
-> Kadang juga: “Code. Crash. Cry. Coffee. Continue.” ☕💀
+> “Code. Serve. Slice. Repeat.”  
+> Kadang juga: “Code. Error. Cry. Coffee. Continue.” ☕💀
 
 ---
 

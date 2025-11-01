@@ -527,12 +527,12 @@
                         <i class="bx bx-category"></i> <span data-key="t-widgets">Kategori</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link menu-link {{ Request::is('Discount*') ? 'active' : '' }}"
                         href="{{ route('Discount.index') }}">
                         <i class="ri-percent-line"></i> <span data-key="t-widgets">Diskon</span>
                     </a>
-                </li>
+                </li> --}}
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Laporan</span>
                 </li>

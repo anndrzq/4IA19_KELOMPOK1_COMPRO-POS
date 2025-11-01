@@ -191,6 +191,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Diskon</th>
+                                <th>Jenis Pelanggan</th>
                                 <th>Persentase</th>
                                 <th>Tanggal Mulai</th>
                                 <th>Tanggal Berakhir</th>
@@ -202,6 +203,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $discount->name }}</td>
+                                    <td>{{ $discount->customer_type }}</td>
                                     <td>
                                         @if ($discount->percentage > 100)
                                             Rp. {{ number_format($discount->percentage, 0, ',', '.') }},-
