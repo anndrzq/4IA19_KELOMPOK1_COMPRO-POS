@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\StockIn;
+use App\Models\Discount;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\UnitController;
@@ -13,7 +14,7 @@ use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\DiscountController;
 use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
-use App\Models\Discount;
+use App\Http\Controllers\dashboard\salesHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +49,7 @@ Route::resource('/Category', CategoryController::class)->middleware('auth');
 // Product
 Route::resource('/Product', ProductController::class)->middleware('auth');
 // Discount
-Route::resource('/Discount', DiscountController::class)->middleware('auth');
+// Route::resource('/Discount', DiscountController::class)->middleware('auth');
 
 //Cashier
 Route::middleware('auth')->group(function () {
@@ -60,6 +61,7 @@ Route::middleware('auth')->group(function () {
 // StockIn
 Route::resource('/StockIn', StockInController::class)->middleware('auth');
 Route::resource('/StockOut', StockOutController::class)->middleware('auth');
+Route::resource('/SalesHistory', salesHistoryController::class)->middleware('auth');
 
 // Setting Sections
 // User Data
