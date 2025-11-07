@@ -28,9 +28,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('#productTable tbody');
 
-            // =======================
-            // Fungsi SweetAlert
-            // =======================
             window.confirmDelete = function(Stockid) {
                 Swal.fire({
                     title: "Yakin Hapus?",
@@ -62,12 +59,31 @@
                     icon: "error"
                 });
             @endif
+
+            const allRefundButtons = document.querySelectorAll('.btn-refund-all');
+
+            allRefundButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (!modal) return;
+
+                    const qtyInputs = modal.querySelectorAll('.input-qty-refund');
+
+                    qtyInputs.forEach(input => {
+                        const maxQty = input.getAttribute('max');
+
+                        if (!input.disabled) {
+                            input.value = maxQty;
+                        }
+                    });
+                });
+            });
+
         });
     </script>
 @endpush
 @section('title', 'Histori Penjualan')
 @section('content')
-    <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
@@ -83,7 +99,6 @@
             </div>
         </div>
     </div>
-    <!-- end page title -->
     <div class="row">
         <div class="col-12 mt-4">
             <div class="card">
@@ -262,7 +277,99 @@
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Tutup</button>
                                         <a href="#" class="btn btn-primary">Cetak Struk</a>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#modalRefund-{{ $trx->invoice_number }}"
+                                            data-bs-dismiss="modal">
+                                            Proses Refund
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="modalRefund-{{ $trx->invoice_number }}" class="modal fade" tabindex="-1"
+                            aria-labelledby="modalLabelRefund-{{ $trx->invoice_number }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabelRefund-{{ $trx->invoice_number }}">Proses
+                                            Refund
+                                            - {{ $trx->invoice_number }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+
+                                    <form action="{{ route('refunds.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="transaction_id" value="{{ $trx->invoice_number }}">
+
+                                        <div class="modal-body">
+                                            <p>Pilih barang dan jumlah yang ingin dikembalikan ke stok. Jumlah tidak bisa
+                                                melebihi yang dibeli.</p>
+
+                                            <div class="d-flex justify-content-end mb-2">
+                                                <button type="button" class="btn btn-warning btn-sm btn-refund-all">
+                                                    <i class="las la-undo-alt"></i> Set Refund Semua
+                                                </button>
+                                            </div>
+
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 50px;">No</th>
+                                                            <th>Produk</th>
+                                                            <th class="text-center">Qty Dibeli</th>
+                                                            <th class="text-center">Sudah Refund</th>
+                                                            <th class="text-center" style="width: 150px;">Qty Refund</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($trx->details as $detail)
+                                                            @php
+                                                                $availableToRefund =
+                                                                    $detail->qty - ($detail->refunded_qty ?? 0);
+                                                            @endphp
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ $detail->product->nameProduct }}</td>
+                                                                <td class="text-center">{{ $detail->qty }}</td>
+                                                                <td class="text-center">{{ $detail->refunded_qty ?? 0 }}
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <input type="number"
+                                                                        class="form-control form-control-sm input-qty-refund"
+                                                                        name="items[{{ $detail->id }}][qty]"
+                                                                        value="0" min="0"
+                                                                        max="{{ $availableToRefund }}"
+                                                                        {{ $availableToRefund <= 0 ? 'disabled' : '' }}>
+
+                                                                    <input type="hidden"
+                                                                        name="items[{{ $detail->id }}][price]"
+                                                                        value="{{ $detail->price }}">
+
+                                                                    <input type="hidden"
+                                                                        name="items[{{ $detail->id }}][KdProduct]"
+                                                                        value="{{ $detail->KdProduct }}">
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label for="notes-{{ $trx->id }}" class="form-label">Alasan Refund
+                                                    (Opsional)</label>
+                                                <textarea class="form-control" name="notes" id="notes-{{ $trx->id }}" rows="2"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger">Proses Refund</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

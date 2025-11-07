@@ -12,6 +12,7 @@ use App\Http\Controllers\Dashboard\StockInController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\DiscountController;
+use App\Http\Controllers\dashboard\RefundsControllers;
 use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
 use App\Http\Controllers\dashboard\salesHistoryController;
@@ -62,6 +63,7 @@ Route::middleware('auth')->group(function () {
 Route::resource('/StockIn', StockInController::class)->middleware('auth');
 Route::resource('/StockOut', StockOutController::class)->middleware('auth');
 Route::resource('/SalesHistory', salesHistoryController::class)->middleware('auth');
+Route::post('/refunds', [RefundsControllers::class, 'store'])->name('refunds.store');
 
 // Setting Sections
 // User Data

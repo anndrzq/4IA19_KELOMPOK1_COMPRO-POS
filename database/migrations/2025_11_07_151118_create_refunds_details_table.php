@@ -11,19 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction_details', function (Blueprint $table) {
+        Schema::create('refunds_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->string('transaction_id');
-            $table->foreign('transaction_id')->references('invoice_number')->on('transactions')->onDelete('cascade');
+            $table->uuid('refund_id');
+            $table->foreign('refund_id')->references('id')->on('refunds')->onDelete('cascade');
             $table->string('KdProduct');
             $table->foreign('KdProduct')->references('KdProduct')->on('products')->onDelete('cascade');
-
             $table->integer('qty');
-            $table->integer('refunded_qty')->default(0);
-            $table->decimal('price', 15, 2)->default(0);
-            $table->decimal('discount', 15, 2)->default(0);
-            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('price', 15, 2);
+            $table->decimal('subtotal', 15, 2);
             $table->timestamps();
         });
     }
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_details');
+        Schema::dropIfExists('refunds_details');
     }
 };
