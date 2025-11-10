@@ -50,7 +50,7 @@
 
 
     @include('layouts.footer')
-
+    @stack('page-script')
     <!-- JAVASCRIPT -->
     <script src="{{ asset('') }}assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('') }}assets/libs/simplebar/simplebar.min.js"></script>
@@ -67,7 +67,7 @@
 
 
     @stack('vendor-script')
-    @stack('page-script')
+
 
     <!-- App js -->
     <script src="{{ asset('') }}assets/js/app.js"></script>

@@ -12,7 +12,7 @@ class StockOutController extends Controller
     public function index()
     {
         // Mengambil Data Kode Product dan nama Product
-        $productData            = Product::get(['KdProduct', 'nameProduct', 'stok']);
+        $productData            = Product::get(['KdProduct', 'nameProduct', 'stock']);
         // Mengambil Semua Data Di StockOut
         $StockData              = StockOut::all();
         return view('content.Dashboard.Report.StockOut.index', compact('productData', 'StockData'));
@@ -35,11 +35,11 @@ class StockOutController extends Controller
         $product = Product::find($data['KdProduct']);
         if ($product) {
             // Jika Stok Produk Sudah 0 Maka Tidak bisa mengurangi lagi
-            if ($product->stok <= 0) {
+            if ($product->stock <= 0) {
                 return back()->with('error', 'Stock Tidak Tersedia');
             }
             // Kurangi Stok Produk
-            $product->stok -= $data['qty'];
+            $product->stock -= $data['qty'];
             $product->save();
         } else {
             return back()->with('error', 'Produk Tidak Tersedia');

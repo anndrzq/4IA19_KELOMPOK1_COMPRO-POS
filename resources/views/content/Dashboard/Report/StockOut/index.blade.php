@@ -38,7 +38,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        function confirmDelete(StockUuid) {
+        function confirmDelete(Stockid) {
             Swal.fire({
                 title: "Yakin Hapus?",
                 text: "Data ini tidak bisa dipulihkan!",
@@ -49,7 +49,7 @@
                 confirmButtonText: "Ya, Hapus!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + StockUuid).submit();
+                    document.getElementById('delete-form-' + Stockid).submit();
                 }
             })
         }
@@ -75,18 +75,18 @@
         </script>
     @endif
 @endpush
-@section('title', 'Stock Masuk Produk')
+@section('title', 'Stok Keluar')
 @section('content')
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Stock Masuk Produk</h4>
+                <h4 class="mb-sm-0">Stok Keluar</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Laporan</a></li>
-                        <li class="breadcrumb-item active">Stock Masuk</li>
+                        <li class="breadcrumb-item active">Stock Keluar</li>
                     </ol>
                 </div>
 
@@ -99,7 +99,7 @@
             <div class="card">
                 <div class="card-body">
                     @if (request()->routeIs('StockOut.edit'))
-                        <form action="{{ route('StockOut.update', $stock->uuid) }}" method="POST"
+                        <form action="{{ route('StockOut.update', $stock->id) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
@@ -116,7 +116,7 @@
                                                 <option value="{{ $produk->KdProduct }}"
                                                     {{ $stock->KdProduct == $produk->KdProduct ? 'selected' : '' }}>
                                                     Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
-                                                    @if ($produk->stok <= 0)
+                                                    @if ($produk->stock <= 0)
                                                         (Stock Habis)
                                                     @endif
                                                 </option>
@@ -132,9 +132,9 @@
 
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="qty" class="form-label">Pengeluaran Stok </label>
+                                        <label for="qty" class="form-label">Pengeluaran stock </label>
                                         <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Pengeluaran Stok " id="qty"
+                                            placeholder="Masukan Pengeluaran stock " id="qty"
                                             value="{{ $stock->qty }}">
                                         <small class="text-info">
                                             *masukan data dalam bentuk numeric
@@ -184,7 +184,7 @@
                                                 <option value="{{ $produk->KdProduct }}"
                                                     {{ old('KdProduct') == $produk->KdProduct ? 'selected' : '' }}>
                                                     Kode: {{ $produk->KdProduct }}, Nama: {{ $produk->nameProduct }}
-                                                    @if ($produk->stok <= 0)
+                                                    @if ($produk->stock <= 0)
                                                         (Stock Habis)
                                                     @endif
                                                 </option>
@@ -200,9 +200,9 @@
 
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="qty" class="form-label">Pengeluaran Stok </label>
+                                        <label for="qty" class="form-label">Pengeluaran stock </label>
                                         <input type="number" name="qty" class="form-control"
-                                            placeholder="Masukan Pengeluaran Stok " id="qty"
+                                            placeholder="Masukan Pengeluaran stock " id="qty"
                                             value="{{ old('qty') }}">
                                         <small class="text-info">
                                             *masukan data dalam bentuk numeric
@@ -242,10 +242,10 @@
         </div>
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header">
+                {{-- <div class="card-header">
                     <a href="" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i>
                         Export Excel</a>
-                </div>
+                </div> --}}
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                         style="width:100%">
@@ -256,7 +256,8 @@
                                 <th>Kode Produk</th>
                                 <th>Nama Produk</th>
                                 <th>Tanggal</th>
-                                <th>Stock Masuk</th>
+                                <th>Stock Keluar</th>
+                                <th>Harga Barang Keluar</th>
                                 <th>Keterangan</th>
                                 <th>Aksi</th>
                             </tr>
@@ -270,26 +271,27 @@
                                     <td>{{ $stock->products->nameProduct }}</td>
                                     <td>{{ $stock->date }}</td>
                                     <td>{{ $stock->qty }}</td>
+                                    <td>{{ $stock->products->price * $stock->qty }}</td>
                                     <td>{{ $stock->description }}</td>
                                     <td>
-                                        <button data-bs-target="#modalView-{{ $stock->uuid }}" data-bs-toggle="modal"
+                                        <button data-bs-target="#modalView-{{ $stock->id }}" data-bs-toggle="modal"
                                             class="btn btn-primary"><i class="las la-eye"></i></button>
-                                        <a href="{{ route('StockOut.edit', $stock->uuid) }}"
+                                        <a href="{{ route('StockOut.edit', $stock->id) }}"
                                             class="btn btn-success btn-icon waves-effect waves-light"><i
                                                 class="las la-pencil-alt"></i></a>
-                                        <form action="{{ route('StockOut.destroy', $stock->uuid) }}" method="POST"
-                                            class="d-inline" id="delete-form-{{ $stock->uuid }}">
+                                        <form action="{{ route('StockOut.destroy', $stock->id) }}" method="POST"
+                                            class="d-inline" id="delete-form-{{ $stock->id }}">
                                             @method('delete')
                                             @csrf
                                             <button type="button" class="btn btn-danger btn-icon"
-                                                onclick="confirmDelete('{{ $stock->uuid }}')">
+                                                onclick="confirmDelete('{{ $stock->id }}')">
                                                 <i class="ri-delete-bin-5-line"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
 
-                                <div id="modalView-{{ $stock->uuid }}" class="modal fade" tabindex="-1"
+                                <div id="modalView-{{ $stock->id }}" class="modal fade" tabindex="-1"
                                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
                                     <div class="modal-dialog">
                                         <div class="modal-content">

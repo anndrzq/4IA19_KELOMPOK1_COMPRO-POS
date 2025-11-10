@@ -121,6 +121,7 @@
                                 <th>Pajak</th>
                                 <th>Jumlah Di Terima</th>
                                 <th>Status</th>
+                                <th>Status Refund</th>
                                 <th>Kasir</th>
                                 <th>Aksi</th>
                             </tr>
@@ -151,6 +152,20 @@
                                             <span class="badge bg-danger">Dibatalkan</span>
                                         @endif
                                     </td>
+                                    <td>
+                                        @php
+                                            $total_qty = $trx->details->sum('qty');
+                                            $total_refunded_qty = $trx->details->sum('refunded_qty');
+                                        @endphp
+
+                                        @if ($total_refunded_qty == 0)
+                                            <span class="badge bg-light text-dark">Tidak Ada Refund</span>
+                                        @elseif ($total_refunded_qty < $total_qty)
+                                            <span class="badge bg-warning text-dark">Pengembalian Sebagian</span>
+                                        @else
+                                            <span class="badge bg-danger">Pengembalian Semua</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $trx->user->name ?? '-' }}</td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -174,6 +189,7 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
+                                        {{-- Bagian info (No. Invoice, Tanggal, dll.) tetap sama --}}
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <strong>No. Invoice:</strong>
@@ -213,7 +229,8 @@
                                                         <th style="width: 50px;">No</th>
                                                         <th>Kode Produk</th>
                                                         <th>Produk</th>
-                                                        <th>Qty</th>
+                                                        <th>Qty Dibeli</th> {{-- DIUBAH --}}
+                                                        <th>Qty Refund</th> {{-- BARU --}}
                                                         <th class="text-end">Harga</th>
                                                         <th class="text-end">Subtotal</th>
                                                     </tr>
@@ -226,7 +243,11 @@
                                                             <td>{{ $detail->product->KdProduct }}</td>
                                                             <td>{{ $detail->product->nameProduct }}</td>
 
-                                                            <td>{{ $detail->qty }}</td>
+                                                            <td>{{ $detail->qty }}</td> {{-- INI QTY BELI --}}
+
+                                                            {{-- KOLOM BARU UNTUK MELIHAT QTY REFUND --}}
+                                                            <td>{{ $detail->refunded_qty ?? 0 }}</td>
+
                                                             <td class="text-end">
                                                                 {{ 'Rp ' . number_format($detail->price, 0, ',', '.') }}
                                                             </td>
@@ -239,6 +260,7 @@
                                             </table>
                                         </div>
 
+                                        {{-- Bagian total (Pajak, Total, dll.) tetap sama --}}
                                         <div class="row justify-content-end mt-3">
                                             <div class="col-md-6">
                                                 <table class="table table-sm table-borderless">
@@ -274,19 +296,27 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
+                                        {{-- Bagian footer modal ini SAMA PERSIS seperti sebelumnya --}}
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Tutup</button>
                                         <a href="#" class="btn btn-primary">Cetak Struk</a>
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#modalRefund-{{ $trx->invoice_number }}"
-                                            data-bs-dismiss="modal">
-                                            Proses Refund
-                                        </button>
+
+                                        @if (\Carbon\Carbon::parse($trx->transaction_date)->addHours(24)->isFuture())
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modalRefund-{{ $trx->invoice_number }}"
+                                                data-bs-dismiss="modal">
+                                                Proses Refund
+                                            </button>
+                                        @else
+                                            <button type="button" class="btn btn-danger" disabled
+                                                title="Batas refund 24 jam telah berakhir">
+                                                Refund Kadaluarsa
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div id="modalRefund-{{ $trx->invoice_number }}" class="modal fade" tabindex="-1"
                             aria-labelledby="modalLabelRefund-{{ $trx->invoice_number }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
