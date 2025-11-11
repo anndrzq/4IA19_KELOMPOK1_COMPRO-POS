@@ -11,11 +11,11 @@ use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\StockInController;
 use App\Http\Controllers\Dashboard\SuplierController;
 use App\Http\Controllers\Dashboard\CategoryController;
-use App\Http\Controllers\Dashboard\DiscountController;
 use App\Http\Controllers\dashboard\RefundsControllers;
 use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
 use App\Http\Controllers\dashboard\salesHistoryController;
+use App\Http\Controllers\Dashboard\DashboardAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +29,6 @@ use App\Http\Controllers\dashboard\salesHistoryController;
 */
 
 // Authenticate
-
 // Login
 Route::controller(LoginController::class)->middleware('guest')->group(function () {
     Route::get('/', 'index')->name('login');
@@ -39,6 +38,7 @@ Route::controller(LoginController::class)->middleware('guest')->group(function (
 Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 
 //Dashboard Data
+Route::get('/Dashboard', [DashboardAdminController::class, 'index'])->middleware('auth')->name('Dashboard.index');
 
 // Data Master
 // Suplier

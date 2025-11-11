@@ -50,7 +50,7 @@
 
 
     @include('layouts.footer')
-    @stack('page-script')
+
     <!-- JAVASCRIPT -->
     <script src="{{ asset('') }}assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('') }}assets/libs/simplebar/simplebar.min.js"></script>
@@ -66,11 +66,10 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
-    @stack('vendor-script')
-
-
     <!-- App js -->
     <script src="{{ asset('') }}assets/js/app.js"></script>
+    @stack('vendor-script')
+    @stack('page-script')
 </body>
 
 </html>
