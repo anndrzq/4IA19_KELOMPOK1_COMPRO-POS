@@ -31,11 +31,11 @@ class LoginController extends Controller
             $user = User::findOrFail(Auth::user()->id);
             $user->last_login = Carbon::now();
             $user->save();
-            return redirect()->intended('/UserData')->with('succes', 'Anda Berhasil Login');
+            return redirect()->intended('/Dashboard')->with('success', 'Hallo Selamat Datang ' . Auth::user()->name);
         }
 
         if (Auth::viaRemember()) {
-            return redirect()->intended('/UserData')->with('succes', 'Anda Berhasil Login');
+            return redirect()->intended('/Dashboard')->with('success', 'Hallo Selamat Datang ' . Auth::user()->name);
         }
 
         return back()->with('error', 'Periksa Kembali Data Yang Anda Masukan');

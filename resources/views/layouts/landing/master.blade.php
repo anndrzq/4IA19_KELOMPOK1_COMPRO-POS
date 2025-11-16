@@ -1,68 +1,59 @@
-<!doctype html>
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
-    data-sidebar-image="none" data-preloader="disable">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Toko Daging Sawangan</title>
+    <meta name="description" content="Toko Daging Sawangan">
+    <meta name="keywords" content="TDS, Toko Daging Sawangan">
 
-    <meta charset="utf-8" />
-    <title>Landing | Velzon - Admin & Dashboard Template</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('') }}assets/images/favicon.ico">
+    <link href="{{ asset('') }}assets_landing/img/logotds.png" rel="icon">
+    <link href="{{ asset('') }}assets_landing/img/logotds.png" rel="apple-touch-icon">
 
-    <!--Swiper slider css-->
-    <link href="{{ asset('') }}assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
-    <!-- Layout config Js -->
-    <script src="{{ asset('') }}assets/js/layout.js"></script>
-    <!-- Bootstrap Css -->
-    <link href="{{ asset('') }}assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="{{ asset('') }}assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="{{ asset('') }}assets/css/app.min.css" rel="stylesheet" type="text/css" />
-    <!-- custom Css-->
-    <link href="{{ asset('') }}assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('') }}assets_landing/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('') }}assets_landing/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('') }}assets_landing/vendor/aos/aos.css" rel="stylesheet">
+    <link href="{{ asset('') }}assets_landing/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="{{ asset('') }}assets_landing/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
+    <link href="{{ asset('') }}assets_landing/css/main.css" rel="stylesheet">
 </head>
 
-<body data-bs-spy="scroll" data-bs-target="#navbar-example">
+<body class="index-page">
+    @include('layouts.landing.header')
 
-    <!-- Begin page -->
-    <div class="layout-wrapper landing">
-        @include('layouts.landing.navbar')
-        <!-- end navbar -->
-        <div class="vertical-overlay" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent.show"></div>
-
-
+    <main class="main">
         @yield('content')
+    </main>
 
-        <!-- Start footer -->
-        @include('layouts.landing.footer')
-        <!-- end footer -->
+    @include('layouts.landing.footer')
 
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
-        <!--start back-to-top-->
-        <button onclick="topFunction()" class="btn btn-danger btn-icon landing-back-top" id="back-to-top">
-            <i class="ri-arrow-up-line"></i>
-        </button>
-        <!--end back-to-top-->
-
+    <div id="preloader">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
-    <!-- end layout wrapper -->
 
+    <script src="{{ asset('') }}assets_landing/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/php-email-form/validate.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/aos/aos.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/waypoints/noframework.waypoints.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="{{ asset('') }}assets_landing/vendor/isotope-layout/isotope.pkgd.min.js"></script>
 
-    <!-- JAVASCRIPT -->
-    <script src="{{ asset('') }}assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('') }}assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="{{ asset('') }}assets/libs/node-waves/waves.min.js"></script>
-    <script src="{{ asset('') }}assets/libs/feather-icons/feather.min.js"></script>
-    <script src="{{ asset('') }}assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-    <script src="{{ asset('') }}assets/js/plugins.js"></script>
-    @stack('vendor-script')
-    @stack('page-script')
+    <script src="{{ asset('') }}assets_landing/js/main.js"></script>
 </body>
-
-</html>

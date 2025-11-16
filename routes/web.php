@@ -16,6 +16,7 @@ use App\Http\Controllers\Dashboard\StockOutController;
 use App\Http\Controllers\Dashboard\UsersDataController;
 use App\Http\Controllers\dashboard\salesHistoryController;
 use App\Http\Controllers\Dashboard\DashboardAdminController;
+use App\Http\Controllers\Landing\indexController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,12 +28,14 @@ use App\Http\Controllers\Dashboard\DashboardAdminController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+//Landing Page
+Route::get('/', [indexController::class, 'index']);
 
 // Authenticate
 // Login
 Route::controller(LoginController::class)->middleware('guest')->group(function () {
-    Route::get('/', 'index')->name('login');
-    Route::post('/', 'authenticate')->name('loginPost');
+    Route::get('/auth', 'index')->name('login');
+    Route::post('/auth', 'authenticate')->name('loginPost');
 });
 // Logout
 Route::post('/Logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
