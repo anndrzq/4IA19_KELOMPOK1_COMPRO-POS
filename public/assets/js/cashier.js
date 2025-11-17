@@ -431,46 +431,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function updateRowFromData(row) {
-        let selectElement = $(row).find('.selectProduct');
-        let selectedVal = selectElement.val();
-        let selectedOption = selectElement.find('option[value="' + selectedVal +
-            '"]');
-
-
-        if (!selectedVal || selectedOption.length === 0) {
-            $(row).find('.product-image').attr('src', '');
-            $(row).find('.price').val(formatRupiah(0)).data('raw', 0);
-            let qtyInput = $(row).find('.qty');
-            qtyInput.val(1).removeAttr('max').prop('disabled', false);
-            $(row).find('.discount').val(0);
-        } else {
-            let price = parseInt(selectedOption.data('price')) || 0;
-            let image = selectedOption.data('image');
-            let stock = parseInt(selectedOption.data('stock'));
-            if (isNaN(stock)) stock = 0;
-
-            $(row).find('.product-image').attr('src', image || '');
-            $(row).find('.price').val(formatRupiah(price)).data('raw', price);
-
-            let qtyInput = $(row).find('.qty');
-            let currentQty = parseInt(qtyInput.val());
-            qtyInput.attr('max', stock);
-
-            if (stock <= 0) {
-                qtyInput.val(0).prop('disabled', true);
-            } else {
-
-                if (currentQty > stock) qtyInput.val(stock);
-                if (currentQty < 1) qtyInput.val(1);
-                qtyInput.prop('disabled', false);
-            }
-        }
-        calculateRow(row);
-    }
-
-
-
     function getHeldTransactions() {
         return JSON.parse(localStorage.getItem(HELD_TRANSACTIONS_KEY) || '[]');
     }
@@ -669,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
             missingFields.push('Metode Pembayaran');
         }
 
-        if ((customerType === 'debit' || customerType === 'credit') && !$('#paymentDetail').val()) {
+        if (($('select[name="payment_method"]').val() === 'debit' || $('select[name="payment_method"]').val() === 'credit') && !$('#paymentDetail').val()) {
             missingFields.push('Detail Pembayaran (BCA/Bank Lain)');
         }
 
@@ -724,7 +684,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmButtonText: 'Baik'
             });
         } else {
-            form.submit();
+            Swal.fire({
+                title: 'Transaksi Selesai',
+                text: 'Apakah Anda ingin mencetak struk untuk transaksi ini?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Cetak Struk',
+                cancelButtonText: 'Tidak',
+                reverseButtons: true
+            }).then((result) => {
+                const printInput = $('#printReceiptInput');
+                if (result.isConfirmed) {
+                    printInput.val('true');
+                    form.submit();
+                } else {
+                    printInput.val('false');
+                    form.submit();
+                }
+            });
         }
     });
 

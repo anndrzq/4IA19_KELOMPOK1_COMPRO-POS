@@ -5,12 +5,12 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>Sign In | Velzon - Admin & Dashboard Template</title>
+    <title>Login | Toko Daging Sawangan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('') }}assets/images/favicon.ico">
+    <link rel="shortcut icon" href="{{ asset('') }}assets_landing/img/logotds.png">
 
     <!-- Layout config Js -->
     <script src="{{ asset('') }}assets/js/layout.js"></script>
@@ -52,7 +52,7 @@
                                 <script>
                                     document.write(new Date().getFullYear())
                                 </script> Velzon. Crafted with <i class="mdi mdi-heart text-danger"></i>
-                                by Ananda Rizq
+                                by Kelompok 1
                             </p>
                         </div>
                     </div>

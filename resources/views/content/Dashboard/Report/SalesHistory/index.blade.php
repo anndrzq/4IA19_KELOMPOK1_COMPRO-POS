@@ -13,7 +13,6 @@
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -79,6 +78,35 @@
                 });
             });
 
+            document.querySelectorAll('.btn-print-receipt').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const printWindow = window.open(url, '_blank');
+
+                    const modalId = this.closest('.modal').id;
+                    const modalElement = document.getElementById(modalId);
+                    if (modalElement) {
+                        const modalBootstrap = bootstrap.Modal.getInstance(modalElement) ||
+                            new bootstrap.Modal(modalElement);
+                        modalBootstrap.hide();
+                    }
+
+                    if (!printWindow || printWindow.closed || typeof printWindow.closed ===
+                        'undefined') {
+                        Swal.fire({
+                            title: 'Cetak Diblokir!',
+                            html: 'Struk gagal dibuka karena <b>Pop-up Blocker</b> aktif. <br><br> Silakan izinkan pop-up atau klik <a href="' +
+                                url +
+                                '" target="_blank">tautan ini</a> untuk membuka struk secara manual.',
+                            icon: 'warning',
+                            confirmButtonText: 'Baik',
+                            allowOutsideClick: false
+                        });
+                    }
+                });
+            });
+
         });
     </script>
 @endpush
@@ -120,7 +148,7 @@
                                 <th>Jumlah Dibayar</th>
                                 <th>Pajak</th>
                                 <th>Jumlah Di Terima</th>
-                                <th>Status</th>
+
                                 <th>Status Refund</th>
                                 <th>Kasir</th>
                                 <th>Aksi</th>
@@ -143,15 +171,6 @@
                                     <td>{{ 'Rp ' . number_format($trx->amount_paid, 0, ',', '.') }}</td>
                                     <td>{{ 'Rp ' . number_format($trx->tax_amount, 0, ',', '.') }}</td>
                                     <td>{{ 'Rp ' . number_format($trx->total_amount, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if ($trx->status === 'paid')
-                                            <span class="badge bg-success">Lunas</span>
-                                        @elseif ($trx->status === 'unpaid')
-                                            <span class="badge bg-warning text-dark">Belum Lunas</span>
-                                        @else
-                                            <span class="badge bg-danger">Dibatalkan</span>
-                                        @endif
-                                    </td>
                                     <td>
                                         @php
                                             $total_qty = $trx->details->sum('qty');
@@ -189,7 +208,6 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        {{-- Bagian info (No. Invoice, Tanggal, dll.) tetap sama --}}
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <strong>No. Invoice:</strong>
@@ -229,8 +247,8 @@
                                                         <th style="width: 50px;">No</th>
                                                         <th>Kode Produk</th>
                                                         <th>Produk</th>
-                                                        <th>Qty Dibeli</th> {{-- DIUBAH --}}
-                                                        <th>Qty Refund</th> {{-- BARU --}}
+                                                        <th>Qty Dibeli</th>
+                                                        <th>Qty Refund</th>
                                                         <th class="text-end">Harga</th>
                                                         <th class="text-end">Subtotal</th>
                                                     </tr>
@@ -243,9 +261,8 @@
                                                             <td>{{ $detail->product->KdProduct }}</td>
                                                             <td>{{ $detail->product->nameProduct }}</td>
 
-                                                            <td>{{ $detail->qty }}</td> {{-- INI QTY BELI --}}
+                                                            <td>{{ $detail->qty }}</td>
 
-                                                            {{-- KOLOM BARU UNTUK MELIHAT QTY REFUND --}}
                                                             <td>{{ $detail->refunded_qty ?? 0 }}</td>
 
                                                             <td class="text-end">
@@ -260,7 +277,6 @@
                                             </table>
                                         </div>
 
-                                        {{-- Bagian total (Pajak, Total, dll.) tetap sama --}}
                                         <div class="row justify-content-end mt-3">
                                             <div class="col-md-6">
                                                 <table class="table table-sm table-borderless">
@@ -296,10 +312,12 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        {{-- Bagian footer modal ini SAMA PERSIS seperti sebelumnya --}}
+                                        {{-- MODIFIKASI INI UNTUK MENGAKTIFKAN FUNGSI CETAK STRUK --}}
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Tutup</button>
-                                        <a href="#" class="btn btn-primary">Cetak Struk</a>
+                                        <a href="{{ route('cashier.print', ['invoiceNumber' => $trx->invoice_number]) }}"
+                                            target="_blank" class="btn btn-primary btn-print-receipt">Cetak Struk</a>
+                                        {{-- ^ Tambahkan class btn-print-receipt untuk logic JS --}}
 
                                         @if (\Carbon\Carbon::parse($trx->transaction_date)->addHours(24)->isFuture())
                                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
@@ -317,14 +335,15 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- MODAL REFUND --}}
                         <div id="modalRefund-{{ $trx->invoice_number }}" class="modal fade" tabindex="-1"
                             aria-labelledby="modalLabelRefund-{{ $trx->invoice_number }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="modalLabelRefund-{{ $trx->invoice_number }}">Proses
-                                            Refund
-                                            - {{ $trx->invoice_number }}</h5>
+                                            Refund - {{ $trx->invoice_number }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>

@@ -24,6 +24,32 @@
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+                @if (session('print_invoice'))
+                    <script>
+                        const printUrl = '{{ route('cashier.print', ['invoiceNumber' => session('print_invoice')]) }}';
+
+                        const printWindow = window.open(printUrl, '_blank');
+
+                        if (!printWindow || printWindow.closed || typeof printWindow.closed === 'undefined') {
+                            Swal.fire({
+                                title: 'Transaksi Berhasil, Struk Diblokir!',
+                                html: 'Struk gagal dibuka otomatis karena <b>Pop-up Blocker</b> aktif. <br><br> Silakan klik tombol di bawah ini untuk membuka struk secara manual:<br><br><a href="' +
+                                    printUrl + '" target="_blank" class="btn btn-info mt-2">Buka Struk</a>',
+                                icon: 'warning',
+                                confirmButtonText: 'Tutup',
+                                allowOutsideClick: false
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Struk Sedang Dicetak',
+                                text: 'Jendela cetak struk telah dibuka. Silakan cetak atau simpan PDF.',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 4000
+                            });
+                        }
+                    </script>
+                @endif
             @endif
 
             <div class="card">
@@ -161,6 +187,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <input type="hidden" name="print_receipt" id="printReceiptInput" value="false">
                         </div>
 
                     </form>

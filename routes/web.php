@@ -59,6 +59,7 @@ Route::resource('/Product', ProductController::class)->middleware('auth');
 Route::middleware('auth')->group(function () {
     Route::get('/cashier', [CashierController::class, 'index'])->name('cashier');
     Route::post('/cashier', [CashierController::class, 'store'])->name('cashier.store');
+    Route::get('/cashier/receipt/print/{invoiceNumber}', [CashierController::class, 'print'])->name('cashier.print');
 });
 
 // Report

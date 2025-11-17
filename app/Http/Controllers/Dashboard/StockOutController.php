@@ -49,10 +49,10 @@ class StockOutController extends Controller
         return back()->with('success', 'Anda Telah Berhasil Menambah Stock Masuk Produk');
     }
 
-    public function edit($uuid)
+    public function edit($id)
     {
         // Mengambil data Di StockOut berdasarkan UUID
-        $stock              = StockOut::Where('uuid', $uuid)->firstOrFail();
+        $stock              = StockOut::Where('id', $id)->firstOrFail();
         // Mengambil data product seperti kode dan nama
         $productData        = Product::get(['KdProduct', 'nameProduct']);
         // Mengambil Semua Data di StockOut
@@ -60,7 +60,7 @@ class StockOutController extends Controller
         return view('content.Dashboard.Report.StockOut.index', compact('stock', 'productData', 'StockData'));
     }
 
-    public function update(Request $request, $uuid)
+    public function update(Request $request, $id)
     {
         // Mengambil Semua Data Di Form Input
         $data = $request->validate([
@@ -71,37 +71,37 @@ class StockOutController extends Controller
             'description'   => 'required'
         ]);
         // Cari Berdasarkan UUID
-        $StockData = StockOut::findOrFail($uuid);
+        $StockData = StockOut::findOrFail($id);
         // Caru Kode Product
         $product = Product::find($data['KdProduct']);
         if ($product) {
 
-            // Tambah stok Produk dengan qty yang Lama
-            $product->stok += $StockData->qty;
+            // Tambah stock Produk dengan qty yang Lama
+            $product->stock += $StockData->qty;
             // Jika Stock Kurang dari yang di inputkan maka error
-            if ($product->stok < $data['qty']) {
+            if ($product->stock < $data['qty']) {
                 return back()->with('error', 'Stock Kurang Dari Yang Diinginkan');
             }
 
-            // Kurangi qty yang baru ke stok
-            $product->stok -= $data['qty'];
+            // Kurangi qty yang baru ke stock
+            $product->stock -= $data['qty'];
 
-            // Simpan perubahan stok ke database
+            // Simpan perubahan stock ke database
             $product->save();
         } else {
             return back()->with('error', 'Produk Tidak Ada');
         }
         $StockData->update($data);
-        return redirect('/StockOut')->with('success', 'Anda Telah Berhasil Mengupdate Stock Masuk Produk');
+        return redirect('/StockOut')->with('success', 'Anda Telah Berhasil Mengupdate Stock Keluar Produk');
     }
 
-    public function destroy($uuid)
+    public function destroy($id)
     {
-        $StockData = StockOut::findOrFail($uuid);
+        $StockData = StockOut::findOrFail($id);
         $product = Product::find($StockData->KdProduct);
         if ($product) {
             // Tambahkan kembali qty dari reservasi ke stok alat
-            $product->stok += $StockData->qty;
+            $product->stock += $StockData->qty;
             // Simpan perubahan stok ke database
             $product->save();
         } else {

@@ -121,7 +121,7 @@
                                 <th>Nomor Whatsapp</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Status</th>
+                                <th>Terakhir Akses</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -133,7 +133,7 @@
                                     <td>{{ $User->phoneNumber }}</td>
                                     <td>{{ $User->email }}</td>
                                     <td>{{ $User->role }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($User->last_login)->format('d-m-Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($User->last_login)->translatedFormat('l, d F Y') }}</td>
                                     <td>
                                         <a href="{{ route('UserData.show', $User->id) }}"
                                             class="btn btn-primary waves-effect waves-light"><i class="las la-eye"></i></a>

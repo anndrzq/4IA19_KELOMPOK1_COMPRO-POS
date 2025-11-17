@@ -26,12 +26,11 @@ class CashierController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi Input (Disesuaikan dengan field baru)
         $request->validate([
             'customer_type' => 'required|string|in:umum,grosir,member',
             'member_id' => 'nullable|required_if:customer_type,member|uuid|exists:members,id',
-            'payment_method' => 'required|string|in:cash,transfer,qris,debit,credit', // Ditambah credit
-            'payment_detail' => 'nullable|required_if:payment_method,debit|required_if:payment_method,credit|string|in:debit_bca,debit_lain,credit_bca,credit_lain', // Validasi baru
+            'payment_method' => 'required|string|in:cash,transfer,qris,debit,credit',
+            'payment_detail' => 'nullable|required_if:payment_method,debit|required_if:payment_method,credit|string|in:debit_bca,debit_lain,credit_bca,credit_lain',
             'pay' => 'required|string',
             'KdProduct' => 'required|array|min:1',
             'KdProduct.*' => 'required|string|exists:products,KdProduct',
@@ -39,17 +38,15 @@ class CashierController extends Controller
             'qty.*' => 'required|integer|min:1',
             'discount' => 'required|array|min:1',
             'discount.*' => 'required|numeric|min:0',
+            'print_receipt' => 'required|in:true,false',
         ]);
 
-        // 2. Mulai Database Transaction
         DB::beginTransaction();
 
         try {
-            // 3. Siapkan Data
             $paidAmount = (float) preg_replace('/[^\d]/', '', $request->pay);
             $membershipId = ($request->customer_type == 'member') ? $request->member_id : null;
 
-            // Tentukan payment_provider dan tax_percent berdasarkan input
             $paymentProvider = null;
             $taxPercent = 0;
 
@@ -57,48 +54,45 @@ class CashierController extends Controller
                 switch ($request->payment_detail) {
                     case 'debit_bca':
                         $paymentProvider = 'bca';
-                        $taxPercent = 0.25; // 0.25%
+                        $taxPercent = 0.25;
                         break;
                     case 'debit_lain':
                         $paymentProvider = 'lain';
-                        $taxPercent = 1; // 2%
+                        $taxPercent = 1;
                         break;
                     case 'credit_bca':
                         $paymentProvider = 'bca';
-                        $taxPercent = 1; // 1%
+                        $taxPercent = 1;
                         break;
                     case 'credit_lain':
                         $paymentProvider = 'lain';
-                        $taxPercent = 2.5; // 2.5%
+                        $taxPercent = 2.5;
                         break;
                 }
             }
 
             $invoiceNumber = 'STRK-' . Carbon::now()->format('Ymd-His') . '-' . Str::random(2);
 
-            // 4. Buat Transaksi Header (Disesuaikan dengan skema)
             $transaction = Transactions::create([
                 'invoice_number' => $invoiceNumber,
                 'transaction_date' => now(),
                 'type_transaction' => $request->customer_type,
                 'payment_method' => $request->payment_method,
-                'payment_provider' => $paymentProvider, // Kolom baru
+                'payment_provider' => $paymentProvider,
                 'status' => 'paid',
                 'user_id' => Auth::id(),
                 'membership_id' => $membershipId,
                 'amount_paid' => $paidAmount,
-                'total_amount' => 0, // Placeholder, akan diupdate
-                'tax_amount' => 0,   // Placeholder, akan diupdate
-                'change_amount' => 0, // Placeholder, akan diupdate
+                'total_amount' => 0,
+                'tax_amount' => 0,
+                'change_amount' => 0,
             ]);
 
-            $runningSubtotal = 0; // Ini adalah total *sebelum* pajak
+            $runningSubtotal = 0;
 
-            // 5. Loop semua produk
             foreach ($request->KdProduct as $index => $kdProduct) {
                 if (empty($kdProduct)) continue;
 
-                // Ganti 'find' dengan 'where' untuk 'KdProduct'
                 $product = Product::where('KdProduct', $kdProduct)->first();
                 if (!$product) {
                     throw new \Exception("Produk dengan kode {$kdProduct} tidak ditemukan.");
@@ -118,7 +112,6 @@ class CashierController extends Controller
 
                 $runningSubtotal += $subtotal;
 
-                // 6. Buat Transaksi Detail
                 TransactionDetail::create([
                     'transaction_id' => $invoiceNumber,
                     'KdProduct' => $kdProduct,
@@ -128,45 +121,51 @@ class CashierController extends Controller
                     'subtotal' => $subtotal,
                 ]);
 
-                // 7. Kurangi Stok
                 $product->decrement('stock', $quantity);
             }
 
-            // 8. Hitung Total, Pajak, dan Kembalian (setelah loop)
             $taxAmount = ($runningSubtotal * $taxPercent) / 100;
 
-            // --- PERUBAHAN 1: total_amount adalah Subtotal DIKURANGI Pajak ---
-            $grandTotal = $runningSubtotal - $taxAmount; // Ini adalah total_amount bersih yang diterima toko
+            $grandTotal = $runningSubtotal - $taxAmount;
 
-            // --- PERUBAHAN 2: Validasi jumlah bayar terhadap Subtotal (apa yg dibayar pelanggan) ---
-            // Beri toleransi 0.01 untuk pembulatan angka desimal/float
             if (round($paidAmount, 2) < round($runningSubtotal, 2) && abs($paidAmount - $runningSubtotal) > 0.01) {
                 throw new \Exception("Jumlah bayar (Rp " . number_format($paidAmount) . ") tidak mencukupi. Total belanja: Rp " . number_format($runningSubtotal));
             }
 
-            // --- PERUBAHAN 3: Kembalian dihitung dari Bayar - Subtotal ---
             $changeAmount = $paidAmount - $runningSubtotal;
-            if ($changeAmount < 0) $changeAmount = 0; // Pastikan kembalian tidak negatif
+            if ($changeAmount < 0) $changeAmount = 0;
 
 
-            // 9. Update Transaksi Header dengan nilai akhir
-            $transaction->total_amount = $grandTotal;   // Total bersih (setelah potong pajak)
-            $transaction->tax_amount = $taxAmount;    // Jumlah pajak (biaya MDR)
-            $transaction->change_amount = $changeAmount; // Kembalian
+            $transaction->total_amount = $grandTotal;
+            $transaction->tax_amount = $taxAmount;
+            $transaction->change_amount = $changeAmount;
             $transaction->save();
 
-            // 10. Commit
             DB::commit();
 
-            return redirect('/cashier') // Gunakan route() helper
+            $redirect = redirect('/cashier')
                 ->with('success', 'Transaksi berhasil disimpan! Invoice: ' . $invoiceNumber);
+
+            if ($request->input('print_receipt') === 'true') {
+                $redirect->with('print_invoice', $invoiceNumber);
+            }
+
+            return $redirect;
         } catch (\Exception $e) {
-            // 11. Rollback jika gagal
             DB::rollBack();
 
             return redirect()->back()
                 ->withErrors(['error' => 'Gagal menyimpan transaksi: ' . $e->getMessage()])
                 ->withInput();
         }
+    }
+
+    public function print($invoiceNumber)
+    {
+        $transaction = Transactions::where('invoice_number', $invoiceNumber)
+            ->with('details.product')
+            ->firstOrFail();
+
+        return view('content.Dashboard.Cashier.receipt', compact('transaction'));
     }
 }
