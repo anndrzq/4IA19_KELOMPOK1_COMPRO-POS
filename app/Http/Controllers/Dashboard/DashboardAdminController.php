@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Models\Product;
 use App\Models\Refunds;
 use App\Models\StockIn;
 use App\Models\Transactions;
@@ -124,6 +125,9 @@ class DashboardAdminController extends Controller
             ->orderBy('total_qty_sold', 'desc')
             ->take(5)
             ->get();
+        $lowStockProducts = Product::where('stock', '<=', 5)
+            ->orderBy('stock', 'asc')
+            ->get();
 
         return view('content.dashboard.index', compact(
             'dailyIncome',
@@ -135,7 +139,8 @@ class DashboardAdminController extends Controller
             'chartIncomeData',
             'chartExpenseData',
             'filterText',
-            'hasChartData'
+            'hasChartData',
+            'lowStockProducts'
         ));
     }
 }

@@ -88,7 +88,7 @@ class ProductController extends Controller
                 Rule::unique('products', 'nameProduct')->ignore($KdProduct, 'KdProduct'),
             ],
             'Photo'             => 'nullable|mimes:jpg,png,jpeg,svg,webp|max:2048',
-            'stock'             => 'required|numeric|min:0',
+            'stock'             => 'numeric|min:0',
             'KdCategory'       => 'required|exists:categories,KdCategory',
             'KdUnit'           => 'required|exists:units,KdUnit',
         ]);

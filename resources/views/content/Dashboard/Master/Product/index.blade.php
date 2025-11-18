@@ -183,7 +183,8 @@
                             <div class="col-12 mb-3">
                                 <label for="stock" class="form-label">Stok</label>
                                 <input type="number" class="form-control" name="stock" id="stock"
-                                    placeholder="Masukan jumlah stok" value="{{ old('stock', $product->stock ?? 0) }}">
+                                    placeholder="Masukan jumlah stok" value="{{ old('stock', $product->stock ?? 0) }}"
+                                    {{ request()->routeIs('Product.edit') ? 'disabled' : '' }}>
                                 @error('stock')
                                     <small class="text-danger">
                                         {{ $message }}

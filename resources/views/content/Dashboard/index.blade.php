@@ -155,6 +155,29 @@
                 </div>
 
                 <div class="row">
+                    @if ($lowStockProducts->count() > 0)
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center"
+                                    role="alert">
+                                    <div class="flex-grow-1">
+                                        <i class="ri-alert-fill me-2"></i>
+                                        <strong>PERINGATAN STOK RENDAH!</strong> Terdapat
+                                        {{ $lowStockProducts->count() }} produk yang stoknya hampir habis (<= 5 unit).
+                                            </div>
+                                            <div>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger waves-effect waves-light"
+                                                    data-bs-toggle="modal" data-bs-target="#lowStockModal">
+                                                    Lihat Detail
+                                                </button>
+                                                <button type="button" class="btn-close ms-2" data-bs-dismiss="alert"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    @endif
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-animate">
                             <div class="card-body">
@@ -410,6 +433,51 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="lowStockModal" tabindex="-1" aria-labelledby="lowStockModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lowStockModalLabel">Detail Produk Stok Rendah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Daftar produk dengan stok kurang dari atau sama dengan 5 unit:</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama Produk</th>
+                                    <th>Kategori</th>
+                                    <th class="text-center">Sisa Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($lowStockProducts as $product)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $product->nameProduct }}</td>
+                                        <td>{{ $product->KdCategory }}</td>
+                                        <td>
+                                            {{ $product->stock }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">Tidak ada produk dengan stok rendah.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
