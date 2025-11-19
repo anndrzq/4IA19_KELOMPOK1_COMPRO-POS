@@ -6,10 +6,13 @@
     <style>
         body {
             font-family: monospace;
-            font-size: 10px;
+            font-size: 12px;
+            /* Sedikit dikecilkan agar muat */
             margin: 0;
             padding: 0;
             width: 58mm;
+            /* Tambahkan property ini untuk memastikan lebar saat cetak */
+            min-height: 100vh;
         }
 
         .receipt-container {
@@ -26,13 +29,31 @@
 
         .header h3 {
             margin: 0;
-            font-size: 14px;
+            font-size: 12px;
+            /* Lebih kecil */
+            text-transform: uppercase;
+        }
+
+        .header p {
+            margin: 1px 0;
+            line-height: 1.2;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 5px 0;
         }
 
         .info,
         .details {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 5px;
+        }
+
+        .info td {
+            padding: 0;
         }
 
         .details th,
@@ -48,6 +69,7 @@
 
         .total-row td {
             border-top: 1px dashed #000;
+            padding-top: 5px !important;
         }
 
         .right {
@@ -57,6 +79,18 @@
         .center {
             text-align: center;
         }
+
+        .item-name {
+            width: 50%;
+        }
+
+        .item-qty {
+            width: 15%;
+        }
+
+        .item-price {
+            width: 35%;
+        }
     </style>
 </head>
 
@@ -64,10 +98,11 @@
     <div class="receipt-container">
         <div class="header">
             <h3>TOKO DAGING SAWANGAN</h3>
-            <p style="margin: 0;">Jl. Bukit Rivaria Sektor 4 No.8 Blok i4, Bedahan, Sawangan, Depok City, West Java 16519
-            </p>
-            <p style="margin: 0 0 5px 0;">Telp: 081385669987</p>
+            <p>Jl. Bukit Rivaria Sektor 4 No.8 Blok i4, Bedahan, Sawangan, Depok City, West Java 16519</p>
+            <p>Telp: 081385669987</p>
         </div>
+
+        <hr>
 
         <table class="info">
             <tr>
@@ -91,55 +126,84 @@
             </tr>
         </table>
 
-        <table class="details" style="margin-top: 5px;">
+        <hr>
+
+        <table class="details">
             <thead>
                 <tr>
-                    <th style="width: 50%;">Item</th>
-                    <th style="width: 15%;" class="center">Qty</th>
-                    <th style="width: 35%;" class="right">Subtotal</th>
+                    <th class="item-name">Item</th>
+                    <th class="item-qty center">Qty</th>
+                    <th class="item-price right">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $total_setelah_diskon = 0;
+                @endphp
                 @foreach ($transaction->details as $detail)
                     <tr>
-                        <td>{{ $detail->product->nameProduct ?? 'Produk Dihapus' }}</td>
+                        <td colspan="3" style="padding-bottom: 0;">
+                            {{ $detail->product->nameProduct ?? 'Produk Dihapus' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 0;">
+                            {{ number_format($detail->price) }} x {{ $detail->qty }}
+                        </td>
                         <td class="center">{{ $detail->qty }}</td>
-                        <td class="right">{{ number_format($detail->price) }}</td>
+                        <td class="right">{{ number_format($detail->subtotal) }}</td>
                     </tr>
                     @if ($detail->discount > 0)
                         <tr>
-                            <td>Diskon ({{ $detail->discount > 100 ? 'Rp' : '%' }})</td>
+                            <td>Diskon Item</td>
                             <td class="center"></td>
-                            <td class="right">(-{{ number_format($detail->discount) }})</td>
+                            <td class="right">
+                                (-{{ number_format($detail->discount) }})
+                            </td>
                         </tr>
+                        @php
+                            $total_setelah_diskon += $detail->subtotal - $detail->discount;
+                        @endphp
+                    @else
+                        @php
+                            $total_setelah_diskon += $detail->subtotal;
+                        @endphp
                     @endif
                 @endforeach
-                <tr class="total-row">
-                    <td colspan="3" style="padding: 5px 0 3px 0;"></td>
-                </tr>
+
                 <tr>
-                    <td colspan="2">TOTAL </td>
-                    <td class="right">Rp {{ number_format($transaction->total_amount + $transaction->tax_amount) }}
+                    <td colspan="3">
+                        <hr>
                     </td>
                 </tr>
+
+
+                <tr style="font-size: 12px; font-weight: bold;">
+                    <td colspan="2">GRAND TOTAL</td>
+                    <td class="right">Rp {{ number_format($transaction->amount_paid) }}</td>
+                </tr>
+
+                <tr>
+                    <td colspan="3">
+                        <hr>
+                    </td>
+                </tr>
+
                 <tr style="font-weight: bold;">
-                    <td colspan="2">BAYAR</td>
+                    <td colspan="2">BAYAR ({{ ucfirst($transaction->payment_method) }})</td>
                     <td class="right">Rp {{ number_format($transaction->amount_paid) }}</td>
                 </tr>
                 <tr style="font-weight: bold;">
                     <td colspan="2">KEMBALIAN</td>
                     <td class="right">Rp {{ number_format($transaction->change_amount) }}</td>
                 </tr>
-                <tr style="font-weight: bold;">
-                    <td colspan="2">Jenis Pembayaran</td>
-                    <td class="right">{{ ucfirst($transaction->payment_method) }}</td>
-                </tr>
             </tbody>
         </table>
 
         <div class="footer" style="margin-top: 10px;">
-            <p style="margin: 0;">--- Terima Kasih ---</p>
-            <p style="margin: 0;">Selamat Belanja Kembali.</p>
+            <hr>
+            <p>--- Terima Kasih ---</p>
+            <p>Selamat Belanja Kembali.</p>
         </div>
     </div>
 </body>
