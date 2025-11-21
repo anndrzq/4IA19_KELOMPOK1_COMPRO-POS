@@ -166,6 +166,16 @@ class DashboardAdminController extends Controller
             ->orderBy('stock', 'asc')
             ->get();
 
+        $expiringProducts = StockIn::with('products')
+            ->whereNotNull('expired_date')
+            ->where('expired_date', '<=', Carbon::now()->addDays(30))
+            ->whereHas('products', function ($query) {
+                $query->where('stock', '>', 0);
+            })
+            ->orderBy('expired_date', 'asc')
+            ->take(10)
+            ->get();
+
         return view('content.dashboard.index', compact(
             'dailyIncome',
             'dailyExpenses',
@@ -179,7 +189,8 @@ class DashboardAdminController extends Controller
             'hasChartData',
             'lowStockProducts',
             'isAnomaly',
-            'anomalyMessage'
+            'anomalyMessage',
+            'expiringProducts'
         ));
     }
 }

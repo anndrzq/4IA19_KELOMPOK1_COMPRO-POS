@@ -5,7 +5,6 @@
     <script src="{{ asset('') }}assets/libs/swiper/swiper-bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
-
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
@@ -313,6 +312,109 @@
                         </div>
                     </div>
                 </div>
+
+                @if (isset($expiringProducts) && $expiringProducts->count() > 0)
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-danger border-start border-3">
+                                <div
+                                    class="card-header d-flex justify-content-between align-items-center bg-danger-subtle">
+                                    <h5 class="card-title m-0 text-danger"><i class="ri-alarm-warning-fill me-2"></i>
+                                        Peringatan Stok Kadaluarsa</h5>
+                                    <span class="badge bg-danger">Perlu Cek Fisik</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted">Ditemukan <b>{{ $expiringProducts->count() }}</b> batch produk
+                                        yang mendekati tanggal kadaluarsa (30 hari kedepan) atau sudah lewat, dan stok
+                                        sistem masih tersedia.</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Produk</th>
+                                                    <th>Kode Batch</th>
+                                                    <th>Tgl Expired</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($expiringProducts as $item)
+                                                    @php
+                                                        $expiredDate = \Carbon\Carbon::parse($item->expired_date);
+                                                        $daysRemaining = \Carbon\Carbon::now()->diffInDays(
+                                                            $expiredDate,
+                                                            false,
+                                                        );
+                                                        $bgClass =
+                                                            $daysRemaining < 0
+                                                                ? 'bg-danger-subtle'
+                                                                : ($daysRemaining <= 7
+                                                                    ? 'bg-warning-subtle'
+                                                                    : '');
+                                                    @endphp
+                                                    <tr class="{{ $bgClass }}">
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                @if ($item->products->Photo)
+                                                                    <img src="{{ asset('storage/' . $item->products->Photo) }}"
+                                                                        class="avatar-xs rounded-circle me-2"
+                                                                        alt="img">
+                                                                @else
+                                                                    <div
+                                                                        class="avatar-xs bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                                                        <i class="bx bx-box"></i>
+                                                                    </div>
+                                                                @endif
+                                                                <div>
+                                                                    <h6 class="mb-0">{{ $item->products->nameProduct }}
+                                                                    </h6>
+                                                                    <small class="text-muted">Sisa Stok Toko:
+                                                                        {{ $item->products->stock }}</small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td><span
+                                                                class="badge bg-light text-dark">{{ $item->batch_code }}</span>
+                                                        </td>
+                                                        <td>{{ $expiredDate->format('d M Y') }}</td>
+                                                        <td>
+                                                            @if ($daysRemaining < 0)
+                                                                <span class="badge badge-label bg-danger"><i
+                                                                        class="mdi mdi-circle-medium"></i> Expired
+                                                                    {{ abs(intval($daysRemaining)) }} hari lalu</span>
+                                                            @elseif($daysRemaining == 0)
+                                                                <span class="badge badge-label bg-danger"><i
+                                                                        class="mdi mdi-circle-medium"></i> Expired Hari
+                                                                    Ini</span>
+                                                            @else
+                                                                <span class="badge badge-label bg-warning"><i
+                                                                        class="mdi mdi-circle-medium"></i>
+                                                                    {{ intval($daysRemaining) }} hari lagi</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-sm btn-soft-primary"
+                                                                onclick="Swal.fire({
+                                                                        title: 'Cek Stok Fisik',
+                                                                        text: 'Lakukan Stock Opname untuk batch {{ $item->batch_code }}',
+                                                                        icon: 'info',
+                                                                        confirmButtonColor: '#0ab39c',
+                                                                        confirmButtonText: 'Lanjutkan',
+                                                                    })">
+                                                                <i class="ri-search-eye-line align-bottom"></i> Cek
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="row">
                     <div class="col-lg-6">
