@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Services\SalesAnomalyDetector;
 
 class DashboardAdminController extends Controller
 {
@@ -111,13 +112,49 @@ class DashboardAdminController extends Controller
             ->sum('total_amount');
 
         $dailyStockInCost = StockIn::whereDate('created_at', Carbon::today())->sum(DB::raw('purchase_price * quantity'));
-        $dailyRefunds = Refunds::whereDate('created_at', Carbon::today())->sum('total_refund_amount');
-        $dailyExpenses = $dailyStockInCost + $dailyRefunds;
+        $dailyExpenses = $dailyStockInCost;
 
         $totalIncome = Transactions::where('status', 'paid')->sum('total_amount');
         $totalStockInCost = StockIn::sum(DB::raw('purchase_price * quantity'));
-        $totalRefunds = Refunds::sum('total_refund_amount');
-        $totalExpenses = $totalStockInCost + $totalRefunds;
+        $totalExpenses = $totalStockInCost;
+
+        $profitRatio = 0;
+        if ((float)$totalIncome > 0) {
+            $profitRatio = round((($totalIncome - $totalExpenses) / $totalIncome) * 100, 2);
+        }
+
+        $anomalyScore = 0.0;
+        $isAnomaly = false;
+        $anomalyMessage = "";
+        $threshold = 0.55;
+
+        $modelPath = storage_path('app/ml/isolation_forest.model');
+
+        if (file_exists($modelPath)) {
+            try {
+                $detector = new SalesAnomalyDetector();
+                $anomalyScore = $detector->detect($dailyIncome);
+
+                $isAnomaly = $anomalyScore >= $threshold;
+                $anomalyMessage = "Skor Anomali: " . number_format($anomalyScore, 2);
+
+                if (!$isAnomaly && $anomalyScore > 0.0) {
+                    $anomalyMessage = "Pendapatan hari ini normal. " . $anomalyMessage;
+                } elseif ($anomalyScore == 0.0) {
+                    if ($dailyIncome == 0) {
+                        // Jika pendapatan 0, dan skor 0.0, itu adalah perilaku yang normal.
+                        $anomalyMessage = "Pendapatan hari ini normal. Skor Anomali: 0.00 (Rp 0).";
+                    } else {
+                        // Jika pendapatan > 0, tapi skor tetap 0.0, ini mengindikasikan masalah data latih (degenerate).
+                        $anomalyMessage = "Deteksi anomali tidak dapat dijalankan. Skor 0.0 menunjukkan model tidak dapat mendeteksi pola yang jelas. (Mungkin karena data latih degenerate).";
+                    }
+                }
+            } catch (\Exception $e) {
+                $anomalyMessage = "Gagal memuat model deteksi anomali. Pastikan file model tidak rusak.";
+            }
+        } else {
+            $anomalyMessage = "Model Anomali belum dilatih. Jalankan perintah 'php artisan ml:train-anomaly'.";
+        }
 
         $bestSellingProducts = TransactionDetail::with('product')
             ->select('KdProduct', DB::raw('SUM(qty) as total_qty_sold'), DB::raw('SUM(subtotal) as total_sales_amount'))
@@ -140,7 +177,9 @@ class DashboardAdminController extends Controller
             'chartExpenseData',
             'filterText',
             'hasChartData',
-            'lowStockProducts'
+            'lowStockProducts',
+            'isAnomaly',
+            'anomalyMessage'
         ));
     }
 }

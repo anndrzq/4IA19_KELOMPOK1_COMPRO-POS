@@ -178,6 +178,37 @@
                                 </div>
                             </div>
                     @endif
+
+                    @if ($isAnomaly)
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="ri-lightbulb-flash-fill me-2"></i>
+                                    <strong>DETEKSI ANOMALI PENJUALAN HARI INI!</strong>
+                                    <p class="mb-1">Pendapatan hari ini (Rp
+                                        {{ number_format($dailyIncome, 0, ',', '.') }}) berada di luar pola penjualan biasa.
+                                    </p>
+                                    <p class="mb-0 text-sm">Status: <strong>Anomali Terdeteksi</strong>
+                                        ({{ $anomalyMessage }}).</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif ($anomalyMessage != '' && !str_contains($anomalyMessage, 'Model Anomali belum dilatih'))
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    <i class="ri-checkbox-circle-line me-2"></i>
+                                    <strong>Deteksi Anomali Penjualan.</strong>
+                                    {{ $anomalyMessage }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-animate">
                             <div class="card-body">
