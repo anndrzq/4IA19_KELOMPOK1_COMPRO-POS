@@ -69,7 +69,7 @@ Ciri khas proyek ini:
 |------|--------|-----------|
 | 🧑‍💻 **Akmal Ridho Rabbani** | Project Manager | Manajemen Proyek |
 | 🎨 **Irfan Aviseena** | Designer | UI/UX Design |
-| 💻 **Ananda R.** | Programmer | Laravel, Debugging Elegan |
+| 💻 **Ananda Rizq** | Programmer | Laravel, Debugging Elegan |
 | 🧪 **Fadhly Dzil Ikram** | QA | Pengujian Aplikasi, Dokumentasi Bug |
 | ✍️ **Muhammad Tio Safrian** | Technical Writer | Penulisan Dokumentasi, Research |
 
@@ -101,6 +101,21 @@ Kalau kamu suka repo ini (meski isinya cuma daging dan semangat 😅), boleh tra
 > “Code. Serve. Slice. Repeat.”  
 > Kadang juga: “Code. Error. Cry. Coffee. Continue.” ☕💀
 
+---
+
+## INSTALASI
+
+- composer install
+- npm install
+- php artisan key:generate
+- cp .env.example .env
+- php artisan migrate
+- php artisan storage:link
+- npm run dev
+- composer require rubix/ml
+- php artisan ml:train-anomaly
+- php artisan serve
+  
 ---
 
 <p align="center">
