@@ -70,8 +70,9 @@ Ciri khas proyek ini:
 | 🧑‍💻 **Akmal Ridho Rabbani** | Project Manager | Manajemen Proyek |
 | 🎨 **Irfan Aviseena** | Designer | UI/UX Design |
 | 💻 **Ananda Rizq** | Programmer | Laravel, Debugging Elegan |
-| 🧪 **Fadhly Dzil Ikram** | Programmer | Laravel, Company Profile |
-| ✍️ **Muhammad Tio Safrian** | QA | Pengujian Aplikasi, Dokumentasi Bug |
+| 💻 **Fadhly Dzil Ikram** | Programmer | Laravel, Company Profile |
+| 🧪 **Muhammad Tio Safrian** | QA | Pengujian Aplikasi, Dokumentasi Bug |
+| ✍️ **Wisnu Saputra** | Technical Writer | Dokumentasi Teknis, Penulisan Manual Pengguna |
 
 ---
 
