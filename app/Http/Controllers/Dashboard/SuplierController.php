@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * SuplierController
+ * -----------------
+ * Controller ini bertanggung jawab untuk mengelola data supplier
+ * pada halaman Dashboard (Master Data Suppliers).
+ * 
+ * Fitur utama:
+ * - Menampilkan data supplier
+ * - Menambah supplier dengan kode otomatis
+ * - Mengedit data supplier
+ * - Menghapus data supplier
+ */
 
 namespace App\Http\Controllers\Dashboard;
 
@@ -9,31 +21,47 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
-
 class SuplierController extends Controller
 {
-
+    /**
+     * Menampilkan halaman utama data supplier
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        // Mengambil Semua Data Di Supliers
+        // Mengambil semua data supplier dari database
         $SuppliersData = Suplier::all();
+
+        // Mengirim data supplier ke view
         return view('content.Dashboard.Master.Suppliers.index', compact('SuppliersData'));
     }
 
-
+    /**
+     * Menyimpan data supplier baru ke database
+     * dengan kode supplier otomatis
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
-        // Generate kode otomatis
+        // Mengambil kode supplier terakhir berdasarkan urutan descending
         $lastCode = DB::table('supliers')->orderBy('kdSuppliers', 'desc')->first();
+
+        // Jika data supplier sudah ada, ambil nomor terakhir dan tambahkan 1
         if ($lastCode) {
             $lastNumber = intval(substr($lastCode->kdSuppliers, 3));
             $newNumber = $lastNumber + 1;
         } else {
+            // Jika belum ada data, mulai dari 1
             $newNumber = 1;
         }
+
+        // Membuat kode supplier baru dengan format SUPXXX
         $kdSuppliers = 'SUP' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
-        // Validasi data selain kdSuppliers
+        // Validasi input data supplier
         $data = $request->validate([
             'suppliersName'   => 'required|unique:supliers,suppliersName',
             'contactWhatsapp' => 'required|unique:supliers,contactWhatsapp',
@@ -42,30 +70,48 @@ class SuplierController extends Controller
             'status'          => 'required'
         ]);
 
-        // Tambahkan kode otomatis ke data yang akan disimpan
+        // Menambahkan kode supplier otomatis ke data yang akan disimpan
         $data['kdSuppliers'] = $kdSuppliers;
 
-        // Simpan data ke database
+        // Menyimpan data supplier ke database
         Suplier::create($data);
 
+        // Redirect kembali dengan pesan sukses
         return back()->with('success', 'Anda Berhasil Menambahkan Data Suppliers dengan kode otomatis!');
     }
 
+    /**
+     * Menampilkan data supplier yang akan diedit
+     *
+     * @param Suplier $suplier
+     * @param string $kdSuppliers
+     * @return \Illuminate\View\View
+     */
     public function edit(Suplier $suplier, $kdSuppliers)
     {
-        // Melakukan pencarian berdasarkan Kode Supliers
+        // Mencari data supplier berdasarkan kode supplier
         $supplier = Suplier::findOrFail($kdSuppliers);
-        // Mengambil semua data yang ada pada suppliers
+
+        // Mengambil seluruh data supplier untuk ditampilkan pada tabel
         $SuppliersData = Suplier::all();
+
+        // Mengirim data ke view
         return view('content.Dashboard.Master.Suppliers.index', compact('supplier', 'SuppliersData'));
     }
 
+    /**
+     * Memperbarui data supplier berdasarkan kode supplier
+     *
+     * @param Request $request
+     * @param string $kdSuppliers
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $kdSuppliers)
     {
-        // Ambil data supplier berdasarkan kdSuppliers
+        // Mengambil data supplier berdasarkan kode supplier
         $supplier = Suplier::where('kdSuppliers', $kdSuppliers)->firstOrFail();
 
-        // Validasi data (kdSuppliers tidak perlu divalidasi karena tidak diubah user)
+        // Validasi data input (kode supplier tidak diubah)
         $data = $request->validate([
             'suppliersName' => [
                 'required',
@@ -84,18 +130,29 @@ class SuplierController extends Controller
             'status' => 'required'
         ]);
 
-        // Update data ke database
+        // Melakukan update data supplier
         $supplier->update($data);
 
+        // Redirect ke halaman supplier dengan pesan sukses
         return redirect('/Suplier')->with('success', 'Anda Berhasil Melakukan Update Data Supplier!');
     }
 
+    /**
+     * Menghapus data supplier berdasarkan kode supplier
+     *
+     * @param Suplier $suplier
+     * @param string $kdSuppliers
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Suplier $suplier, $kdSuppliers)
     {
-        // Mengambil Data Berdasarkan Kode Supplier
+        // Mencari data supplier berdasarkan kode supplier
         $SuppliersData = Suplier::where('kdSuppliers', $kdSuppliers)->firstOrFail();
-        // Menghapus Data Suppliers
+
+        // Menghapus data supplier dari database
         $SuppliersData->delete();
+
+        // Redirect ke halaman supplier dengan pesan sukses
         return redirect('/Suplier')->with('success', 'Anda Berhasil Menghapus Data Suppliers');
     }
 }
