@@ -193,7 +193,7 @@
                                     <td>{{ $Members->name }}</td>
                                     <td>{{ $Members->noWA }}</td>
                                     <td>{{ $Members->email }}</td>
-                                    @if ($Members->gender == 0)
+                                    @if ($Members->gender == 'Laki')
                                         <td>
                                             Laki Laki
                                         </td>

@@ -4,7 +4,7 @@
           <div class="row gy-4">
               <div class="col-lg-4 col-md-6 footer-about">
                   <a href="index.html" class="d-flex align-items-center">
-                      <span class="sitename">BizLand</span>
+                      <span class="sitename">Toko Daging Sawangan</span>
                   </a>
                   <div class="footer-contact pt-3">
                       <p>Jl. Bukit Rivaria Sektor 4 No.8 Blok i4, Bedahan, Sawangan, Depok City, West Java 16519</p>
@@ -14,13 +14,7 @@
               </div>
 
               <div class="col-lg-2 col-md-3 footer-links">
-                  <h4>Useful Links</h4>
-                  <ul>
-                      <li><i class="bi bi-chevron-right"></i> <a href="#hero" class="active">Beranda</a></li>
-                      <li><i class="bi bi-chevron-right"></i> <a href="#about">Tentang</a></li>
-                      <li><i class="bi bi-chevron-right"></i> <a href="#services">Layanan</a></li>
-                      <li><i class="bi bi-chevron-right"></i> <a href="#products">Top Penjualan</a></li>
-                  </ul>
+
               </div>
 
               <div class="col-lg-2 col-md-3 footer-links">
@@ -33,15 +27,14 @@
                   </ul> --}}
               </div>
 
-              <div class="col-lg-4 col-md-12">
-                  <h4>Follow Us</h4>
-                  <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>
-                  <div class="social-links d-flex">
-                      <a href=""><i class="bi bi-twitter-x"></i></a>
-                      <a href=""><i class="bi bi-facebook"></i></a>
-                      <a href=""><i class="bi bi-instagram"></i></a>
-                      <a href=""><i class="bi bi-linkedin"></i></a>
-                  </div>
+              <div class="col-lg-4 col-md-12 footer-links">
+                  <h4>Tautan</h4>
+                  <ul>
+                      <li><i class="bi bi-chevron-right"></i> <a href="#hero" class="active">Beranda</a></li>
+                      <li><i class="bi bi-chevron-right"></i> <a href="#about">Tentang</a></li>
+                      <li><i class="bi bi-chevron-right"></i> <a href="#services">Layanan</a></li>
+                      <li><i class="bi bi-chevron-right"></i> <a href="#products">Top Penjualan</a></li>
+                  </ul>
               </div>
 
           </div>

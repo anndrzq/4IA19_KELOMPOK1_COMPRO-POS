@@ -340,10 +340,10 @@
         </div>
         <div class="col-12 mt-4">
             <div class="card">
-                <div class="card-header">
+                {{-- <div class="card-header">
                     <a href="" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i>
                         Export Excel</a>
-                </div>
+                </div> --}}
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                         style="width:100%">
