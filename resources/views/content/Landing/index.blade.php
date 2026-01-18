@@ -118,7 +118,7 @@
                             <h3>Daging Sapi Premium</h3>
                         </a>
                         <p>Menyediakan berbagai potongan daging sapi segar, halal, dan higienis. Sesuai untuk
-                            kebutuhan kuliner rumah tangga maupun restoran fine dining.</p>
+                            kebutuhan kuliner rumah tangga maupun usaha fnb.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
@@ -141,8 +141,7 @@
                         <a href="#" class="stretched-link">
                             <h3>Aneka Frozen Food Halal</h3>
                         </a>
-                        <p>Menyediakan beragam produk beku (sosis, bakso, nugget, dll.) dari merek terpercaya dengan
-                            penyimpanan standar internasional.</p>
+                        <p>Menyediakan beragam produk beku (sosis, bakso, nugget, dll.) dari merek terpercaya.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">

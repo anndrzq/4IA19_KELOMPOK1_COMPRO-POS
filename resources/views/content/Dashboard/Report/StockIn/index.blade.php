@@ -276,7 +276,7 @@
                                             <th>Produk</th>
                                             <th>Qty</th>
                                             <th>Expired Date</th>
-                                            <td>Harga Beli</td>
+                                            <td>Total Harga Beli</td>
                                             <td>Markup (%)</td>
                                             <td>Harga Jual</td>
                                             @if (!request()->routeIs('StockIn.edit'))
@@ -354,9 +354,9 @@
                                 <th>Kode Batch</th>
                                 <th>Nama Produk</th>
                                 <th>Nama Suppliers</th>
-                                <th>Tanggal</th>
+                                <th>Tanggal Expire</th>
                                 <th>Stock Masuk</th>
-                                <th>Harga Beli</th>
+                                <th>Total Harga Beli</th>
                                 <th>Harga Jual</th>
                                 <th>Aksi</th>
                             </tr>
