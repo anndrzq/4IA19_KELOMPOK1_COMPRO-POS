@@ -158,12 +158,12 @@ class DashboardAdminController extends Controller
             ->sum('total_amount');
 
         $dailyStockInCost = StockIn::whereDate('created_at', Carbon::today())
-            ->sum(DB::raw('purchase_price * quantity'));
+            ->sum(DB::raw('purchase_price'));
         $dailyExpenses = $dailyStockInCost;
 
         // Total pendapatan dan pengeluaran keseluruhan
         $totalIncome = Transactions::where('status', 'paid')->sum('total_amount');
-        $totalStockInCost = StockIn::sum(DB::raw('purchase_price * quantity'));
+        $totalStockInCost = StockIn::sum(DB::raw('purchase_price'));
         $totalExpenses = $totalStockInCost;
 
         // Menghitung rasio keuntungan

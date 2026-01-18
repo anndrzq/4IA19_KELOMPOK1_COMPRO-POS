@@ -33,16 +33,8 @@
 
                     <h3 class="fw-bold mb-3 text-danger">Siapa Kami?</h3>
                     <p>
-                        <b>Toko Daging Sawangan</b> hadir sebagai solusi modern untuk memenuhi kebutuhan protein
-                        keluarga dan bisnis kuliner di Indonesia. Kami adalah penyedia terintegrasi berbagai
-                        produk
-                        <b>daging, ayam, ikan, dan frozen food</b> lainnya yang menjamin standar <b>Halal,
-                            Higienis, dan Kualitas Premium</b> pada setiap produk.
-                    </p>
-                    <p>
-                        Didukung rantai pasok yang solid dan tim profesional, kami berkomitmen menjadi jembatan
-                        antara produsen lokal berkualitas dengan rumah tangga dan pelaku UMKM kuliner yang
-                        mengutamakan mutu, kesehatan, dan harga terjangkau.
+                        Kami adalah penyedia berbagai produk daging, ayam, ikan, dan frozen food lainnya yang
+                        menjamin standar Halal, Higienis, dan Kualitas Premium pada setiap produk.
                     </p>
 
                     <h4 class="mt-5 mb-3 fw-bold text-danger">VISI Kami</h4>
@@ -50,7 +42,7 @@
                         Menjadi penyedia berbagai macam produk daging, ayam, ikan, dan produk frozen lainnya yang
                         Halal, Higienis, dan Terjangkau bagi masyarakat dan pelaku UMKM, guna mendukung
                         <b>gaya
-                            hidup sehat dan berkelanjutan</b> di Indonesia.
+                            hidup sehat yang berkelanjutan</b> di Indonesia.
                     </p>
 
                     <h4 class="mt-5 mb-3 fw-bold text-danger">MISI Kami</h4>
@@ -120,7 +112,7 @@
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="service-item position-relative">
                         <div class="icon">
-                            <i class="bi bi-cow"></i>
+                            <i class="bi bi-fork-knife"></i>
                         </div>
                         <a href="#" class="stretched-link">
                             <h3>Daging Sapi Premium</h3>
