@@ -85,7 +85,7 @@
         </script>
     @endif
 @endpush
-
+@section('title', 'Member Data')
 @section('content')
     <!-- start page title -->
     <div class="row">

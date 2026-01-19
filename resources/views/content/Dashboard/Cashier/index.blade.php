@@ -4,6 +4,7 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/cashier.js') }}"></script>
 @endpush
+@section('title', 'Kasir')
 @section('content')
     <div class="page-content">
         <div class="container-fluid">
