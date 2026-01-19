@@ -67,58 +67,56 @@
                     </a>
                 </li>
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Data Master</span>
-                </li>
+                @if (auth()->user()->role == 'admin' || auth()->user()->role == 'SuperAdmin')
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Data Master</span></li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Product*') ? 'active' : '' }}"
-                        href="{{ route('Product.index') }}">
-                        <i class="ri-barcode-box-line"></i> <span data-key="t-widgets">Product</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Suplier*') ? 'active' : '' }}"
-                        href="{{ route('Suplier.index') }}">
-                        <i class="ri-dropbox-fill"></i> <span data-key="t-widgets">Suplier</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Unit*') ? 'active' : '' }}"
-                        href="{{ route('Unit.index') }}">
-                        <i class="ri-stack-fill"></i> <span data-key="t-widgets">Unit</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Category*') ? 'active' : '' }}"
-                        href="{{ route('Category.index') }}">
-                        <i class="bx bx-category"></i> <span data-key="t-widgets">Kategori</span>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('Product*') ? 'active' : '' }}"
+                            href="{{ route('Product.index') }}">
+                            <i class="ri-barcode-box-line"></i> <span data-key="t-widgets">Product</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('Suplier*') ? 'active' : '' }}"
+                            href="{{ route('Suplier.index') }}">
+                            <i class="ri-dropbox-fill"></i> <span data-key="t-widgets">Suplier</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('Unit*') ? 'active' : '' }}"
+                            href="{{ route('Unit.index') }}">
+                            <i class="ri-stack-fill"></i> <span data-key="t-widgets">Unit</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('Category*') ? 'active' : '' }}"
+                            href="{{ route('Category.index') }}">
+                            <i class="bx bx-category"></i> <span data-key="t-widgets">Kategori</span>
+                        </a>
+                    </li>
 
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Laporan</span></li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('StockIn*') ? 'active' : '' }}"
+                            href="{{ Route('StockIn.index') }}">
+                            <i class="ri-arrow-down-line"></i> <span data-key="t-widgets">Stok Masuk</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('StockOut*') ? 'active' : '' }}"
+                            href="{{ route('StockOut.index') }}">
+                            <i class="ri-arrow-up-line"></i> <span data-key="t-widgets">Stok Keluar</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('SalesHistory*') ? 'active' : '' }}"
+                            href="{{ Route('SalesHistory.index') }}">
+                            <i class="ri-history-fill"></i> <span data-key="t-widgets">Histori Penjualan</span>
+                        </a>
+                    </li>
+                @endif
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Laporan</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('StockIn*') ? 'active' : '' }}"
-                        href="{{ Route('StockIn.index') }}">
-                        <i class="ri-arrow-down-line"></i> <span data-key="t-widgets">Stok Masuk</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('StockOut*') ? 'active' : '' }}"
-                        href="{{ route('StockOut.index') }}">
-                        <i class="ri-arrow-up-line"></i> <span data-key="t-widgets">Stok Keluar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('SalesHistory*') ? 'active' : '' }}"
-                        href="{{ Route('SalesHistory.index') }}">
-                        <i class="ri-history-fill"></i> <span data-key="t-widgets">Histori Penjualan</span>
-                    </a>
-                </li>
-
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Kasir</span>
-                </li>
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Kasir</span></li>
                 <li class="nav-item">
                     <a class="nav-link menu-link {{ Request::is('cashier*') ? 'active' : '' }}"
                         href="{{ Route('cashier') }}">
@@ -126,21 +124,22 @@
                     </a>
                 </li>
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pengaturan User</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('Member*') ? 'active' : '' }}"
-                        href="{{ route('Member.index') }}">
-                        <i class="ri-file-user-fill"></i> <span data-key="t-widgets">Member</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::is('UserData*') ? 'active' : '' }}"
-                        href="{{ route('UserData.index') }}">
-                        <i class="ri-user-add-fill"></i> <span data-key="t-widgets">User Data</span>
-                    </a>
-                </li>
-
+                @if (auth()->user()->role == 'admin' || auth()->user()->role == 'SuperAdmin')
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pengaturan
+                            User</span></li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('Member*') ? 'active' : '' }}"
+                            href="{{ route('Member.index') }}">
+                            <i class="ri-file-user-fill"></i> <span data-key="t-widgets">Member</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ Request::is('UserData*') ? 'active' : '' }}"
+                            href="{{ route('UserData.index') }}">
+                            <i class="ri-user-add-fill"></i> <span data-key="t-widgets">User Data</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <!-- Sidebar -->

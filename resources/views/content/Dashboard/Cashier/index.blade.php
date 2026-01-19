@@ -164,7 +164,7 @@
                                 </div>
 
                                 <div class="mb-2">
-                                    <label>Total Keseluruhan</label>
+                                    <label>Total Diterima</label>
                                     <input type="text" class="form-control" id="grandTotal" disabled data-raw="0">
                                 </div>
 
