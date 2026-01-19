@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let taxAmount = Math.round((subtotalKeseluruhan * taxPercent) / 100);
         $('#taxAmount').val(formatRupiah(taxAmount)).data('raw', taxAmount);
-        let grandTotal = subtotalKeseluruhan + taxAmount;
+        let grandTotal = subtotalKeseluruhan - taxAmount;
 
         if (grandTotal < 0) grandTotal = 0;
         $('#grandTotal').val(formatRupiah(grandTotal)).data('raw', grandTotal);
