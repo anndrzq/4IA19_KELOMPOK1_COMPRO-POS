@@ -268,11 +268,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function calculateAll() {
-        let subtotal = 0;
+        let subtotalKeseluruhan = 0;
+
         $('.subtotal').each(function () {
-            subtotal += $(this).data('raw') || 0;
+            let nilaiSubtotal = parseFloat($(this).data('raw')) || 0;
+            subtotalKeseluruhan += nilaiSubtotal;
         });
-        $('#total').val(formatRupiah(subtotal)).data('raw', subtotal);
+
+        $('#total').val(formatRupiah(subtotalKeseluruhan)).data('raw', subtotalKeseluruhan);
 
         let taxPercent = 0;
         const paymentMethod = $('select[name="payment_method"]').val();
@@ -280,37 +283,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (paymentMethod === 'debit' || paymentMethod === 'credit') {
             switch (paymentDetail) {
-                case 'debit_bca':
-                    taxPercent = 0.25;
-                    break;
-                case 'debit_lain':
-                    taxPercent = 1;
-                    break;
-                case 'credit_bca':
-                    taxPercent = 1;
-                    break;
-                case 'credit_lain':
-                    taxPercent = 2.5;
-                    break;
+                case 'debit_bca': taxPercent = 0.25; break;
+                case 'debit_lain': taxPercent = 1; break;
+                case 'credit_bca': taxPercent = 1; break;
+                case 'credit_lain': taxPercent = 2.5; break;
             }
         }
 
-        let taxAmount = (subtotal * taxPercent) / 100;
+        let taxAmount = Math.round((subtotalKeseluruhan * taxPercent) / 100);
         $('#taxAmount').val(formatRupiah(taxAmount)).data('raw', taxAmount);
+        let grandTotal = subtotalKeseluruhan + taxAmount;
 
-        let grandTotal = subtotal - taxAmount;
-        if (grandTotal < 0) {
-            grandTotal = 0;
-        }
+        if (grandTotal < 0) grandTotal = 0;
         $('#grandTotal').val(formatRupiah(grandTotal)).data('raw', grandTotal);
-
         if (paymentMethod === 'debit' || paymentMethod === 'credit') {
-            $('#pay').val(formatRupiah(subtotal));
+            $('#pay').val(formatRupiah(grandTotal));
         }
 
         let payInputVal = $('#pay').val();
-        let pay = parseRupiah(payInputVal);
-        let change = pay - subtotal;
+        let payAmount = parseRupiah(payInputVal);
+        let change = payAmount - grandTotal;
+
         $('#change').val(formatRupiah(change < 0 ? 0 : change));
     }
 
