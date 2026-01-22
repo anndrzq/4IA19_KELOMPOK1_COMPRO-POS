@@ -27,4 +27,9 @@ class Transactions extends Model
     {
         return $this->belongsTo(Members::class, 'membership_id');
     }
+
+    public function refunds()
+    {
+        return $this->hasMany(Refunds::class, 'transaction_id', 'invoice_number');
+    }
 }

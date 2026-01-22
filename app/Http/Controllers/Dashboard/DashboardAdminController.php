@@ -34,6 +34,7 @@ class DashboardAdminController extends Controller
         // 2. STATISTIK HARIAN: Menghitung transaksi yang masuk khusus hari ini (Today)
         $dailyIncome = Transactions::where('status', 'paid')
             ->whereDate('transaction_date', Carbon::today())
+            ->whereDoesntHave('refunds')
             ->sum('total_amount');
 
         // Sesuai request: Menghitung biaya pengadaan stok hari ini (hanya purchase_price)
