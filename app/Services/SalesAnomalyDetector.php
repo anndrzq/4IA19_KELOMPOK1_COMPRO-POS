@@ -10,11 +10,6 @@ use App\Models\Transactions;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-/**
- * Service SalesAnomalyDetector
- * * Menggunakan algoritma Isolation Forest untuk mendeteksi penyimpangan (anomali)
- * pada data pendapatan harian berdasarkan tren historis.
- */
 class SalesAnomalyDetector
 {
     protected $persister;
@@ -22,121 +17,75 @@ class SalesAnomalyDetector
 
     public function __construct()
     {
-        // Menentukan lokasi penyimpanan file model hasil training (binary)
         $this->modelPath = storage_path('app/ml/isolation_forest.model');
-
-        // Persister menangani proses simpan/muat model dari penyimpanan fisik
         $this->persister = new Filesystem($this->modelPath);
     }
 
     /**
-     * Mengambil data historis untuk bahan ajar AI.
-     * Menggunakan fitur multidimensi: Indeks Hari + Total Pendapatan.
+     * Ambil data training (LOG revenue ONLY)
      */
     protected function fetchTrainingData(): array
     {
-        // Mengambil data transaksi 'paid' selama 6 bulan terakhir (180 hari)
-        $data = Transactions::where('status', 'paid')
-            ->whereBetween('transaction_date', [Carbon::now()->subDays(180), Carbon::now()->subDay()])
-            ->select(
-                DB::raw('DAYOFWEEK(transaction_date) as day_index'), // Fitur 1: Konteks hari (1-7)
-                DB::raw('SUM(total_amount) as revenue')             // Fitur 2: Nominal pendapatan
-            )
-            // Grouping berdasarkan tanggal unik agar AI belajar pola pendapatan per hari
-            ->groupBy(DB::raw('DATE(transaction_date)'), DB::raw('DAYOFWEEK(transaction_date)'))
-            ->get();
-
-        if ($data->isEmpty()) return [];
-
         $samples = [];
-        foreach ($data as $row) {
-            $revenue = (float) $row->revenue;
 
-            /**
-             * PENANGANAN ERROR:
-             * Jika pendapatan 0, diubah menjadi 0.01.
-             * Algoritma Isolation Forest membutuhkan variasi data. Angka 0 yang terlalu banyak
-             * pada dataset kecil dapat menyebabkan error matematika "Division by Zero".
-             */
-            if ($revenue <= 0) {
-                $revenue = 0.01;
-            }
+        // 1️⃣ Ambil SEMUA transaksi paid
+        $transactions = Transactions::where('status', 'paid')->get();
 
-            // Memasukkan fitur ke dalam array dua dimensi untuk diproses Rubix ML
-            $samples[] = [(int) $row->day_index, $revenue];
+        foreach ($transactions as $trx) {
+            $samples[] = [
+                log10(max((float) $trx->total_amount, 1))
+            ];
         }
 
         return $samples;
     }
 
+
+
     /**
-     * Melatih model AI berdasarkan data yang tersedia di database.
+     * Train model
      */
     public function train()
     {
         $samples = $this->fetchTrainingData();
 
-        // Syarat minimal data agar AI memiliki referensi pola yang cukup (7 hari unik)
-        if (count($samples) < 7) {
-            throw new \Exception("Data tidak cukup. Butuh minimal 7 hari data transaksi untuk melatih AI.");
+        if (count($samples) < 3) {
+            throw new \Exception("Data training belum cukup (min 3 transaksi)");
         }
 
-        /**
-         * Konfigurasi Isolation Forest:
-         * - 100: Jumlah 'pohon' keputusan. Semakin banyak semakin akurat, tapi beban CPU naik.
-         * - 0.1: Contamination (rasio anomali). Asumsi bahwa 10% data di masa lalu mungkin adalah anomali.
-         */
-        $estimator = new IsolationForest(100, 0.1);
 
-        // Membangun dataset tanpa label (Unlabeled) karena ini adalah Unsupervised Learning
+        $estimator = new IsolationForest(
+            200,   // trees
+            0.7,   // subsample
+            0.05   // contamination
+        );
+
         $dataset = Unlabeled::build($samples);
-
-        // Proses pembelajaran dimulai di sini
         $estimator->train($dataset);
 
-        // Membungkus model agar bisa disimpan secara permanen di server
-        $persistentModel = new PersistentModel($estimator, $this->persister);
-        $persistentModel->save();
+        (new PersistentModel($estimator, $this->persister))->save();
     }
 
     /**
-     * Mendeteksi skor anomali untuk pendapatan hari ini.
-     * * @param float $todaysRevenue Total pendapatan yang masuk hari ini.
-     * @return array Score (0.0 - 1.0) dan Status deteksi.
+     * Deteksi anomali
      */
-    public function detect(float $todaysRevenue): array
+    public function detect(float $revenue): array
     {
-        // Jika model belum ada (belum pernah ditrain), jangan jalankan deteksi
         if (!file_exists($this->modelPath)) {
-            return ['score' => 0.0, 'status' => 'untrained'];
+            return ['status' => 'untrained', 'score' => 0];
         }
 
-        try {
-            // Memuat kembali model yang sudah terlatih dari file storage
-            $model = PersistentModel::load($this->persister);
+        $model = PersistentModel::load($this->persister);
 
-            // Konsistensi data: gunakan jitter 0.01 jika pendapatan hari ini nol
-            $inputRevenue = $todaysRevenue <= 0 ? 0.01 : $todaysRevenue;
+        $revenue = max($revenue, 1);
+        $logRevenue = log10($revenue);
 
-            // Mendapatkan indeks hari saat ini (1-7) agar relevan dengan data training
-            $currentDayIndex = Carbon::now()->dayOfWeekIso;
+        $sample = [[$logRevenue]];
+        $scores = $model->base()->predict(Unlabeled::build($sample));
 
-            // Format input harus sama dengan format saat training (Array 2D)
-            $sample = [[$currentDayIndex, $inputRevenue]];
-
-            // Melakukan prediksi (semakin tinggi skor mendekati 1.0, semakin aneh datanya)
-            $scores = $model->base()->predict(Unlabeled::build($sample));
-
-            return [
-                'score' => $scores[0] ?? 0.0,
-                'status' => 'success'
-            ];
-        } catch (\DivisionByZeroError $e) {
-            // Penanganan jika data training terlalu identik sehingga gagal hitung rasio
-            return ['score' => 0.0, 'status' => 'error'];
-        } catch (\Exception $e) {
-            // Penanganan error umum (file korup, library error, dsb)
-            return ['score' => 0.0, 'status' => 'error'];
-        }
+        return [
+            'status' => 'success',
+            'score'  => $scores[0] ?? 0
+        ];
     }
 }

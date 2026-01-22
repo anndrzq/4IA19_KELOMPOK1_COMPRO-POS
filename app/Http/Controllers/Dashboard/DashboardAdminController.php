@@ -12,6 +12,7 @@ use App\Services\SalesAnomalyDetector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Services\WhatsappService;
 
 /**
  * Controller DashboardAdmin
@@ -49,6 +50,7 @@ class DashboardAdminController extends Controller
             : 0;
 
         // 5. ALUR AI: Mengirim data pendapatan hari ini ke AI Detector untuk cek ketidakwajaran
+        // $fakeIncome = 5000000000;
         $anomalyAnalysis = $this->runAnomalyAnalysis($dailyIncome);
 
         // 6. ALUR GRAFIK: Mengambil data historis untuk divisualisasikan ke Chart
@@ -104,31 +106,45 @@ class DashboardAdminController extends Controller
         $detector = new SalesAnomalyDetector();
         $result = $detector->detect($dailyIncome);
 
-        $threshold = 0.65; // Skor di atas 0.65 dianggap tidak wajar
-        $isAnomaly = false;
-
-        // Cek apakah model AI sudah pernah di-train atau belum
-        if ($result['status'] === 'untrained') {
+        if ($result['status'] !== 'success') {
             return [
                 'isAnomaly' => false,
-                'message'   => "Model belum dilatih. Jalankan 'php artisan ml:train-anomaly'."
+                'score' => 0,
+                'message' => 'Model belum dilatih'
             ];
         }
 
         $score = $result['score'];
+        $threshold = 0.65;
 
-        // Klasifikasi skor dari AI
+        \Log::info('AI ANOMALY CHECK', [
+            'income' => $dailyIncome,
+            'log_income' => log10(max($dailyIncome,1)),
+            'score' => $score
+        ]);
+
         if ($score >= $threshold) {
-            $isAnomaly = true;
-            $message = "⚠️ Anomali (" . number_format($score, 2) . "): Penjualan hari ini tidak wajar.";
-        } elseif ($score > 0.50) {
-            $message = "Normal-Variatif (" . number_format($score, 2) . ")";
-        } else {
-            $message = "Normal (" . number_format($score, 2) . ")";
+            WhatsappService::sendMessage(
+                "628111720050",
+                "🚨 *ANOMALI PENJUALAN*\n\n" .
+                "Pendapatan: Rp " . number_format($dailyIncome,0,',','.') . "\n" .
+                "Score: " . number_format($score, 2)
+            );
+
+            return [
+                'isAnomaly' => true,
+                'score' => $score,
+                'message' => "⚠️ Anomali (" . number_format($score, 2) . ")"
+            ];
         }
 
-        return ['isAnomaly' => $isAnomaly, 'message' => $message];
+        return [
+            'isAnomaly' => false,
+            'score' => $score,
+            'message' => "Normal (" . number_format($score, 2) . ")"
+        ];
     }
+
 
     /**
      * Method untuk menentukan rentang tanggal berdasarkan filter dropdown di UI
