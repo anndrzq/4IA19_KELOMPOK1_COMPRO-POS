@@ -32,10 +32,17 @@ class DashboardAdminController extends Controller
         $chartLabels = $dateInfo['labels'];
 
         // 2. STATISTIK HARIAN: Menghitung transaksi yang masuk khusus hari ini (Today)
-        $dailyIncome = Transactions::where('status', 'paid')
+        // Hitung Pendapatan Kotor (Semua transaksi 'paid' hari ini)
+        $grossIncome = Transactions::where('status', 'paid')
             ->whereDate('transaction_date', Carbon::today())
-            ->whereDoesntHave('refunds')
             ->sum('total_amount');
+
+        // Hitung Total Refund yang terjadi hari ini (berdasarkan tabel refunds)
+        $todayRefunds = Refunds::whereDate('created_at', Carbon::today())
+            ->sum('total_refund_amount');
+
+        // Pendapatan Bersih (Net Income)
+        $dailyIncome = $grossIncome - $todayRefunds;
 
         // Sesuai request: Menghitung biaya pengadaan stok hari ini (hanya purchase_price)
         $dailyExpenses = StockIn::whereDate('created_at', Carbon::today())
