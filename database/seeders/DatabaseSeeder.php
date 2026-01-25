@@ -18,12 +18,24 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         User::create([
-            'name' => 'P3L',
+            'name' => 'Super Admin',
             'phoneNumber' => '081212131060',
             'email' => 'superadmin@gmail.com',
             'address' => "Jalan Jalan",
             'password' => Hash::make('123123'),
             'role' => 'SuperAdmin',
+            'gender' => 'Laki',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        User::create([
+            'name' => 'Kasir',
+            'phoneNumber' => '08111720050',
+            'email' => 'kasir@gmail.com',
+            'address' => "Jalan Jalan",
+            'password' => Hash::make('123123'),
+            'role' => 'Kasir',
             'gender' => 'Laki',
             'created_at' => now(),
             'updated_at' => now(),

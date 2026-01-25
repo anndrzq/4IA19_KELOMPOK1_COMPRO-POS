@@ -2,8 +2,12 @@
 
       <div class="container footer-top">
           <div class="row gy-4">
+              <div class="col-lg-2 col-md-3 footer-links text-center">
+                  <img src="{{ asset('assets_landing/img/logotdsaptikom.png') }}" alt="Footer Image" class="img-fluid">
+              </div>
+
               <div class="col-lg-4 col-md-6 footer-about">
-                  <a href="index.html" class="d-flex align-items-center">
+                  <a href="#" class="d-flex align-items-center">
                       <span class="sitename">Toko Daging Sawangan</span>
                   </a>
                   <div class="footer-contact pt-3">
@@ -13,9 +17,7 @@
                   </div>
               </div>
 
-              <div class="col-lg-2 col-md-3 footer-links">
 
-              </div>
 
               <div class="col-lg-2 col-md-3 footer-links">
                   {{-- <h4>Our Services</h4>

@@ -133,7 +133,7 @@ class DashboardAdminController extends Controller
 
         if ($score >= $threshold) {
             WhatsappService::sendMessage(
-                "628111720050",
+                "62811132938",
                 "🚨 *ANOMALI PENJUALAN*\n\n" .
                 "Pendapatan: Rp " . number_format($dailyIncome,0,',','.') . "\n" .
                 "Score: " . number_format($score, 2)

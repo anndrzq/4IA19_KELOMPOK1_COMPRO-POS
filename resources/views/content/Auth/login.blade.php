@@ -23,7 +23,7 @@
                     <div class="text-center mt-sm-5 mb-4 text-white-50">
                         <div>
                             <a href="index.html" class="d-inline-block auth-logo">
-                                <img src="{{ asset('') }}assets_landing/img/logotds.png" alt="" height="150px">
+                                <img src="{{ asset('assets_landing/img/logotdsaptikom.png') }}" alt="" height="200px">
                             </a>
                         </div>
                     </div>

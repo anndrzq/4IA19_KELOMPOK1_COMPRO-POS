@@ -29,13 +29,17 @@
 
 @push('page-script')
     <script src="{{ asset('') }}assets/js/pages/datatables.init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        var nameList = new List('name-list', {
-            valueNames: ["name"]
+        $(document).ready(function() {
+            $('#kdProduct').select2({
+                width: '100%',
+                placeholder: "-Pilih Produk-",
+                allowClear: true
+            });
         });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function confirmDelete(Stockid) {
@@ -74,6 +78,9 @@
             });
         </script>
     @endif
+
+
+
 @endpush
 @section('title', 'Stok Keluar')
 @section('content')
@@ -109,7 +116,7 @@
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label for="KdProduct" class="form-label">Pilih Produk</label>
-                                        <select name="KdProduct" id="KdProduct" class="form-select" data-choices
+                                        <select name="KdProduct" id="KdProduct" class="form-select kdProduct" data-choices
                                             data-choices-search-true>
                                             <option selected disabled>-Pilih Produk-</option>
                                             @foreach ($productData as $produk)
